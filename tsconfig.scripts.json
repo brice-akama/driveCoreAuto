@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "baseUrl": ".",                // <== This is important
+    "paths": {
+      "@/*": ["./app/*"]           // <== Adjust this to match your actual structure
+    },
+    "outDir": "dist-scripts",      // Optional: where compiled files go
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["scripts/**/*.ts", "scripts/**/*.ts"]
+}
