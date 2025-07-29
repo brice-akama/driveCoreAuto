@@ -79,7 +79,7 @@ const price = parseFloat(rawPrice.replace(/,/g, ''));
 
     const toyota = form.get('toyota') === 'true';
     const acura = form.get('acura') === 'true';
-    const mercedes = form.get('mercedes') === 'true';
+    const scion = form.get('scion') === 'true';
     const honda = form.get('honda') === 'true';
     const lexus = form.get('lexus') === 'true';
     const infiniti = form.get('infiniti') === 'true';
@@ -147,7 +147,7 @@ if (!mainImage) return NextResponse.json({ error: 'Missing main image' }, { stat
       price,
       toyota,
       acura,
-      mercedes,
+      scion,
       honda,
       lexus,
       infiniti,
@@ -206,7 +206,7 @@ export async function GET(req: NextRequest) {
     const id = searchParams.get("id");
     const slug = searchParams.get("slug");                  //     nissan
     const toyota = searchParams.get("toyota") === "true";
-    const  mercedes = searchParams.get("mercedes") === "true";
+    const  scion = searchParams.get("scion") === "true";
      const  infiniti = searchParams.get("infiniti") === "true";
       const  nissan = searchParams.get("nissan") === "true";
       const   lexus = searchParams.get("lexus") === "true";
@@ -260,7 +260,7 @@ if (pageParam && perPageParam) {
       id,
       slug,
       toyota,
-       mercedes,
+       scion,
       popularProduct,
        subaru,
       infiniti,
@@ -333,7 +333,7 @@ const brandFilters = {
   infiniti: searchParams.get("infiniti") === "true",
   lexus: searchParams.get("lexus") === "true",
   honda: searchParams.get("honda") === "true",
-  mercedes: searchParams.get("mercedes") === "true",
+  scion: searchParams.get("scion") === "true",
   acura: searchParams.get("acura") === "true",
 };
 
@@ -434,7 +434,7 @@ export async function PUT(req: NextRequest) {
 
     const toyota = form.get('toyota') === 'true';
     const acura = form.get('acura') === 'true';
-    const mercedes = form.get('mercedes') === 'true';
+    const scion = form.get('scion') === 'true';
     const honda = form.get('honda') === 'true';
     const lexus = form.get('lexus') === 'true';
     const infiniti = form.get('infiniti') === 'true';
@@ -493,7 +493,7 @@ export async function PUT(req: NextRequest) {
       category,
       toyota,
       acura,
-      mercedes,
+      scion,
       honda,
       lexus,
       infiniti,

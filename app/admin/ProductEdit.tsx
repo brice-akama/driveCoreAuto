@@ -83,7 +83,7 @@ const ProductEditForm = () => {
 
     formData.append("toyota", data.toyota ? "true" : "false");
     formData.append("acura", data.acura ? "true" : "false");
-    formData.append("mercedes", data.mercedes ? "true" : "false");
+    formData.append("scion", data.scion ? "true" : "false");
     formData.append("honda", data.honda ? "true" : "false");
     formData.append("lexus", data.lexus ? "true" : "false");
     formData.append("infiniti", data.infiniti ? "true" : "false");
@@ -196,7 +196,7 @@ const ProductEditForm = () => {
       <h3>Brand Flags</h3>
       <BooleanInput source="toyota" label="Toyota" defaultValue={record?.toyota} />
       <BooleanInput source="acura" label="Acura" defaultValue={record?.acura} />
-      <BooleanInput source="mercedes" label="Mercedes" defaultValue={record?.mercedes} />
+      <BooleanInput source="scion" label="Scion" defaultValue={record?.scion} />
       <BooleanInput source="honda" label="Honda" defaultValue={record?.honda} />
       <BooleanInput source="lexus" label="Lexus" defaultValue={record?.lexus} />
       <BooleanInput source="infiniti" label="Infiniti" defaultValue={record?.infiniti} />

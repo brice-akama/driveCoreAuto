@@ -20,7 +20,7 @@ const BRANDS = [
   'transmission',
   'free-shipping',
   'top-sellers',
-  'mercedes',
+  'Scion',
 ];
 
 type BrandLinksNavProps = {
@@ -38,8 +38,7 @@ export default function BrandLinksNav({ currentBrand }: BrandLinksNavProps) {
     switch (brand) {
       case 'wheels':
         return 'Wheels and Tires';
-      case 'mercedes':
-        return 'Mercedes Benz';
+      
       case 'top-sellers':
         return 'Top Sellers';
       case 'free-shipping':

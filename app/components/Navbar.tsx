@@ -118,20 +118,19 @@ const Navbar = () => {
   ],
 },
 
-            {
-  name: await translate("Mercedes Benz"),
-  link: "/mercedes",
+           {
+  name: await translate("Scion"),
+  link: "/scion",
   subMenu: [
-    { name: await translate("OM651"), link: `/mercedes?category=${toSlug("OM651")}` },
-    { name: await translate("M274"), link: `/mercedes?category=${toSlug("M274")}` },
-    { name: await translate("M272"), link: `/mercedes?category=${toSlug("M272")}` },
-    { name: await translate("OM642"), link: `/mercedes?category=${toSlug("OM642")}` },
-    { name: await translate("M112"), link: `/mercedes?category=${toSlug("M112")}` },
-    { name: await translate("M113"), link: `/mercedes?category=${toSlug("M113")}` },
-    { name: await translate("OM606"), link: `/mercedes?category=${toSlug("OM606")}` },
-    { name: await translate("OM646"), link: `/mercedes?category=${toSlug("OM646")}` },
+    { name: await translate("2ZR-FE"), link: `/scion?category=${toSlug("2ZR-FE")}` },
+    { name: await translate("1NZ-FE"), link: `/scion?category=${toSlug("1NZ-FE")}` },
+    { name: await translate("2AZ-FE"), link: `/scion?category=${toSlug("2AZ-FE")}` },
+    { name: await translate("1GR-FE"), link: `/scion?category=${toSlug("1GR-FE")}` },
+    { name: await translate("3ZR-FAE"), link: `/scion?category=${toSlug("3ZR-FAE")}` },
+    { name: await translate("5E-FE"), link: `/scion?category=${toSlug("5E-FE")}` },
   ],
 },
+
 
             {
   name: await translate("Nissan"),

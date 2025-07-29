@@ -75,7 +75,7 @@ export const ProductCreate: React.FC = (props) => {
 
     formData.append("toyota", data.toyota ? "true" : "false");
     formData.append("acura", data.acura ? "true" : "false");
-    formData.append("mercedes", data.mercedes ? "true" : "false");
+    formData.append("scion", data.scion ? "true" : "false");
     formData.append("honda", data.honda ? "true" : "false");
     formData.append("lexus", data.lexus ? "true" : "false");
     formData.append("infiniti", data.infiniti ? "true" : "false");
@@ -207,7 +207,7 @@ export const ProductCreate: React.FC = (props) => {
         <h3>Brand Flags</h3>
         <BooleanInput source="toyota" label="Toyota" />
         <BooleanInput source="acura" label="Acura" />
-        <BooleanInput source="mercedes" label="Mercedes" />
+        <BooleanInput source="scion" label="Scion" />
         <BooleanInput source="honda" label="Honda" />
         <BooleanInput source="lexus" label="Lexus" />
         <BooleanInput source="infiniti" label="Infiniti" />

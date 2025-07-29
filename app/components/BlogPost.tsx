@@ -20,7 +20,7 @@ export default function BlogPost() {
   const { language, translate } = useLanguage(); // Get current language and translate function
 
   const [translatedTexts, setTranslatedTexts] = useState({
-    latestTitle: "Latest in Cannabis Wellness",
+    latestTitle: "DriveCore Journal",
     viewAll: "View All Articles",
     readMore: "Read More",
   });
@@ -50,17 +50,17 @@ export default function BlogPost() {
   useEffect(() => {
     async function fetchTranslations() {
       try {
-        const latestTitle = await translate("Latest in Cannabis Wellness");
+        const latestTitle = await translate("DriveCore Journal");
         const viewAll = await translate("View All Articles");
         const readMore = await translate("Read More");
         setTranslatedTexts({
-          latestTitle: latestTitle || "Latest in Cannabis Wellness",
+          latestTitle: latestTitle || "DriveCore Journal",
           viewAll: viewAll || "View All Articles",
           readMore: readMore || "Read More",
         });
       } catch {
         setTranslatedTexts({
-          latestTitle: "Latest in Cannabis Wellness",
+          latestTitle: "DriveCore Journal",
           viewAll: "View All Articles",
           readMore: "Read More",
         });

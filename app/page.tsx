@@ -9,6 +9,7 @@ import BestSeller from "./components/BestSeller";
 import BlogPost from "./components/BlogPost";
 
 
+
 export const metadata: Metadata = {
   title: "Home - 16Zips",
   description: "Discover premium cannabis products at 16Zips. From flower to edibles and concentrates, we offer top-shelf quality, fast shipping, and a discreet shopping experience.",
@@ -29,6 +30,7 @@ const Home: React.FC = () => {
       <AboutEnginesSection />
       <EngineBrandGrid  />
       <BestSeller />
+      
       <BlogPost  />
       
     </div>
