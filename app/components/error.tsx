@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useWishlist } from "../context/WishlistContext";
 import SelectLanguageButton from "./SelectLanguageButton";
 
+
 type SubMenuItem = {
   name: string;
   link: string;
@@ -22,7 +23,7 @@ type MenuItem = {
   name: string;
   link: string;
   subLinks?: (SubMenuItem | string)[];
-  customDropdownType?: "category" | "default" | "transmissionCategory";
+  customDropdownType?: "category" | "default";
 };
 
 type Mode = "top" | "categoryList" | "supportList" | "transmissionsList" | { subIndex: number };
@@ -40,12 +41,10 @@ const Navbar = () => {
   const router = useRouter();
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search...");
+
+  
+
   const [mode, setMode] = useState<Mode>("top");
-  const [expandedTransmissionIndex, setExpandedTransmissionIndex] = useState<number | null>(null);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-const [popupSearchQuery, setPopupSearchQuery] = useState("");
-
-
 
   const [translatedTexts, setTranslatedTexts] = useState({
     login: '',
@@ -81,28 +80,15 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
               subMenu: [
                 { name: await translate("2GR-FKS"), link: `/toyota?category=${toSlug("2GR-FKS")}` },
                 { name: await translate("2TR-FE"), link: `/toyota?category=${toSlug("2TR-FE")}` },
-                { name: await translate("1ZZ-FE"), link: `/toyota?category=${toSlug("1ZZ-FE")}` },
-                { name: await translate("2ZR-FXE"), link: `/toyota?category=${toSlug("2ZR-FXE")}` },
-                { name: await translate("2AZ-FE"), link: `/toyota?category=${toSlug("2AZ-FE")}` },
-                { name: await translate("5VZ-FE"), link: `/toyota?category=${toSlug("5VZ-FE")}` },
-                { name: await translate("1MZ-FE"), link: `/toyota?category=${toSlug("1MZ-FE")}` },
-                { name: await translate("2GR-FE"), link: `/toyota?category=${toSlug("2GR-FE")}` },
+                 { name: await translate("1ZZ-FE"), link: `/toyota?category=${toSlug("1ZZ-FE")}` },
+                 { name: await translate("2ZR-FXE"), link: `/toyota?category=${toSlug("2ZR-FXE")}` },
+                  { name: await translate("2AZ-FE"), link: `/toyota?category=${toSlug("2AZ-FE")}` },
+                  { name: await translate("5VZ-FE"), link: `/toyota?category=${toSlug("5VZ-FE")}` },
+                   { name: await translate("1MZ-FE"), link: `/toyota?category=${toSlug("1MZ-FE")}` },
+                   { name: await translate("2GR-FE"), link: `/toyota?category=${toSlug("2GR-FE")}` },
               ],
             },
-            
-           {
-  name: await translate("Subaru"),
-  link: "/subaru",
-  subMenu: [
-    { name: await translate("EJ20"), link: `/subaru?category=${toSlug("EJ20")}` },
-    { name: await translate("EJ25"), link: `/subaru?category=${toSlug("EJ25")}` },
-    { name: await translate("FB20"), link: `/subaru?category=${toSlug("FB20")}` },
-    { name: await translate("FA20"), link: `/subaru?category=${toSlug("FA20")}` },
-    { name: await translate("EZ36"), link: `/subaru?category=${toSlug("EZ36")}` },
-    { name: await translate("EJ205"), link: `/subaru?category=${toSlug("EJ205")}` },
-  ],
-},
-{
+            {
   name: await translate("Acura"),
   link: "/acura",
   subMenu: [
@@ -184,15 +170,29 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     // Add others as you get more data
   ],
 },  
+{
+  name: await translate("Subaru"),
+  link: "/subaru",
+  subMenu: [
+    { name: await translate("EJ20"), link: `/subaru?category=${toSlug("EJ20")}` },
+    { name: await translate("EJ25"), link: `/subaru?category=${toSlug("EJ25")}` },
+    { name: await translate("FB20"), link: `/subaru?category=${toSlug("FB20")}` },
+    { name: await translate("FA20"), link: `/subaru?category=${toSlug("FA20")}` },
+    { name: await translate("EZ36"), link: `/subaru?category=${toSlug("EZ36")}` },
+    { name: await translate("EJ205"), link: `/subaru?category=${toSlug("EJ205")}` },
+  ],
+},
+
+
+
+
           ],
         },
-
-        
         { name: await translate("ABOUT US"), link: "/about-us" },
-       {
+        {
   name: await translate("TRANSMISSIONS"),
   link: "/transmissions",
-  customDropdownType: "transmissionCategory",  // Keep this as is
+  customDropdownType: "category",
   subLinks: [
     {
       name: await translate("Toyota"),
@@ -215,7 +215,6 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
         }
       ]
     },
-
     {
       name: await translate("Honda"),
       link: "/transmissions/honda",
@@ -236,7 +235,6 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
         }
       ]
     },
-
     {
       name: await translate("Nissan"),
       link: "/transmissions/nissan",
@@ -257,125 +255,6 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
         }
       ]
     },
-
-    // Added new manufacturers below:
-
-    {
-      name: await translate("Subaru"),
-      link: "/transmissions/subaru",
-      subMenu: [
-        {
-          name: await translate("Automatic"),
-          link: "/transmissions/subaru/automatic",
-          subMenu: [
-            // Add Subaru automatic models here
-            { name: "ModelA1", link: `/transmissions/subaru?model=${toSlug("ModelA1")}` },
-            { name: "ModelA2", link: `/transmissions/subaru?model=${toSlug("ModelA2")}` },
-          ],
-        },
-        {
-          name: await translate("Manual"),
-          link: "/transmissions/subaru/manual",
-          subMenu: [
-            // Add Subaru manual models here
-            { name: "ModelM1", link: `/transmissions/subaru?model=${toSlug("ModelM1")}` },
-          ],
-        }
-      ]
-    },
-
-    {
-      name: await translate("Acura"),
-      link: "/transmissions/acura",
-      subMenu: [
-        {
-          name: await translate("Automatic"),
-          link: "/transmissions/acura/automatic",
-          subMenu: [
-            // Add Acura automatic models here
-            { name: "ModelA1", link: `/transmissions/acura?model=${toSlug("ModelA1")}` },
-          ],
-        },
-        {
-          name: await translate("Manual"),
-          link: "/transmissions/acura/manual",
-          subMenu: [
-            // Add Acura manual models here
-            { name: "ModelM1", link: `/transmissions/acura?model=${toSlug("ModelM1")}` },
-          ],
-        }
-      ]
-    },
-
-    {
-      name: await translate("Infiniti"),
-      link: "/transmissions/infiniti",
-      subMenu: [
-        {
-          name: await translate("Automatic"),
-          link: "/transmissions/infiniti/automatic",
-          subMenu: [
-            // Add Infiniti automatic models here
-            { name: "ModelA1", link: `/transmissions/infiniti?model=${toSlug("ModelA1")}` },
-          ],
-        },
-        {
-          name: await translate("Manual"),
-          link: "/transmissions/infiniti/manual",
-          subMenu: [
-            // Add Infiniti manual models here
-            { name: "ModelM1", link: `/transmissions/infiniti?model=${toSlug("ModelM1")}` },
-          ],
-        }
-      ]
-    },
-
-    {
-      name: await translate("Scion"),
-      link: "/transmissions/scion",
-      subMenu: [
-        {
-          name: await translate("Automatic"),
-          link: "/transmissions/scion/automatic",
-          subMenu: [
-            // Add Scion automatic models here
-            { name: "ModelA1", link: `/transmissions/scion?model=${toSlug("ModelA1")}` },
-          ],
-        },
-        {
-          name: await translate("Manual"),
-          link: "/transmissions/scion/manual",
-          subMenu: [
-            // Add Scion manual models here
-            { name: "ModelM1", link: `/transmissions/scion?model=${toSlug("ModelM1")}` },
-          ],
-        }
-      ]
-    },
-
-    {
-      name: await translate("Lexus"),
-      link: "/transmissions/lexus",
-      subMenu: [
-        {
-          name: await translate("Automatic"),
-          link: "/transmissions/lexus/automatic",
-          subMenu: [
-            // Add Lexus automatic models here
-            { name: "ModelA1", link: `/transmissions/lexus?model=${toSlug("ModelA1")}` },
-          ],
-        },
-        {
-          name: await translate("Manual"),
-          link: "/transmissions/lexus/manual",
-          subMenu: [
-            // Add Lexus manual models here
-            { name: "ModelM1", link: `/transmissions/lexus?model=${toSlug("ModelM1")}` },
-          ],
-        }
-      ]
-    },
-
     {
       name: await translate("Parts & Fluids"),
       link: "/transmissions/parts-fluids"
@@ -384,7 +263,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 },
 
         { name: await translate("BLOG"), link: "/blog" },
-        {
+        { 
           name: await translate("SUPPORT"), link: "/support",
           subLinks: [
             { name: await translate("FAQS"), link: "/support/faqs" },
@@ -437,46 +316,19 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
   };
 
   const handleDropdownEnter = (index: number) => {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-      setHoverTimeout(null);
-    }
-    setActiveDropdown(index);
-  };
+  // Cancel any existing timeout so dropdown stays open while hovering
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout);
+    setHoverTimeout(null);
+  }
+  setActiveDropdown(index);
+};
 
-  const handleDropdownLeave = () => {
-    const timeout = setTimeout(() => {
-      setActiveDropdown(null);
-    }, 350);
-    setHoverTimeout(timeout);
-  };
-
-  const doPopupSearch = () => {
-  if (!popupSearchQuery.trim()) return;
-
-  (async () => {
-    try {
-      const knownPaths = ["/privacy-policy", "/terms", "/support", "/about-us", "/refund-policy", "/shipping-info", "/faqs", "/contact-us"];
-      const matchedPath = knownPaths.find(path => path.toLowerCase().includes(popupSearchQuery.trim().toLowerCase()));
-      if (matchedPath) {
-        router.push(matchedPath);
-      } else {
-        const res = await fetch(`/api/search?search=${encodeURIComponent(popupSearchQuery.trim())}`);
-        const { redirectTo } = await res.json();
-        if (redirectTo) {
-          router.push(redirectTo);
-        } else {
-          toast.error("No matching results found.");
-        }
-      }
-    } catch (error) {
-      console.error("Error during search:", error);
-      toast.error("Something went wrong. Please try again.");
-    }
-  })();
-
-  setIsSearchOpen(false);
-  setPopupSearchQuery("");
+const handleDropdownLeave = () => {
+  const timeout = setTimeout(() => {
+    setActiveDropdown(null);
+  }, 350); // 350ms delay before hiding dropdown
+  setHoverTimeout(timeout);
 };
 
   const goBack = () => {
@@ -487,21 +339,18 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
-    handleResize();
+    handleResize(); // initial check
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
-    async function fetchPlaceholderTranslation() {
-      const placeholder = await translate("Search...");
-      setSearchPlaceholder(placeholder || "Search...");
-    }
-    fetchPlaceholderTranslation().catch(console.error);
-  }, [translate]);
+  async function fetchPlaceholderTranslation() {
+    const placeholder = await translate("Search...");
+    setSearchPlaceholder(placeholder || "Search...");
+  }
 
-  useEffect(() => {
-  setExpandedTransmissionIndex(null);
-}, [mode]);
+  fetchPlaceholderTranslation().catch(console.error);
+}, [translate]);
 
 
   return (
@@ -539,29 +388,19 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 
         <div className="flex items-center w-1/2 bg-gray-50 rounded-full shadow-inner px-6 py-3 mx-auto mt-3 hidden md:flex">
           <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={searchPlaceholder}
-            className="flex-grow bg-transparent outline-none text-gray-800 text-lg"
-          />
+  type="text"
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  placeholder={searchPlaceholder}
+  className="flex-grow bg-transparent outline-none text-gray-800 text-lg"
+/>
+
           <button onClick={handleSearch} className="flex-shrink-0 ml-3">
             <FaSearch className="text-gray-500 text-xl" />
           </button>
         </div>
 
         <div className="flex items-center space-x-2 ">
-          <button
-  onClick={() => {
-    setIsSearchOpen(true);
-    setPopupSearchQuery("");
-  }}
-  aria-label="Open search"
-  className="text-2xl cursor-pointer text-black hover:text-blue-700 mt-3"
->
-  <FaSearch />
-</button>
-
           <Link href="/wishlist" className="relative">
             <FaHeart className="text-2xl cursor-pointer text-black hover:text-red-700 mt-3" />
             <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full mt-3">{wishlist.length}</span>
@@ -582,11 +421,11 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
           <div className="flex justify-start space-x-6 relative">
             {translatedMenuItems.map((item, index) => (
               <div
-                key={index}
-                className="relative"
-                onMouseEnter={() => handleDropdownEnter(index)}
-                onMouseLeave={handleDropdownLeave}
-              >
+    key={index}
+    className="relative"
+    onMouseEnter={() => handleDropdownEnter(index)}
+    onMouseLeave={handleDropdownLeave}
+  >
                 <div className="cursor-pointer uppercase mt-2 flex items-center gap-1 rounded-md transition" onClick={() => item.subLinks && setActiveDropdown(index)}>
                   <Link href={item.link}>{item.name}</Link>
                   {item.subLinks && (activeDropdown === index ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
@@ -654,18 +493,19 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
                         </button>
                       );
                     }
+                    
 
-                    if (item.customDropdownType === "transmissionCategory") {
+                    if (item.link === "/support") {
                       return (
-                        <button key={idx} onClick={() => setMode("transmissionsList")} className={commonClasses}>
+                        <button key={idx} onClick={() => setMode("supportList")} className={commonClasses}>
                           {item.name} <ChevronRight />
                         </button>
                       );
                     }
 
-                    if (item.link === "/support") {
+                    if (item.link === "/transmissions") {
                       return (
-                        <button key={idx} onClick={() => setMode("supportList")} className={commonClasses}>
+                        <button key={idx} onClick={() => setMode("transmissionsList")} className={commonClasses}>
                           {item.name} <ChevronRight />
                         </button>
                       );
@@ -705,7 +545,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
                   {(() => {
                     const categoryItem = translatedMenuItems.find(it => it.customDropdownType === "category");
                     if (!categoryItem) return null;
-
+                    
                     // Filter to only object type subLinks with subMenu arrays
                     const validSubLinks = (categoryItem.subLinks ?? []).filter(sub => typeof sub === "object" && sub !== null && "subMenu" in sub && Array.isArray(sub.subMenu)) as SubMenuItem[];
                     const cat = validSubLinks[mode.subIndex];
@@ -754,77 +594,35 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
               )}
 
               {/* Transmissions submenu */}
-              
-
-{mode === "transmissionsList" && (
-  <div>
-    <button onClick={goBack} className="mb-4 flex items-center gap-2 text-lg">
-      <FaTimes /> Back
-    </button>
-
-    {translatedMenuItems
-      .find(item => item.customDropdownType === "transmissionCategory")
-      ?.subLinks?.map((manufacturer, idx) => {
-        if (typeof manufacturer === "string") {
-          return (
-            <Link
-              key={manufacturer}
-              href={`/transmissions/${toSlug(manufacturer)}`}
-              onClick={() => setIsSidebarOpen(false)}
-              className="block ml-4 py-2 border-b border-gray-200 hover:text-black"
-            >
-              {manufacturer}
-            </Link>
-          );
-        }
-
-        const isExpanded = expandedTransmissionIndex === idx;
-
-        return (
-          <div key={manufacturer.name} className="mb-2">
-            <button
-              onClick={() => setExpandedTransmissionIndex(isExpanded ? null : idx)}
-              className="flex justify-between items-center w-full py-2 px-2 text-lg border-b border-gray-200 hover:bg-gray-100"
-              aria-expanded={isExpanded}
-              aria-controls={`transmission-submenu-${idx}`}
-            >
-              <span>{manufacturer.name}</span>
-              <ChevronRight
-                className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-90" : "rotate-0"}`}
-                aria-hidden="true"
-              />
-            </button>
-
-            {isExpanded && manufacturer.subMenu && (
-              <ul
-                id={`transmission-submenu-${idx}`}
-                className="ml-6 border-l border-gray-300"
-              >
-                {manufacturer.subMenu.map((transmissionType) => (
-                  // Show only Manual and Automatic as clickable links
-                  <li key={transmissionType.name} className="py-2">
-                    <Link
-                      href={transmissionType.link}
-                      onClick={() => setIsSidebarOpen(false)}
-                      className="text-blue-600 hover:underline block"
-                    >
-                      {transmissionType.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        );
-      })}
-  </div>
-)}
-
-
+              {mode === "transmissionsList" && (
+                <div>
+                  <button onClick={goBack} className="mb-4 flex items-center gap-2 text-lg">
+                    <FaTimes /> Back
+                  </button>
+                  {translatedMenuItems
+                    .find(item => item.link === "/transmissions")
+                    ?.subLinks?.map(sub => {
+                      if (typeof sub === "string") {
+                        return (
+                          <Link key={sub} href={`/transmissions/${toSlug(sub)}`} onClick={() => setIsSidebarOpen(false)} className="block ml-4 py-2 border-b border-gray-200 hover:text-black">
+                            {sub}
+                          </Link>
+                        );
+                      } else {
+                        return (
+                          <Link key={sub.name} href={sub.link} onClick={() => setIsSidebarOpen(false)} className="block ml-4 py-2 border-b border-gray-200 hover:text-black">
+                            {sub.name}
+                          </Link>
+                        );
+                      }
+                    })}
+                    
+                </div>
+              )}
               <Link
                 onClick={() => setIsSidebarOpen(false)}
                 href="/profile"
-                className="ml-3 text-lg !text-black hover:!text-red-800 upper-case"
+                className="ml-3 text-lg  !text-black hover:!text-red-800 upper-case"
               >
                 {translatedTexts.login}
               </Link>
@@ -832,54 +630,6 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
           </div>
         </div>
       )}
-
-      
-
-
-{isSearchOpen && (
-  <div
-    className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
-    onClick={() => setIsSearchOpen(false)} // Clicking outside popup closes it
-  >
-    <div
-      className="bg-white p-6 rounded-lg w-full max-w-md relative"
-      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside popup
-    >
-      {/* Close button at top-right */}
-      <button
-        onClick={() => setIsSearchOpen(false)}
-        aria-label="Close search"
-        className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 transition text-xl"
-      >
-        <FaTimes />
-      </button>
-
-      <div className="flex space-x-2 items-center mt-6">
-        <input
-          type="text"
-          value={popupSearchQuery}
-          onChange={(e) => setPopupSearchQuery(e.target.value)}
-          placeholder={searchPlaceholder}
-          autoFocus
-          className="flex-grow border border-gray-300 rounded px-4 py-2 text-lg outline-none"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              doPopupSearch();
-            }
-          }}
-        />
-        <button
-          onClick={doPopupSearch}
-          className="bg-blue-600 text-white px-1 py-2 rounded hover:bg-blue-700 transition"
-          aria-label="Search"
-        >
-          <FaSearch />
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
     </div>
   );
 };
