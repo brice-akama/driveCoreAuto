@@ -62,18 +62,18 @@ export async function POST(req: NextRequest) {
 
     // Use name in English to create slug (fallback to any other if needed)
     const baseName = sanitizeInput(name?.en || "");
-  const slug = {
-  en: slugify(sanitizeInput(name.en || ''), { lower: true, strict: true }),
-  de: slugify(sanitizeInput(name.de || ''), { lower: true, strict: true }),
-  fr: slugify(sanitizeInput(name.fr || ''), { lower: true, strict: true }),
-  es: slugify(sanitizeInput(name.es || ''), { lower: true, strict: true }),
-};
+    const slug = {
+      en: slugify(sanitizeInput(name.en || ''), { lower: true, strict: true }),
+      de: slugify(sanitizeInput(name.de || ''), { lower: true, strict: true }),
+      fr: slugify(sanitizeInput(name.fr || ''), { lower: true, strict: true }),
+      es: slugify(sanitizeInput(name.es || ''), { lower: true, strict: true }),
+    };
 
 
 
     // Other fields
     const rawPrice = form.get('price') as string;
-const price = parseFloat(rawPrice.replace(/,/g, ''));
+    const price = parseFloat(rawPrice.replace(/,/g, ''));
 
     const category = sanitizeInput(form.get('category') as string);
 
@@ -82,8 +82,42 @@ const price = parseFloat(rawPrice.replace(/,/g, ''));
     const scion = form.get('scion') === 'true';
     const honda = form.get('honda') === 'true';
     const lexus = form.get('lexus') === 'true';
-    const infiniti = form.get('infiniti') === 'true';
+    const infiniti = form.get('infiniti') === 'true';        // transmissionsToyotaManuel
     const subaru = form.get('subaru') === 'true';
+    const partsFluids = form.get('partsFluids') === 'true';
+const wheelsTires = form.get('wheelsTires') === 'true';
+const subframe = form.get('subframe') === 'true';
+const accessories = form.get('accessories') === 'true';
+const bumpers = form.get('bumpers') === 'true';
+const freeShipping = form.get('freeShipping') === 'true';
+const topSellers = form.get('topSellers') === 'true';
+
+const swapsToyota = form.get('swapsToyota') === 'true';
+const swapsHonda = form.get('swapsHonda') === 'true';
+const swapsAcura = form.get('swapsAcura') === 'true';
+const swapsScion = form.get('swapsScion') === 'true';
+const swapsLexus = form.get('swapsLexus') === 'true';
+const swapsNissan = form.get('swapsNissan') === 'true';
+const swapsSubaru = form.get('swapsSubaru') === 'true';
+const swapsInfiniti = form.get('swapsInfiniti') === 'true';
+
+
+    const transmissionsToyotaAutomatic = form.get('transmissionsToyotaAutomatic') === 'true';
+    const transmissionsHondataAutomatic = form.get('transmissionsHondataAutomatic') === 'true';
+    const transmissionsAcuretaAutomatic = form.get('transmissionsAcuretaAutomatic') === 'true';
+    const transmissionsInfinitAutomatic = form.get('transmissionsInfinitAutomatic') === 'true';
+    const transmissionsSaburaAutomatic = form.get('transmissionsSaburaAutomatic') === 'true';
+    const transmissionsScionAutomatic = form.get('transmissionsScionAutomatic') === 'true';
+    const transmissionsNissanAutomatic = form.get('transmissionsNissanAutomatic') === 'true';
+    const transmissionsLexusAutomatic = form.get('transmissionsLexusAutomatic') === 'true';
+    const transmissionsToyotaManuel = form.get('transmissionsToyotaManuel') === 'true';
+    const transmissionsHondaaManuel = form.get('transmissionsHondaaManuel') === 'true';
+    const transmissionsAcureaManuel = form.get('transmissionsAcureaManuel') === 'true';
+    const transmissionsInfinitManuel = form.get('transmissionsInfinitManuel') === 'true';
+    const transmissionsSaburaManuel = form.get('transmissionsSaburaManuel') === 'true';
+    const transmissionScionburaManuel = form.get('transmissionScionburaManuel') === 'true';
+    const transmissionNissanburaManuel = form.get('transmissionNissanburaManuel') === 'true';
+    const transmissionLexuxburaManuel = form.get('transmissionLexuxburaManuel') === 'true';
     const nissan = form.get('nissan') === 'true';
     const popularProduct = form.get('popularProduct') === 'true';
     const isPublished = form.get('isPublished') === 'true';
@@ -96,10 +130,10 @@ const price = parseFloat(rawPrice.replace(/,/g, ''));
 
     // ✅ Validate required fields
     if (!name?.en) return NextResponse.json({ error: 'Missing name.en' }, { status: 400 });
-if (!description?.en) return NextResponse.json({ error: 'Missing description.en' }, { status: 400 });
-if (!price) return NextResponse.json({ error: 'Missing price' }, { status: 400 });
-if (!category) return NextResponse.json({ error: 'Missing category' }, { status: 400 });
-if (!mainImage) return NextResponse.json({ error: 'Missing main image' }, { status: 400 });
+    if (!description?.en) return NextResponse.json({ error: 'Missing description.en' }, { status: 400 });
+    if (!price) return NextResponse.json({ error: 'Missing price' }, { status: 400 });
+    if (!category) return NextResponse.json({ error: 'Missing category' }, { status: 400 });
+    if (!mainImage) return NextResponse.json({ error: 'Missing main image' }, { status: 400 });
 
 
     // ✅ Upload main image
@@ -151,8 +185,40 @@ if (!mainImage) return NextResponse.json({ error: 'Missing main image' }, { stat
       honda,
       lexus,
       infiniti,
+      swapsToyota,
+  swapsHonda,
+  swapsAcura,
+  swapsScion,
+  swapsLexus,
+  swapsNissan,
+  swapsSubaru,
+  swapsInfiniti,
+      transmissionsToyotaAutomatic,//
+      transmissionsToyotaManuel,//
+      transmissionsHondataAutomatic,//
+      transmissionsHondaaManuel,//
+      transmissionsAcuretaAutomatic,//
+      transmissionsAcureaManuel,//
+      transmissionsInfinitAutomatic,//
+      transmissionsInfinitManuel,//
+      transmissionsSaburaAutomatic,//
+      transmissionsScionAutomatic,//
+      transmissionsSaburaManuel,//
+      transmissionScionburaManuel,//
+      transmissionsNissanAutomatic,//
+      transmissionNissanburaManuel,//
+      transmissionLexuxburaManuel,//
+      transmissionsLexusAutomatic,//
       subaru,
       nissan,
+      partsFluids,
+wheelsTires,
+subframe,
+accessories,
+bumpers,
+freeShipping,
+topSellers,
+
       popularProduct,
       isPublished,
       mainImage: mainImageUpload?.secure_url || '',
@@ -204,34 +270,68 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    const slug = searchParams.get("slug");                  //     nissan
+    const slug = searchParams.get("slug");                  //      transmissionsInfinitManuel
     const toyota = searchParams.get("toyota") === "true";
-    const  scion = searchParams.get("scion") === "true";
-     const  infiniti = searchParams.get("infiniti") === "true";
-      const  nissan = searchParams.get("nissan") === "true";
-      const   lexus = searchParams.get("lexus") === "true";
-       const    subaru = searchParams.get("subaru") === "true";
-    const   honda = searchParams.get("honda") === "true";
+    const transmissionsToyotaAutomatic = searchParams.get("transmissionsToyotaAutomatic") === "true";
+    const transmissionsToyotaManuel = searchParams.get("transmissionsToyotaManuel") === "true";
+    const transmissionsHondataAutomatic = searchParams.get("transmissionsHondataAutomatic") === "true";
+    const transmissionsHondaaManuel = searchParams.get("transmissionsHondaaManuel") === "true";
+    const transmissionsAcuretaAutomatic = searchParams.get("transmissionsAcuretaAutomatic") === "true";
+    const transmissionsAcureaManuel = searchParams.get("transmissionsAcureaManuel") === "true";
+    const transmissionsInfinitAutomatic = searchParams.get("transmissionsInfinitAutomatic") === "true";
+    const transmissionsInfinitManuel = searchParams.get("transmissionsInfinitManuel") === "true";
+    const transmissionsSaburaAutomatic = searchParams.get("transmissionsSaburaAutomatic") === "true";
+    const transmissionsScionAutomatic = searchParams.get("transmissionsScionAutomatic") === "true";
+    const transmissionsSaburaManuel = searchParams.get("transmissionsSaburaManuel") === "true";
+    const transmissionScionburaManuel = searchParams.get("transmissionScionburaManuel") === "true";
+    const transmissionsNissanAutomatic = searchParams.get("transmissionsNissanAutomatic") === "true";
+    const transmissionLexuxburaManuel = searchParams.get("transmissionLexuxburaManuel") === "true";
+    const transmissionNissanburaManuel = searchParams.get("transmissionNissanburaManuel") === "true";
+    const transmissionsLexusAutomatic = searchParams.get("transmissionsLexusAutomatic") === "true";
+    const scion = searchParams.get("scion") === "true";
+    const infiniti = searchParams.get("infiniti") === "true";
+    const nissan = searchParams.get("nissan") === "true";
+    const lexus = searchParams.get("lexus") === "true";
+    const subaru = searchParams.get("subaru") === "true";
+    const honda = searchParams.get("honda") === "true";
     const acura = searchParams.get("acura") === "true";
     const popularProduct = searchParams.get("popularProduct") === "true";
+    const partsFluids = searchParams.get("partsFluids") === "true";
+const wheelsTires = searchParams.get("wheelsTires") === "true";
+const subframe = searchParams.get("subframe") === "true";
+const accessories = searchParams.get("accessories") === "true";
+const bumpers = searchParams.get("bumpers") === "true";
+const freeShipping = searchParams.get("freeShipping") === "true";
+const topSellers = searchParams.get("topSellers") === "true";
+// Swap filters
+const swapsToyota = searchParams.get("swapsToyota") === "true";
+const swapsHonda = searchParams.get("swapsHonda") === "true";
+const swapsAcura = searchParams.get("swapsAcura") === "true";
+const swapsScion = searchParams.get("swapsScion") === "true";
+const swapsLexus = searchParams.get("swapsLexus") === "true";
+const swapsNissan = searchParams.get("swapsNissan") === "true";
+const swapsSubaru = searchParams.get("swapsSubaru") === "true";
+const swapsInfiniti = searchParams.get("swapsInfiniti") === "true";
+
+   
 
     // Pagination (optional)
-   // Pagination (optional)
-const pageParam = searchParams.get("page") || searchParams.get("_page");
-const perPageParam = searchParams.get("perPage") || searchParams.get("_limit");
-const limitParam = searchParams.get("limit"); // 👈 new addition
+    // Pagination (optional)
+    const pageParam = searchParams.get("page") || searchParams.get("_page");
+    const perPageParam = searchParams.get("perPage") || searchParams.get("_limit");
+    const limitParam = searchParams.get("limit"); // 👈 new addition
 
-let skip = 0;
-let limit = 0;
+    let skip = 0;
+    let limit = 0;
 
-if (pageParam && perPageParam) {
-  const page = parseInt(pageParam, 10);
-  const perPage = parseInt(perPageParam, 10);
-  skip = (page - 1) * perPage;
-  limit = perPage;
-} else if (limitParam) {
-  limit = parseInt(limitParam, 10); // 👈 now supports limit=4 directly
-}
+    if (pageParam && perPageParam) {
+      const page = parseInt(pageParam, 10);
+      const perPage = parseInt(perPageParam, 10);
+      skip = (page - 1) * perPage;
+      limit = perPage;
+    } else if (limitParam) {
+      limit = parseInt(limitParam, 10); // 👈 now supports limit=4 directly
+    }
 
 
     // Sorting
@@ -239,7 +339,7 @@ if (pageParam && perPageParam) {
     const sortOrder =
       (searchParams.get("order") || searchParams.get("_order") || "desc").toLowerCase() === "asc" ? 1 : -1;
 
-          // Construct a simple cache key based on all query parameters
+    // Construct a simple cache key based on all query parameters
     const key = req.url;
 
     // Check for cached result
@@ -260,14 +360,45 @@ if (pageParam && perPageParam) {
       id,
       slug,
       toyota,
-       scion,
+      scion,
       popularProduct,
-       subaru,
+      subaru,
       infiniti,
       nissan,
-       lexus,
-         honda,
+      lexus,
+      honda,
+      swapsToyota,
+  swapsHonda,
+  swapsAcura,
+  swapsScion,
+  swapsLexus,
+  swapsNissan,
+  swapsSubaru,
+  swapsInfiniti,
+      transmissionsToyotaAutomatic,
+      transmissionsToyotaManuel,
+      transmissionsHondataAutomatic,
+      transmissionsHondaaManuel,
+      transmissionsAcuretaAutomatic,
+      transmissionsAcureaManuel,
+      transmissionsInfinitAutomatic,
+      transmissionsInfinitManuel,
+      transmissionsSaburaAutomatic,
+      transmissionsScionAutomatic,
+      transmissionsSaburaManuel,
+      transmissionScionburaManuel,
+      transmissionsNissanAutomatic,
+      transmissionNissanburaManuel,
+      transmissionLexuxburaManuel,
+      transmissionsLexusAutomatic,
       acura,
+      partsFluids,
+  wheelsTires,
+  subframe,
+  accessories,
+  bumpers,
+  freeShipping,
+  topSellers,
       skip,
       limit,
       sortField,
@@ -286,8 +417,8 @@ if (pageParam && perPageParam) {
       return NextResponse.json({ data: { id: product._id.toString(), ...product } }, { status: 200 });
     }
 
-     // Fetch product by slug
-     if (slug) {
+    // Fetch product by slug
+    if (slug) {
       const product = await db.collection("products").findOne({ slug });
       if (!product) {
         return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -300,8 +431,8 @@ if (pageParam && perPageParam) {
         },
       }).toArray();
 
-         
-      
+
+
 
       return NextResponse.json({
         data: {
@@ -318,47 +449,83 @@ if (pageParam && perPageParam) {
       }, { status: 200 });
     }
 
+
+
+    const filter: any = {};
+
+    const engineCode = searchParams.get("engineCode");
+    const vehicleModel = searchParams.get("vehicleModel");
     
 
-const filter: any = {};
+    // 1. Brand filters (unchanged)
+    const brandFilters = {
+      toyota: searchParams.get("toyota") === "true",
+      nissan: searchParams.get("nissan") === "true",
+      subaru: searchParams.get("subaru") === "true",
+      infiniti: searchParams.get("infiniti") === "true",
+      lexus: searchParams.get("lexus") === "true",
+      honda: searchParams.get("honda") === "true",
+      scion: searchParams.get("scion") === "true",
+      acura: searchParams.get("acura") === "true",
+      swapsToyota: searchParams.get("swapsToyota") === "true",
+swapsHonda: searchParams.get("swapsHonda") === "true",
+swapsAcura: searchParams.get("swapsAcura") === "true",
+swapsScion: searchParams.get("swapsScion") === "true",
+swapsLexus: searchParams.get("swapsLexus") === "true",
+swapsNissan: searchParams.get("swapsNissan") === "true",
+swapsSubaru: searchParams.get("swapsSubaru") === "true",
+swapsInfiniti: searchParams.get("swapsInfiniti") === "true",
 
-const engineCode = searchParams.get("engineCode");
-const vehicleModel = searchParams.get("vehicleModel");
+      
+      transmissionsToyotaAutomatic: searchParams.get("transmissionsToyotaAutomatic") === "true",
+  transmissionsToyotaManuel: searchParams.get("transmissionsToyotaManuel") === "true",
+  transmissionsHondataAutomatic: searchParams.get("transmissionsHondataAutomatic") === "true",
+  transmissionsHondaaManuel: searchParams.get("transmissionsHondaaManuel") === "true",
+  transmissionsAcuretaAutomatic: searchParams.get("transmissionsAcuretaAutomatic") === "true",
+  transmissionsAcureaManuel: searchParams.get("transmissionsAcureaManuel") === "true",
+  transmissionsInfinitAutomatic: searchParams.get("transmissionsInfinitAutomatic") === "true",
+  transmissionsInfinitManuel: searchParams.get("transmissionsInfinitManuel") === "true",
+  transmissionsSaburaAutomatic: searchParams.get("transmissionsSaburaAutomatic") === "true",
+  transmissionsSaburaManuel: searchParams.get("transmissionsSaburaManuel") === "true",
+  transmissionsScionAutomatic: searchParams.get("transmissionsScionAutomatic") === "true",
+  transmissionScionburaManuel: searchParams.get("transmissionScionburaManuel") === "true",
+  transmissionsNissanAutomatic: searchParams.get("transmissionsNissanAutomatic") === "true",
+  transmissionNissanburaManuel: searchParams.get("transmissionNissanburaManuel") === "true",
+  transmissionsLexusAutomatic: searchParams.get("transmissionsLexusAutomatic") === "true",
+  transmissionLexuxburaManuel: searchParams.get("transmissionLexuxburaManuel") === "true",
+    };
 
-// 1. Brand filters (unchanged)
-const brandFilters = {
-  toyota: searchParams.get("toyota") === "true",
-  nissan: searchParams.get("nissan") === "true",
-  subaru: searchParams.get("subaru") === "true",
-  infiniti: searchParams.get("infiniti") === "true",
-  lexus: searchParams.get("lexus") === "true",
-  honda: searchParams.get("honda") === "true",
-  scion: searchParams.get("scion") === "true",
-  acura: searchParams.get("acura") === "true",
-};
+   
 
-for (const [brand, isSelected] of Object.entries(brandFilters)) {
-  if (isSelected) {
-    filter[brand] = true;
-  }
-}
+    for (const [brand, isSelected] of Object.entries(brandFilters)) {
+      if (isSelected) {
+        filter[brand] = true;
+      }
+    }
 
-// 2. Engine code has priority
-if (engineCode) {
-  filter.category = engineCode; // exact match, override vehicleModel
-} else if (vehicleModel) {
-  const langKeys = ["en", "de", "fr", "es"];
-  filter.$or = langKeys.map((lang) => ({
-    [`name.${lang}`]: { $regex: new RegExp(vehicleModel, "i") },
-  }));
-}
+    // 2. Engine code has priority
+    if (engineCode) {
+      filter.category = engineCode; // exact match, override vehicleModel
+    } else if (vehicleModel) {
+      const langKeys = ["en", "de", "fr", "es"];
+      filter.$or = langKeys.map((lang) => ({
+        [`name.${lang}`]: { $regex: new RegExp(vehicleModel, "i") },
+      }));
+    }
 
+    if (partsFluids) filter.partsFluids = true;
+if (wheelsTires) filter.wheelsTires = true;
+if (subframe) filter.subframe = true;
+if (accessories) filter.accessories = true;
+if (bumpers) filter.bumpers = true;
+if (freeShipping) filter.freeShipping = true;
+if (topSellers) filter.topSellers = true;
+     
 
-
-// 3. Optional: popularProduct filter
-if (searchParams.get("popularProduct") === "true") {
-  filter.popularProduct = true;
-}
+    // 3. Optional: popularProduct filter
+    if (searchParams.get("popularProduct") === "true") {
+      filter.popularProduct = true;
+    }
 
     const totalCount = await db.collection("products").countDocuments(filter);
 
@@ -376,7 +543,7 @@ if (searchParams.get("popularProduct") === "true") {
       ...product
     }));
 
-     // Cache the result
+    // Cache the result
     productCache.set(key, {
       data: formattedProducts,
       total: totalCount,
@@ -419,11 +586,11 @@ export async function PUT(req: NextRequest) {
 
     // Sanitize name fields to generate multilingual slug object
     const slug = {
-  en: slugify(sanitizeInput(name.en || ''), { lower: true, strict: true }),
-  de: slugify(sanitizeInput(name.de || ''), { lower: true, strict: true }),
-  fr: slugify(sanitizeInput(name.fr || ''), { lower: true, strict: true }),
-  es: slugify(sanitizeInput(name.es || ''), { lower: true, strict: true }),
-};
+      en: slugify(sanitizeInput(name.en || ''), { lower: true, strict: true }),
+      de: slugify(sanitizeInput(name.de || ''), { lower: true, strict: true }),
+      fr: slugify(sanitizeInput(name.fr || ''), { lower: true, strict: true }),
+      es: slugify(sanitizeInput(name.es || ''), { lower: true, strict: true }),
+    };
 
 
     // Other fields
@@ -441,6 +608,41 @@ export async function PUT(req: NextRequest) {
     const subaru = form.get('subaru') === 'true';
     const nissan = form.get('nissan') === 'true';
     const popularProduct = form.get('popularProduct') === 'true';
+    const partsFluids = form.get('partsFluids') === 'true';
+const wheelsTires = form.get('wheelsTires') === 'true';
+const subframe = form.get('subframe') === 'true';
+const accessories = form.get('accessories') === 'true';
+const bumpers = form.get('bumpers') === 'true';
+const freeShipping = form.get('freeShipping') === 'true';
+const topSellers = form.get('topSellers') === 'true';
+const swapsToyota = form.get('swapsToyota') === 'true';
+const swapsHonda = form.get('swapsHonda') === 'true';
+const swapsAcura = form.get('swapsAcura') === 'true';
+const swapsScion = form.get('swapsScion') === 'true';
+const swapsLexus = form.get('swapsLexus') === 'true';
+const swapsNissan = form.get('swapsNissan') === 'true';
+const swapsSubaru = form.get('swapsSubaru') === 'true';
+const swapsInfiniti = form.get('swapsInfiniti') === 'true';
+
+
+    // Transmission type flags
+const transmissionsToyotaAutomatic = form.get('transmissionsToyotaAutomatic') === 'true';
+const transmissionsToyotaManuel = form.get('transmissionsToyotaManuel') === 'true';
+const transmissionsHondataAutomatic = form.get('transmissionsHondataAutomatic') === 'true';
+const transmissionsHondaaManuel = form.get('transmissionsHondaaManuel') === 'true';
+const transmissionsAcuretaAutomatic = form.get('transmissionsAcuretaAutomatic') === 'true';
+const transmissionsAcureaManuel = form.get('transmissionsAcureaManuel') === 'true';
+const transmissionsInfinitAutomatic = form.get('transmissionsInfinitAutomatic') === 'true';
+const transmissionsInfinitManuel = form.get('transmissionsInfinitManuel') === 'true';
+const transmissionsSaburaAutomatic = form.get('transmissionsSaburaAutomatic') === 'true';
+const transmissionsSaburaManuel = form.get('transmissionsSaburaManuel') === 'true';
+const transmissionsScionAutomatic = form.get('transmissionsScionAutomatic') === 'true';
+const transmissionScionburaManuel = form.get('transmissionScionburaManuel') === 'true';
+const transmissionsNissanAutomatic = form.get('transmissionsNissanAutomatic') === 'true';
+const transmissionNissanburaManuel = form.get('transmissionNissanburaManuel') === 'true';
+const transmissionsLexusAutomatic = form.get('transmissionsLexusAutomatic') === 'true';
+const transmissionLexuxburaManuel = form.get('transmissionLexuxburaManuel') === 'true';
+
     const isPublished = form.get('isPublished') === 'true';
 
     const weights = JSON.parse(form.get('weights') as string || '[]');
@@ -493,10 +695,44 @@ export async function PUT(req: NextRequest) {
       category,
       toyota,
       acura,
+      swapsToyota,
+swapsHonda,
+swapsAcura,
+swapsScion,
+swapsLexus,
+swapsNissan,
+swapsSubaru,
+swapsInfiniti,
+
       scion,
       honda,
       lexus,
       infiniti,
+      transmissionsToyotaAutomatic,
+transmissionsToyotaManuel,
+transmissionsHondataAutomatic,
+transmissionsHondaaManuel,
+transmissionsAcuretaAutomatic,
+transmissionsAcureaManuel,
+transmissionsInfinitAutomatic,
+transmissionsInfinitManuel,
+transmissionsSaburaAutomatic,
+transmissionsSaburaManuel,
+transmissionsScionAutomatic,
+transmissionScionburaManuel,
+transmissionsNissanAutomatic,
+transmissionNissanburaManuel,
+transmissionsLexusAutomatic,
+transmissionLexuxburaManuel,
+partsFluids,
+wheelsTires,
+subframe,
+accessories,
+bumpers,
+freeShipping,
+topSellers,
+
+
       subaru,
       nissan,
       popularProduct,

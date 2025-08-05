@@ -81,6 +81,40 @@ export const ProductCreate: React.FC = (props) => {
     formData.append("infiniti", data.infiniti ? "true" : "false");
     formData.append("subaru", data.subaru ? "true" : "false");
     formData.append("nissan", data.nissan ? "true" : "false");
+    formData.append("transmissionsToyotaAutomatic", data.transmissionsToyotaAutomatic ? "true" : "false");
+formData.append("transmissionsToyotaManuel", data.transmissionsToyotaManuel ? "true" : "false");
+formData.append("transmissionsHondataAutomatic", data.transmissionsHondataAutomatic ? "true" : "false");
+formData.append("transmissionsHondaaManuel", data.transmissionsHondaaManuel ? "true" : "false");
+formData.append("transmissionsAcuretaAutomatic", data.transmissionsAcuretaAutomatic ? "true" : "false");
+formData.append("transmissionsAcureaManuel", data.transmissionsAcureaManuel ? "true" : "false");
+formData.append("transmissionsInfinitAutomatic", data.transmissionsInfinitAutomatic ? "true" : "false");
+formData.append("transmissionsInfinitManuel", data.transmissionsInfinitManuel ? "true" : "false");
+formData.append("transmissionsSaburaAutomatic", data.transmissionsSaburaAutomatic ? "true" : "false");
+formData.append("transmissionsSaburaManuel", data.transmissionsSaburaManuel ? "true" : "false");
+formData.append("transmissionsScionAutomatic", data.transmissionsScionAutomatic ? "true" : "false");
+formData.append("transmissionScionburaManuel", data.transmissionScionburaManuel ? "true" : "false");
+formData.append("transmissionsNissanAutomatic", data.transmissionsNissanAutomatic ? "true" : "false");
+formData.append("transmissionNissanburaManuel", data.transmissionNissanburaManuel ? "true" : "false");
+formData.append("transmissionsLexusAutomatic", data.transmissionsLexusAutomatic ? "true" : "false");
+formData.append("transmissionLexuxburaManuel", data.transmissionLexuxburaManuel ? "true" : "false");
+formData.append("partsFluids", data.partsFluids ? "true" : "false");
+formData.append("wheelsTires", data.wheelsTires ? "true" : "false");
+formData.append("accessories", data.accessories ? "true" : "false");
+formData.append("subframe", data.subframe ? "true" : "false");
+formData.append("bumpers", data.bumpers ? "true" : "false");
+formData.append("topSellers", data.topSellers ? "true" : "false");
+formData.append("freeShipping", data.freeShipping ? "true" : "false");
+formData.append("swapsToyota", data.swapsToyota ? "true" : "false");
+formData.append("swapsHonda", data.swapsHonda ? "true" : "false");
+formData.append("swapsAcura", data.swapsAcura ? "true" : "false");
+formData.append("swapsScion", data.swapsScion ? "true" : "false");
+formData.append("swapsLexus", data.swapsLexus ? "true" : "false");
+formData.append("swapsNissan", data.swapsNissan ? "true" : "false");
+formData.append("swapsSubaru", data.swapsSubaru ? "true" : "false");
+formData.append("swapsInfiniti", data.swapsInfiniti ? "true" : "false");
+
+
+
 
     // Serialize arrays
     if (data.weights?.length) formData.append("weights", JSON.stringify(data.weights));
@@ -213,6 +247,45 @@ export const ProductCreate: React.FC = (props) => {
         <BooleanInput source="infiniti" label="Infiniti" />
         <BooleanInput source="subaru" label="Subaru" />
         <BooleanInput source="nissan" label="Nissan" />
+        <h3>Transmission Flags</h3>
+<BooleanInput source="transmissionsToyotaAutomatic" label="Toyota Automatic" />
+<BooleanInput source="transmissionsToyotaManuel" label="Toyota Manual" />
+<BooleanInput source="transmissionsHondataAutomatic" label="Honda Automatic" />
+<BooleanInput source="transmissionsHondaaManuel" label="Honda Manual" />
+<BooleanInput source="transmissionsAcuretaAutomatic" label="Acura Automatic" />
+<BooleanInput source="transmissionsAcureaManuel" label="Acura Manual" />
+<BooleanInput source="transmissionsInfinitAutomatic" label="Infiniti Automatic" />
+<BooleanInput source="transmissionsInfinitManuel" label="Infiniti Manual" />
+<BooleanInput source="transmissionsSaburaAutomatic" label="Subaru Automatic" />
+<BooleanInput source="transmissionsSaburaManuel" label="Subaru Manual" />
+<BooleanInput source="transmissionsScionAutomatic" label="Scion Automatic" />
+<BooleanInput source="transmissionScionburaManuel" label="Scion Manual" />
+<BooleanInput source="transmissionsNissanAutomatic" label="Nissan Automatic" />
+<BooleanInput source="transmissionNissanburaManuel" label="Nissan Manual" />
+<BooleanInput source="transmissionsLexusAutomatic" label="Lexus Automatic" />
+<BooleanInput source="transmissionLexuxburaManuel" label="Lexus Manual" />
+
+<h3>Product Type Flags</h3>
+<BooleanInput source="partsFluids" label="Parts & Fluids" />
+<BooleanInput source="wheelsTires" label="Wheels & Tires" />
+<BooleanInput source="accessories" label="Accessories" />
+<BooleanInput source="subframe" label="Subframe" />
+<BooleanInput source="bumpers" label="Bumpers" />
+<BooleanInput source="topSellers" label="Top Sellers" />
+<BooleanInput source="freeShipping" label="Free Shipping" />
+
+<h3>Swap Flags</h3>
+<BooleanInput source="swapsToyota" label="Swaps Toyota" />
+<BooleanInput source="swapsHonda" label="Swaps Honda" />
+<BooleanInput source="swapsAcura" label="Swaps Acura" />
+<BooleanInput source="swapsScion" label="Swaps Scion" />
+<BooleanInput source="swapsLexus" label="Swaps Lexus" />
+<BooleanInput source="swapsNissan" label="Swaps Nissan" />
+<BooleanInput source="swapsSubaru" label="Swaps Subaru" />
+<BooleanInput source="swapsInfiniti" label="Swaps Infiniti" />
+
+
+
 
         {/* Other Booleans */}
         <BooleanInput source="popularProduct" label="Popular Product" />

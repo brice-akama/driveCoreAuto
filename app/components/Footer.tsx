@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";  // import next/image for optimized image handling
 import {
   FaFacebookF,
   FaInstagram,
@@ -12,6 +13,8 @@ import {
 } from "react-icons/fa";
 import { SiCashapp } from "react-icons/si";
 import { useLanguage } from "@/app/context/LanguageContext";
+
+// Import your logo - adjust path to your actual logo file
 
 const Footer: React.FC = () => {
   const { translate } = useLanguage();
@@ -24,7 +27,7 @@ const Footer: React.FC = () => {
     quickLinks: "Quick Links",
     home: "Home",
     login: "LOGIN",
-     weAccept: "We Accept",
+    weAccept: "We Accept",
     buyerServices: "Buyer Services",
     privacyPolicy: "Privacy Policy",
     terms: "Terms & Conditions",
@@ -39,17 +42,15 @@ const Footer: React.FC = () => {
     async function translateTexts() {
       setTranslatedTexts({
         newsletter: await translate("Newsletter"),
-        newsletterDesc: await translate(
-          "Get updates on new products and special offers."
-        ),
+        newsletterDesc: await translate("Get updates on new products and special offers."),
         placeholder: await translate("Enter your email"),
         subscribe: await translate("Subscribe"),
         quickLinks: await translate("Quick Links"),
         home: await translate("Home"),
         login: await translate("LOGIN"),
-        buyerServices: await translate("Buyer Services"),    //  We Accept
+        buyerServices: await translate("Buyer Services"),
         privacyPolicy: await translate("Privacy Policy"),
-         weAccept: await translate("We Accept"),
+        weAccept: await translate("We Accept"),
         terms: await translate("Terms & Conditions"),
         refundPolicy: await translate("Refund Policy"),
         shippingInfo: await translate("Shipping Info"),
@@ -60,7 +61,6 @@ const Footer: React.FC = () => {
         ),
       });
     }
-
     translateTexts();
   }, [translate]);
 
@@ -95,43 +95,25 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-blue-900 text-white px-6 py-10">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center md:text-left">
-       
-        {/* Quick Links */}
-        <div>
-          <h3 className="font-semibold text-lg">{translatedTexts.quickLinks}</h3>
-          <ul className="mt-2 space-y-2 text-sm">
-            <li>
-              <Link href="/" className="hover:underline">
-                {translatedTexts.home}
-              </Link>
-            </li>
-            <li>
-              <Link href="/buyer-services" className="hover:underline">
-                {translatedTexts.buyerServices}
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy-policy" className="hover:underline">
-                {translatedTexts.privacyPolicy}
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="hover:underline">
-                {translatedTexts.terms}
-              </Link>
-            </li>
-            <li>
-              <Link href="/shipping-info" className="hover:underline">
-                {translatedTexts.shippingInfo}
-              </Link>
-            </li>
-            <li>
-              <Link href="/refund-policy" className="hover:underline">
-                {translatedTexts.refundPolicy}
-              </Link>
-            </li>
-          </ul>
-        </div>
+
+        {/* Company Logo */}
+          {/* Company Logo + Short Description */}
+<div className="flex flex-col items-center md:items-start">
+  <Link href="/">
+    <Image
+      src="/assets/logos.png"
+      alt="DriveCore Auto Logo"
+      width={150}
+      height={50}
+      className="object-contain"
+      priority
+    />
+  </Link>
+  <p className=" text-sm max-w-xs text-center md:text-left text-gray-300">
+    {/* Your very short description here */}
+    Quality automotive parts and expert swaps for your vehicle.
+  </p>
+</div>
 
         {/* Contact Info */}
         <div>
@@ -160,7 +142,7 @@ const Footer: React.FC = () => {
           </address>
         </div>
 
-                {/* Newsletter Subscription */}
+        {/* Newsletter Subscription */}
         <div>
           <h3 className="font-semibold text-lg">{translatedTexts.newsletter}</h3>
           <p className="text-sm mt-2">{translatedTexts.newsletterDesc}</p>
@@ -185,40 +167,38 @@ const Footer: React.FC = () => {
           </form>
         </div>
 
-
         {/* Social Media */}
         <div>
           <h3 className="font-semibold text-lg">{translatedTexts.followUs}</h3>
-       
+          <div className="flex justify-center md:justify-start space-x-4 mt-4">
+            <Link
+              href=""
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-blue-300"
+              aria-label="Facebook"
+            >
+              <FaFacebookF size={20} />
+            </Link>
 
-<div className="flex justify-center md:justify-start space-x-4 mt-4">
-  <Link
-    href=""
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-white hover:text-blue-300"
-    aria-label="Facebook"
-  >
-    <FaFacebookF size={20} />
-  </Link>
-
-  <Link
-    href=""
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-[#c32aa3] hover:text-[#7232bd]"  // Instagram brand colors (magenta to purple)
-    aria-label="Instagram"
-  >
-    <FaInstagram size={20} />
-  </Link>
-</div>
-
+            <Link
+              href=""
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#c32aa3] hover:text-[#7232bd]"
+              aria-label="Instagram"
+            >
+              <FaInstagram size={20} />
+            </Link>
+          </div>
         </div>
       </div>
 
       {/* Payment Methods */}
       <div className="mt-10 text-center">
-        <h4 className="text-sm font-semibold mb-4 text-gray-200"> {translatedTexts.weAccept}</h4>
+        <h4 className="text-sm font-semibold mb-4 text-gray-200">
+          {translatedTexts.weAccept}
+        </h4>
         <div className="flex justify-center items-center flex-wrap gap-3">
           <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-blue-50 shadow">
             <FaPaypal size={16} className="text-blue-600" />

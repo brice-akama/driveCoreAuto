@@ -25,7 +25,7 @@ type MenuItem = {
   customDropdownType?: "category" | "default" | "transmissionCategory";
 };
 
-type Mode = "top" | "categoryList" | "supportList" | "transmissionsList" | { subIndex: number };
+type Mode = "top" | "categoryList" | "supportList" |  "swapList" | "transmissionsList" | { subIndex: number };
 
 const Navbar = () => {
   const { translate } = useLanguage();
@@ -76,7 +76,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
           customDropdownType: "category",
           subLinks: [
             {
-              name: await translate("Toyota"),
+              name: await translate("Toyota Engines"),
               link: "/toyota",
               subMenu: [
                 { name: await translate("2GR-FKS"), link: `/toyota?category=${toSlug("2GR-FKS")}` },
@@ -91,7 +91,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
             },
             
            {
-  name: await translate("Subaru"),
+  name: await translate("Subaru Engines"),
   link: "/subaru",
   subMenu: [
     { name: await translate("EJ20"), link: `/subaru?category=${toSlug("EJ20")}` },
@@ -103,7 +103,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
   ],
 },
 {
-  name: await translate("Acura"),
+  name: await translate("Acura  Engines"),
   link: "/acura",
   subMenu: [
     { name: await translate("K20A"), link: `/acura?category=${toSlug("K20A")}` },
@@ -118,7 +118,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 },
 
              {
-  name: await translate("Infiniti"),
+  name: await translate("Infiniti  Engines"),
   link: "/infiniti",
   subMenu: [
     { name: await translate("VQ35DE"), link: `/infiniti?category=${toSlug("VQ35DE")}` },
@@ -133,7 +133,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 },
 
            {
-  name: await translate("Scion"),
+  name: await translate("Scion  Engines"),
   link: "/scion",
   subMenu: [
     { name: await translate("2ZR-FE"), link: `/scion?category=${toSlug("2ZR-FE")}` },
@@ -147,7 +147,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 
 
             {
-  name: await translate("Nissan"),
+  name: await translate("Nissan  Engines"),
   link: "/nissan",
   subMenu: [
     { name: await translate("QR20DE"), link: `/nissan?category=${toSlug("QR20DE")}` },
@@ -162,7 +162,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 },   
 
            {
-  name: await translate("Honda"),
+  name: await translate("Honda  Engines"),
   link: "/honda",
   subMenu: [
     { name: await translate("K20A"), link: `/honda?category=${toSlug("K20A")}` },
@@ -173,7 +173,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
   ],
 },
 {
-  name: await translate("Lexus"),
+  name: await translate("Lexus  Engines"),
   link: "/lexus",
   subMenu: [
     { name: await translate("ES 250"), link: `/lexus?category=${toSlug("ES-250")}` },
@@ -188,14 +188,14 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
         },
 
         
-        { name: await translate("ABOUT US"), link: "/about-us" },
-       {
-  name: await translate("TRANSMISSIONS"),
+      
+      {
+  name: await translate("TRANSMISSION"),  // plural sounds better here
   link: "/transmissions",
-  customDropdownType: "transmissionCategory",  // Keep this as is
+  customDropdownType: "transmissionCategory",
   subLinks: [
     {
-      name: await translate("Toyota"),
+      name: await translate("Toyota Transmissions"),
       link: "/transmissions/toyota",
       subMenu: [
         {
@@ -215,9 +215,8 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
         }
       ]
     },
-
     {
-      name: await translate("Honda"),
+      name: await translate("Honda Transmissions"),
       link: "/transmissions/honda",
       subMenu: [
         {
@@ -236,9 +235,8 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
         }
       ]
     },
-
     {
-      name: await translate("Nissan"),
+      name: await translate("Nissan Transmissions"),
       link: "/transmissions/nissan",
       subMenu: [
         {
@@ -257,148 +255,148 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
         }
       ]
     },
-
-    // Added new manufacturers below:
-
     {
-      name: await translate("Subaru"),
+      name: await translate("Subaru Transmissions"),
       link: "/transmissions/subaru",
       subMenu: [
         {
           name: await translate("Automatic"),
           link: "/transmissions/subaru/automatic",
           subMenu: [
-            // Add Subaru automatic models here
             { name: "ModelA1", link: `/transmissions/subaru?model=${toSlug("ModelA1")}` },
             { name: "ModelA2", link: `/transmissions/subaru?model=${toSlug("ModelA2")}` },
-          ],
+          ]
         },
         {
           name: await translate("Manual"),
           link: "/transmissions/subaru/manual",
           subMenu: [
-            // Add Subaru manual models here
-            { name: "ModelM1", link: `/transmissions/subaru?model=${toSlug("ModelM1")}` },
-          ],
+            { name: "ModelM1", link: `/transmissions/subaru?model=${toSlug("ModelM1")}` }
+          ]
         }
       ]
     },
-
     {
-      name: await translate("Acura"),
+      name: await translate("Acura Transmissions"),
       link: "/transmissions/acura",
       subMenu: [
         {
           name: await translate("Automatic"),
           link: "/transmissions/acura/automatic",
           subMenu: [
-            // Add Acura automatic models here
-            { name: "ModelA1", link: `/transmissions/acura?model=${toSlug("ModelA1")}` },
-          ],
+            { name: "ModelA1", link: `/transmissions/acura?model=${toSlug("ModelA1")}` }
+          ]
         },
         {
           name: await translate("Manual"),
           link: "/transmissions/acura/manual",
           subMenu: [
-            // Add Acura manual models here
-            { name: "ModelM1", link: `/transmissions/acura?model=${toSlug("ModelM1")}` },
-          ],
+            { name: "ModelM1", link: `/transmissions/acura?model=${toSlug("ModelM1")}` }
+          ]
         }
       ]
     },
-
     {
-      name: await translate("Infiniti"),
+      name: await translate("Infiniti Transmissions"),
       link: "/transmissions/infiniti",
       subMenu: [
         {
           name: await translate("Automatic"),
           link: "/transmissions/infiniti/automatic",
           subMenu: [
-            // Add Infiniti automatic models here
-            { name: "ModelA1", link: `/transmissions/infiniti?model=${toSlug("ModelA1")}` },
-          ],
+            { name: "ModelA1", link: `/transmissions/infiniti?model=${toSlug("ModelA1")}` }
+          ]
         },
         {
           name: await translate("Manual"),
           link: "/transmissions/infiniti/manual",
           subMenu: [
-            // Add Infiniti manual models here
-            { name: "ModelM1", link: `/transmissions/infiniti?model=${toSlug("ModelM1")}` },
-          ],
+            { name: "ModelM1", link: `/transmissions/infiniti?model=${toSlug("ModelM1")}` }
+          ]
         }
       ]
     },
-
     {
-      name: await translate("Scion"),
+      name: await translate("Scion Transmissions"),
       link: "/transmissions/scion",
       subMenu: [
         {
           name: await translate("Automatic"),
           link: "/transmissions/scion/automatic",
           subMenu: [
-            // Add Scion automatic models here
-            { name: "ModelA1", link: `/transmissions/scion?model=${toSlug("ModelA1")}` },
-          ],
+            { name: "ModelA1", link: `/transmissions/scion?model=${toSlug("ModelA1")}` }
+          ]
         },
         {
           name: await translate("Manual"),
           link: "/transmissions/scion/manual",
           subMenu: [
-            // Add Scion manual models here
-            { name: "ModelM1", link: `/transmissions/scion?model=${toSlug("ModelM1")}` },
-          ],
+            { name: "ModelM1", link: `/transmissions/scion?model=${toSlug("ModelM1")}` }
+          ]
         }
       ]
     },
-
     {
-      name: await translate("Lexus"),
+      name: await translate("Lexus Transmissions"),
       link: "/transmissions/lexus",
       subMenu: [
         {
           name: await translate("Automatic"),
           link: "/transmissions/lexus/automatic",
           subMenu: [
-            // Add Lexus automatic models here
-            { name: "ModelA1", link: `/transmissions/lexus?model=${toSlug("ModelA1")}` },
-          ],
+            { name: "ModelA1", link: `/transmissions/lexus?model=${toSlug("ModelA1")}` }
+          ]
         },
         {
           name: await translate("Manual"),
           link: "/transmissions/lexus/manual",
           subMenu: [
-            // Add Lexus manual models here
-            { name: "ModelM1", link: `/transmissions/lexus?model=${toSlug("ModelM1")}` },
-          ],
+            { name: "ModelM1", link: `/transmissions/lexus?model=${toSlug("ModelM1")}` }
+          ]
         }
       ]
     },
-
-    {
-      name: await translate("Parts & Fluids"),
-      link: "/transmissions/parts-fluids"
-    }
+   
   ]
 },
 
-        { name: await translate("BLOG"), link: "/blog" },
+{
+  name: await translate("SWAPS"),
+  link: "/swaps",
+  subLinks: [
+    { name: await translate("Toyota Swaps"), link: "/swaps/toyota" },
+    { name: await translate("Nissan Swaps"), link: "/swaps/nissan" },
+    { name: await translate("Honda Swaps"), link: "/swaps/honda" },
+    { name: await translate("Lexus Swaps"), link: "/swaps/lexus" },
+    { name: await translate("Acura Swaps"), link: "/swaps/acura" },
+    { name: await translate("Subaru Swaps"), link: "/swaps/subaru" },
+    { name: await translate("Scion Swaps"), link: "/swaps/scion" },
+    { name: await translate("Infiniti Swaps"), link: "/swaps/infiniti" },
+  ]
+},
+
+
+       { name: await translate("ABOUT US"), link: "/about-us" },
+        
         {
           name: await translate("SUPPORT"), link: "/support",
           subLinks: [
             { name: await translate("FAQS"), link: "/support/faqs" },
             { name: await translate("Contact Us"), link: "/support/contact-us" },
-            { name: await translate("Buyer Services"), link: "/support/buyer-services" }
+            { name: await translate("Buyer Services"), link: "/support/buyer-services" },
+            { name: await translate("BLOG"), link: "/blog" },
           ]
         },
+
+        
+        
       ];
       setTranslatedMenuItems(items);
 
       const aquaBite = await translate("16Zips");
       const login = await translate("Login");
       const shopNow = await translate("Shop Now");
-      const specialOffer = await translate("Special Offer: Get 20% Off on All Orders! Limited Time Only.");
+      const specialOffer = await translate("Quality You Can Trust");
       setTranslatedTexts({ aquaBite, login, specialOffer, shopNow });
     }
 
@@ -508,14 +506,44 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     <div className="w-full fixed top-0 z-20 left-0">
       <Toaster position="top-center" reverseOrder={false} />
       {/* Moving Text Bar */}
-      <div className="absolute top-0 left-0 w-full bg-blue-100 h-10 overflow-hidden flex items-center justify-center">
-        <p className="text-black text-sm font-semibold animate-marquee flex items-center gap-2">
-          {translatedTexts.specialOffer}
-          <Link href="/toyota" className="text-blue-600 font-bold underline hover:text-blue-800 transition">
-            {translatedTexts.shopNow} →
-          </Link>
-        </p>
-      </div>
+      {/* Top Bar (responsive layout) */}
+    <div className="absolute top-0 left-0 w-full bg-blue-100 h-10 flex items-center justify-between px-6 md:px-16 z-50">
+
+  {/* Left side - Special Offer */}
+  <div className="w-full md:w-auto flex justify-center md:justify-start">
+    <p className="text-black text-sm font-semibold flex items-center gap-2">
+      {translatedTexts.specialOffer}
+      <Link
+        href="/toyota"
+        className="text-blue-600 font-bold underline hover:text-blue-800 transition"
+      >
+        {translatedTexts.shopNow}
+      </Link>
+    </p>
+  </div>
+
+  {/* Right side - Warranty & Track Order */}
+  <div className="hidden md:flex items-center gap-6">
+    <Link
+      href="/warranty"
+      className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
+    >
+      Warranty
+    </Link>
+    <Link
+      href="/shipping"
+      className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
+    >
+      Shipping
+    </Link>
+    <Link
+      href="/track-order"
+      className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
+    >
+      Track Order
+    </Link>
+  </div>
+</div>
 
       {/* Secondary Navbar */}
       <div className="bg-white shadow-md py-4 px-6 flex justify-between items-center h-20 mt-8">
@@ -557,7 +585,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     setPopupSearchQuery("");
   }}
   aria-label="Open search"
-  className="text-2xl cursor-pointer text-black hover:text-blue-700 mt-3"
+  className="text-2xl cursor-pointer text-black hover:text-blue-700 mt-3 md:hidden "
 >
   <FaSearch />
 </button>
@@ -671,6 +699,15 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
                       );
                     }
 
+                    if (item.link === "/swaps") {
+                      return (
+                        <button key={idx} onClick={() => setMode("swapList")} className={commonClasses}>
+                          {item.name} <ChevronRight />
+                        </button>
+                      );
+                    }
+
+
                     return (
                       <Link key={idx} href={item.link} onClick={() => setIsSidebarOpen(false)} className={`${commonClasses} block border-b border-gray-200`}>
                         {item.name}
@@ -739,6 +776,32 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
                       if (typeof sub === "string") {
                         return (
                           <Link key={sub} href={`/support/${toSlug(sub)}`} onClick={() => setIsSidebarOpen(false)} className="block ml-4 py-2 border-b border-gray-200 hover:text-black">
+                            {sub}
+                          </Link>
+                        );
+                      } else {
+                        return (
+                          <Link key={sub.name} href={sub.link} onClick={() => setIsSidebarOpen(false)} className="block ml-4 py-2 border-b border-gray-200 hover:text-black">
+                            {sub.name}
+                          </Link>
+                        );
+                      }
+                    })}
+                </div>
+              )}
+
+              {/* Swap submenu */}
+              {mode === "swapList" && (
+                <div>
+                  <button onClick={goBack} className="mb-4 flex items-center gap-2 text-lg">
+                    <FaTimes /> Back
+                  </button>
+                  {translatedMenuItems
+                    .find(item => item.link === "/swaps")
+                    ?.subLinks?.map(sub => {
+                      if (typeof sub === "string") {
+                        return (
+                          <Link key={sub} href={`/swaps/${toSlug(sub)}`} onClick={() => setIsSidebarOpen(false)} className="block ml-4 py-2 border-b border-gray-200 hover:text-black">
                             {sub}
                           </Link>
                         );

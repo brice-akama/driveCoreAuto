@@ -8,6 +8,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { Menu, X } from "lucide-react"
 import BrandLinksNav from "../components/BrandLinksNav";
+import { FiSearch, FiHeart } from "react-icons/fi";
 
 type Product = {
   _id: string;
@@ -27,6 +28,7 @@ export default function ToyotaPage() {
   const searchParams = useSearchParams();
   const productsRef = useRef<HTMLDivElement>(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -374,7 +376,7 @@ useEffect(() => {
       <input
         id="vehicleModelInputMobile"
         type="text"
-        placeholder="{translatedTexts.placeholderVehicleModel}"
+        placeholder={translatedTexts.placeholderVehicleModel}
         value={vehicleModelInput}
         onChange={(e) => {
           setVehicleModelInput(e.target.value);
@@ -484,7 +486,7 @@ useEffect(() => {
 
           {/* Engine Code Input */}
           <div>
-            <label htmlFor="engineCodeInput" className="block font-bold mb-2">
+            <label htmlFor="engineCodeInput" className="block font-bold mt-3">
                 {translatedTexts.engineCodes}
             </label>
             <input
@@ -552,24 +554,69 @@ useEffect(() => {
                       <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
                         {extractModel(product.name[currentLang] || product.name.en)}
                       </div>
-                      <Image
-                        src={product.mainImage}
-                        alt={product.name[currentLang] || product.name.en}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        unoptimized
-                      />
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleAddToCart(product);
-                        }}
-                        className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 whitespace-nowrap"
+                     <Image
+  src={product.mainImage}
+  alt={product.name[currentLang] || product.name.en}
+  fill
+  className="object-cover group-hover:scale-105 transition-transform duration-300"
+  unoptimized
+/>
 
-                      >
-                        {translatedTexts.addToCart}
-                      </button>
+{/* Icon buttons on hover */}
+<div className="absolute top-3 right-1 flex flex-col space-y-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+  {/* Quick View Icon */}
+  <div
+    className="relative cursor-pointer"
+    onMouseEnter={() => setHoveredIcon(product._id + "-search")}
+    onMouseLeave={() => setHoveredIcon(null)}
+  >
+    <button
+      aria-label="Quick view"
+      className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+      onClick={(e) => {
+        e.preventDefault();
+        alert(`Open quick view for ${product.name[currentLang] || product.name.en}`);
+      }}
+    >
+      <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+    </button>
+    {hoveredIcon === product._id + "-search" && (
+      <span
+        className="absolute right-full mr-2 md:mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100"
+        style={{ minWidth: "80px" }}
+      >
+        Quick view
+      </span>
+    )}
+  </div>
+
+  {/* Wishlist Icon */}
+  <div
+    className="relative cursor-pointer"
+    onMouseEnter={() => setHoveredIcon(product._id + "-wishlist")}
+    onMouseLeave={() => setHoveredIcon(null)}
+  >
+    <button
+      aria-label={translatedTexts.addToWishList}
+      className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+      onClick={(e) => {
+        e.preventDefault();
+        handleAddToWishlist(product);
+      }}
+    >
+      <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+    </button>
+    {hoveredIcon === product._id + "-wishlist" && (
+      <span
+       className="absolute right-full mr-2 md:mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100"
+        style={{ minWidth: "110px" }}
+      >
+        {translatedTexts.addToWishList}
+      </span>
+    )}
+  </div>
+</div>
+
                     </div>
                   </Link>
 
@@ -582,9 +629,9 @@ useEffect(() => {
                     <p className="mt-2 text-gray-700">${product.price}</p>
                     <button
                       onClick={() => handleAddToWishlist(product)}
-                      className="mt-3 w-full border border-gray-700 rounded py-2 hover:bg-gray-700 hover:text-white transition"
+                      className="mt-3 w-full border border-gray-700 rounded py-2 hover:bg-gray-700 hover:text-white transition bg-blue-800 text-white"
                     >
-                      {translatedTexts.addToWishList}
+                      {translatedTexts.addToCart}
                     </button>
                   </div>
                 </div>

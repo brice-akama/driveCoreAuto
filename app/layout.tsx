@@ -13,6 +13,8 @@ import CookieConsent from "./components/CookieConsent";
 import BackToTop from "./components/BackToTop";
 import FooterLanguageButton from "./components/FooterLanguageButton";
 import ScrollToTop from "./components/ScrollToTop";
+import CurrencySelector from "./components/CurrencySelector";
+import { CurrencyProvider } from "./context/CurrencyContext";
 
 
 const geistSans = Geist({
@@ -39,10 +41,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+         <CurrencyProvider> 
          <WishlistProvider>
         <CartProvider>
         <LanguageProvider>
           {!isAdminRoute  && <Navbar />}
+           {!isAdminRoute && <CurrencySelector />}  {/* Add CurrencySelector here */}
 
           <main>
                  <ScrollToTop /> {/* ✅ Add this here */}
@@ -54,8 +58,11 @@ export default function RootLayout({
             {!isAdminRoute && <FooterLanguageButton />} {/* Render only on non-admin pages */}
            {!isAdminRoute  && <CookieConsent />}
         </LanguageProvider>
+        
         </CartProvider>
        </WishlistProvider>
+        </CurrencyProvider>
+       
       </body>
     </html>
   );

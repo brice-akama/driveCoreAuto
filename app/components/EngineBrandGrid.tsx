@@ -7,43 +7,43 @@ const brands = [
   {
     name: "Acura",
     background: "/assets/Acura-Thumb.png",
-    url: "/acura?category=k20a",
+    url: "/acura",
   },
   {                 
     name: "Honda",
     background: "/assets/Honda-humb.png",
-    url: "/honda?category=k20a",
+    url: "/honda",
   },
   {
     name: "Infiniti",
     background: "/assets/Infiniti-Thumb.png",
-    url: "/infiniti?category=vq35de",
+    url: "/infiniti",
   },
   {
     name: "Lexus",
     background: "/assets/Lexus-Thumb.png",
-    url: "/lexus?category=es-250",
+    url: "/lexus",
   },
   {
     name: "Subaru",
     background: "/assets/subaru-humb.jpg",
-    url: "/subaru?category=ej20",
+    url: "/subaru",
   },
   {
     name: "Nissan",
     background: "/assets/Nissan-humb.png",
-    url: "/nissan?category=qr20de",
+    url: "/nissan",
   },
   {
     name: "Toyota",
     background: "/assets/toyota-humb.png",
-    url: "/toyota?category=1kd-ftv",
+    url: "/toyota",
   },
   {
-    name: "Other",
+    name: "Scion",
     background: "/assets/Scion-Thumb.png",
-    url: "/mercedes?category=m274",
-    customIcon: true,
+    url: "/scion",
+    
   },
 ];
 
@@ -69,13 +69,7 @@ const EngineBrandGrid: React.FC = () => (
 
           {/* Content overlay */}
           <div className="relative z-10 flex flex-col items-center justify-center">
-            {brand.customIcon ? (
-              <div className="flex flex-col items-center mb-2 space-y-1">
-                <span className="block w-4 h-4 bg-red-600 rounded-full"></span>
-                <span className="block w-4 h-4 bg-red-600 rounded-full"></span>
-                <span className="block w-4 h-4 bg-red-600 rounded-full"></span>
-              </div>
-            ) : null}
+            
 
             {/* Removed productsCount rendering */}
 
