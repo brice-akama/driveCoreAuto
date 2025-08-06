@@ -1,26 +1,24 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 import { useLanguage } from "@/app/context/LanguageContext";
 
 const BRANDS = [
-  'toyota',
-  'honda',
-  'acura',
+  
+  'free-shipping',
+  'top-sellers',
+  'subframe',
   'nissan',
   'subaru',
   'lexus',
   'infiniti',
+  'toyota',
+  'honda',
+  'acura',
   'scion',
-  'subframe',
   
   
-  'free-shipping',
-  'top-sellers',
   'accessories',
-  
 ];
 
 const TRANSMISSION_LINKS = [
@@ -47,6 +45,21 @@ type BrandLinksNavProps = {
   currentPath?: string;
 };
 
+function useBreakpoint() {
+  const [breakpoint, setBreakpoint] = useState<"sm" | "md" | "lg">("lg");
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 768) setBreakpoint("sm");
+      else if (window.innerWidth < 1024) setBreakpoint("md");
+      else setBreakpoint("lg");
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return breakpoint;
+}
+
 export default function BrandLinksNav({ currentBrand, currentPath }: BrandLinksNavProps) {
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
   const [isTransmissionsOpen, setIsTransmissionsOpen] = useState(false);
@@ -55,16 +68,14 @@ export default function BrandLinksNav({ currentBrand, currentPath }: BrandLinksN
   const [translatedTransmissionHeading, setTranslatedTransmissionHeading] = useState('Transmissions');
   const [categoryLabel, setCategoryLabel] = useState("Categories");
   const [hoveredBrand, setHoveredBrand] = useState<string | null>(null);
-const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
-const [mobileBrandToggles, setMobileBrandToggles] = useState<Record<string, boolean>>({});
-
-
-
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [mobileBrandToggles, setMobileBrandToggles] = useState<Record<string, boolean>>({});
+  const breakpoint = useBreakpoint();
+  const [mdOpenBrand, setMdOpenBrand] = useState<string | null>(null);
 
   const getDefaultLabel = (brand: string): string => {
     switch (brand) {
       case 'wheels':
-        
       case 'top-sellers':
         return 'Top Sellers';
       case 'free-shipping':
@@ -77,12 +88,11 @@ const [mobileBrandToggles, setMobileBrandToggles] = useState<Record<string, bool
   };
 
   const toggleMobileBrand = (brand: string) => {
-  setMobileBrandToggles((prev) => ({
-    ...prev,
-    [brand]: !prev[brand],
-  }));
-};
-
+    setMobileBrandToggles((prev) => ({
+      ...prev,
+      [brand]: !prev[brand],
+    }));
+  };
 
   useEffect(() => {
     async function loadTranslations() {
@@ -108,28 +118,49 @@ const [mobileBrandToggles, setMobileBrandToggles] = useState<Record<string, bool
   };
 
   return (
-    <section className="w-full bg-black mt-20 md:mt-40 rounded">
+    <section className="w-full bg-black mt-20 lg:mt-40 rounded">
       {/* Brands section - always visible on md+ */}
       <div className="hidden md:flex flex-wrap justify-center items-center gap-6 px-4 py-12">
   {BRANDS.map((brand) => {
-    const label = translatedBrands[brand] || getDefaultLabel(brand);
-    const isCurrent = brand === currentBrand;
-    const isCarBrand = ['toyota', 'honda', 'nissan', 'subaru', 'acura', 'lexus', 'infiniti', 'scion'].includes(brand);
+  const label = translatedBrands[brand] || getDefaultLabel(brand);
+  const isCurrent = brand === currentBrand;
+  const isCarBrand = ['toyota', 'honda', 'nissan', 'subaru', 'acura', 'lexus', 'infiniti', 'scion'].includes(brand);
+  const isMdOpen = breakpoint === "md" && mdOpenBrand === brand;
 
-    return (
-      <div
-  key={brand}
-  className="relative"
-  onMouseEnter={() => {
-    if (hoverTimeout) clearTimeout(hoverTimeout);
-    setHoveredBrand(brand);
-  }}
-  onMouseLeave={() => {
-    const timeout = setTimeout(() => setHoveredBrand(null), 200); // 200ms delay
-    setHoverTimeout(timeout);
-  }}
->
+  // Debug log
+  console.log('Brand:', brand);
 
+  return (
+    <div
+      key={brand}
+      className="relative"
+      {...(breakpoint === "lg"
+        ? {
+            onMouseEnter: () => {
+              if (hoverTimeout) clearTimeout(hoverTimeout);
+              setHoveredBrand(brand);
+            },
+            onMouseLeave: () => {
+              const timeout = setTimeout(() => setHoveredBrand(null), 200);
+              setHoverTimeout(timeout);
+            },
+          }
+        : breakpoint === "md" && isCarBrand
+        ? {
+            onClick: () => setMdOpenBrand(mdOpenBrand === brand ? null : brand),
+          }
+        : {}
+      )}
+    >
+      {/* On medium devices, car brands are not links, just clickable spans */}
+      {breakpoint === "md" && isCarBrand ? (
+        <span
+          className={`text-lg font-semibold whitespace-nowrap transition cursor-pointer 
+            ${isCurrent ? 'text-blue-400 underline' : 'text-gray-300 hover:text-blue-400'}`}
+        >
+          {label}
+        </span>
+      ) : (
         <Link
           href={`/${brand}`}
           className={`text-lg font-semibold whitespace-nowrap transition 
@@ -138,31 +169,51 @@ const [mobileBrandToggles, setMobileBrandToggles] = useState<Record<string, bool
         >
           {label}
         </Link>
+      )}
 
-        {isCarBrand && hoveredBrand === brand && (
-  <div className="absolute left-0 mt-2 bg-black text-white rounded shadow-lg z-50 min-w-[180px]">
+      {/* Dropdown for large devices (hover) */}
+      {isCarBrand && breakpoint === "lg" && hoveredBrand === brand && (
+        <div className="absolute left-0 mt-2 bg-black text-white rounded shadow-lg z-50 min-w-[180px]">
+          <Link
+            href={`/${brand}`}
+            className="block px-4 py-2 hover:bg-gray-800 border-b border-gray-700"
+          >
+            {label} Engines
+          </Link>
+          <Link
+            href={`/swaps/${brand}`}
+            className="block px-4 py-2 hover:bg-gray-800"
+          >
+            {label} Swaps
+          </Link>
+        </div>
+      )}
 
-           <Link
-  href={`/${brand}`}
-  className="block px-4 py-2 hover:bg-gray-800 border-b border-gray-700"
->
-  {label} Engines
-</Link>
-
-            <Link
-              href={`/swaps/${brand}`}
-              className="block px-4 py-2 hover:bg-gray-800"
-            >
-              {label} Swaps
-            </Link>
-          </div>
-        )}
+      {/* Dropdown for medium devices (click) */}
+      {isCarBrand && breakpoint === "md" && isMdOpen && (
+        <div className="absolute left-0 mt-2 bg-black text-white rounded shadow-lg z-50 min-w-[180px]">
+          <Link
+            href={`/${brand}`}
+            className="block px-4 py-2 hover:bg-gray-800 border-b border-gray-700"
+            onClick={() => setMdOpenBrand(null)}
+          >
+            {label} Engines
+          </Link>
+          <Link
+            href={`/swaps/${brand}`}
+            className="block px-4 py-2 hover:bg-gray-800"
+            onClick={() => setMdOpenBrand(null)}
+          >
+            {label} Swaps
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+})}
       </div>
-    );
-  })}
-</div>
 
-
+      {/* Mobile section - always visible on small screens */}
       {/* Transmission toggle button on md+ */}
       <div className="hidden md:flex justify-center border-t border-gray-700 py-4 cursor-pointer select-none">
         <button
@@ -213,61 +264,70 @@ const [mobileBrandToggles, setMobileBrandToggles] = useState<Record<string, bool
           <ChevronDown className={`w-5 h-5 transition-transform ${isBrandsOpen ? 'rotate-180' : ''}`} />
         </button>
         {isBrandsOpen && (
-          <ul
-            id="brand-links-mobile"
-            className="rounded text-white shadow z-50 bg-black mb-6"
-          >
-            {BRANDS.map((brand) => {
-  const label = translatedBrands[brand] || getDefaultLabel(brand);
-  const isCurrent = brand === currentBrand;
-  const isCarBrand = ['toyota', 'honda', 'nissan', 'subaru', 'acura', 'lexus', 'infiniti', 'scion'].includes(brand);
-  const isOpen = mobileBrandToggles[brand] || false;
+  <ul
+    id="brand-links-mobile"
+    className="rounded text-white shadow z-50 bg-black mb-6"
+  >
+    {BRANDS.map((brand) => {
+      const label = translatedBrands[brand] || getDefaultLabel(brand);
+      const isCurrent = brand === currentBrand;
+      const isCarBrand = ['toyota', 'honda', 'nissan', 'subaru', 'acura', 'lexus', 'infiniti', 'scion'].includes(brand);
+      const isOpen = mobileBrandToggles[brand] || false;
 
-  return (
-    <li key={brand} className="border-b border-gray-700">
-      <div className="flex justify-between items-center px-4 py-2">
-        <Link
-          href={`/${brand}`}
-          onClick={() => setIsBrandsOpen(false)}
-          className={`flex-1 ${isCurrent ? 'text-blue-500 font-semibold' : ''}`}
-        >
-          {label}
-        </Link>
-        {isCarBrand && (
-          <button
-            onClick={() => toggleMobileBrand(brand)}
-            className="text-white"
-            aria-expanded={isOpen}
-          >
-            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-          </button>
-        )}
-      </div>
+      return (
+        <li key={brand} className="border-b border-gray-700 relative">
+          <div className="flex justify-between items-center px-4 py-2">
+            {/* For car brands, show label as span, not link */}
+            {isCarBrand ? (
+              <span
+                className={`flex-1 text-lg font-semibold whitespace-nowrap transition cursor-pointer 
+                  ${isCurrent ? 'text-blue-500 font-semibold underline' : 'text-gray-300 hover:text-blue-400'}`}
+              >
+                {label}
+              </span>
+            ) : (
+              <Link
+                href={`/${brand}`}
+                onClick={() => setIsBrandsOpen(false)}
+                className={`flex-1 ${isCurrent ? 'text-blue-500 font-semibold' : ''}`}
+              >
+                {label}
+              </Link>
+            )}
+            {isCarBrand && (
+              <button
+                onClick={() => toggleMobileBrand(brand)}
+                className="text-white"
+                aria-expanded={isOpen}
+              >
+                <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+              </button>
+            )}
+          </div>
 
-      {isCarBrand && isOpen && (
-        <div className="pl-6 pb-2 space-y-1">
-          <Link
-            href={`/${brand}`}
-            onClick={() => setIsBrandsOpen(false)}
-            className="block text-white hover:underline transition"
-          >
-            {label} Engines
-          </Link>
-          <Link
-            href={`/swaps/${brand}`}
-            onClick={() => setIsBrandsOpen(false)}
-            className="block text-white hover:underline transition"
-          >
-            {label} Swaps
-          </Link>
-        </div>
-      )}
-    </li>
-  );
-})}
-
-          </ul>
-        )}
+          {isCarBrand && isOpen && (
+            <div className="pl-6 pb-2 space-y-1">
+              <Link
+                href={`/${brand}`}
+                onClick={() => setIsBrandsOpen(false)}
+                className="block text-white hover:underline transition"
+              >
+                {label} Engines
+              </Link>
+              <Link
+                href={`/swaps/${brand}`}
+                onClick={() => setIsBrandsOpen(false)}
+                className="block text-white hover:underline transition"
+              >
+                {label} Swaps
+              </Link>
+            </div>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+)}
 
         {/* Transmissions toggle */}
         <button
