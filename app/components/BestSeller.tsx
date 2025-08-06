@@ -10,39 +10,50 @@ import { useCurrency } from "@/app/context/CurrencyContext";
 
 type Product = {
   id: string;
-  name: Record<string, string>; // multilingual names
+  name: Record<string, string>;
   price: number;
   category: string;
   edibles: boolean;
   popularProduct: boolean;
   mainImage: string;
-  slug: Record<string, string>; // multilingual slugs
+  slug: Record<string, string>;
 };
 
-// Brand list to detect in product names
 const BRANDS = ["Toyota", "Nissan", "Subaru", "Honda", "Mazda"];
 
 const extractModel = (name: string): string => {
   if (!name) return "UNKNOWN ENGINE";
-
   const brandPattern = BRANDS.join("|");
   const regex = new RegExp(`(${brandPattern})\\s+(\\w+)`, "i");
-
   const match = name.match(regex);
   if (match && match[1] && match[2]) {
     return `${match[1].toUpperCase()} ${match[2].toUpperCase()}`;
   }
-
   const fallback = name.split(" ").slice(0, 2).join(" ");
   return fallback.toUpperCase() || "UNKNOWN ENGINE";
 };
+
+// Responsive breakpoint hook
+function useBreakpoint() {
+  const [breakpoint, setBreakpoint] = useState<"sm" | "md" | "lg">("lg");
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 768) setBreakpoint("sm");
+      else if (window.innerWidth < 1024) setBreakpoint("md");
+      else setBreakpoint("lg");
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return breakpoint;
+}
 
 export default function BestSeller() {
   const [products, setProducts] = useState<Product[]>([]);
   const { addToWishlist } = useWishlist();
   const { translate, language } = useLanguage();
-  const currentLang = language || "en"; // fallback
-
+  const currentLang = language || "en";
 
   const [translatedTexts, setTranslatedTexts] = useState({
     title: "Best-Selling Engine Components",
@@ -141,12 +152,10 @@ function ProductCard({
     addtoWishlist: string;
   };
 }) {
-  
-const { symbol } = useCurrency();
-
-
+  const { symbol } = useCurrency();
   const [hovered, setHovered] = useState(false);
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+  const breakpoint = useBreakpoint();
 
   const slugForLang = product.slug?.[currentLang] || product.slug?.en || "";
   const nameForLang = product.name?.[currentLang] || product.name?.en || "";
@@ -176,8 +185,10 @@ const { symbol } = useCurrency();
             priority
           />
 
-          {hovered && (
+          {/* Large screens: show icons on hover */}
+          {breakpoint === "lg" && hovered && (
             <div className="absolute top-3 right-1 flex flex-col space-y-3 z-10">
+              {/* Search Icon */}
               <div
                 className="relative cursor-pointer"
                 onMouseEnter={() => setHoveredIcon("search")}
@@ -202,7 +213,7 @@ const { symbol } = useCurrency();
                   </span>
                 )}
               </div>
-
+              {/* Heart Icon */}
               <div
                 className="relative cursor-pointer"
                 onMouseEnter={() => setHoveredIcon("wishlist")}
@@ -235,6 +246,60 @@ const { symbol } = useCurrency();
               </div>
             </div>
           )}
+
+          {/* Medium screens: always show both icons */}
+          {breakpoint === "md" && (
+            <div className="absolute top-3 right-1 flex flex-col space-y-3 z-10">
+              <button
+                aria-label="Quick view"
+                className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 mb-2"
+                onClick={e => {
+                  e.preventDefault();
+                  alert(`Open quick view for ${nameForLang}`);
+                }}
+              >
+                <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+              </button>
+              <button
+                aria-label={translatedTexts.addtoWishlist}
+                className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+                onClick={e => {
+                  e.preventDefault();
+                  addToWishlist(
+                    product.id,
+                    slugForLang,
+                    nameForLang,
+                    product.price,
+                    product.mainImage
+                  );
+                }}
+              >
+                <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+          )}
+
+          {/* Small screens: always show only heart icon */}
+          {breakpoint === "sm" && (
+            <div className="absolute top-3 right-1 flex flex-col space-y-3 z-10">
+              <button
+                aria-label={translatedTexts.addtoWishlist}
+                className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 w-10 h-10"
+                onClick={e => {
+                  e.preventDefault();
+                  addToWishlist(
+                    product.id,
+                    slugForLang,
+                    nameForLang,
+                    product.price,
+                    product.mainImage
+                  );
+                }}
+              >
+                <FiHeart className="text-gray-900 w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
       </Link>
 
@@ -244,8 +309,7 @@ const { symbol } = useCurrency();
             {nameForLang}
           </h3>
         </Link>
-       <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
-
+        <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
 
         <div
           className="mt-2 relative group"
@@ -267,9 +331,17 @@ const { symbol } = useCurrency();
             {hoveredIcon === "cart" ? (
               <FiShoppingCart className="w-5 h-5" />
             ) : (
-              translatedTexts.addtoCart
+              <span className="text-sm">{translatedTexts.addtoCart}</span>
             )}
           </button>
+          {hoveredIcon === "cart" && (
+            <span
+              className="absolute top-0 -translate-y-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs font-medium transition-all duration-200 opacity-100 scale-100"
+              style={{ minWidth: "80px" }}
+            >
+              {translatedTexts.addtoCart}
+            </span>
+          )}
         </div>
       </div>
     </div>
