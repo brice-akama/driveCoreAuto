@@ -482,12 +482,14 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     else setMode("categoryList");
   };
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+ // ...existing code...
+useEffect(() => {
+  const handleResize = () => setIsMobile(window.innerWidth < 1024); // was 768
+  window.addEventListener("resize", handleResize);
+  handleResize();
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+// ...existing code...
 
   useEffect(() => {
     async function fetchPlaceholderTranslation() {
@@ -660,13 +662,25 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 
       {/* Sidebar for mobile */}
       {isSidebarOpen && isMobile && (
-        <div className="fixed inset-0 z-30 bg-opacity-50">
-          <div className="fixed inset-0 z-40 bg-white w-64">
-            <div className="flex justify-end p-4">
-              <button onClick={() => setIsSidebarOpen(false)}>
-                <FaTimes className="text-xl" />
-              </button>
-            </div>
+        <div
+    className="fixed inset-0 z-30  bg-opacity-40"
+    onClick={() => setIsSidebarOpen(false)}
+  >
+    <div
+      className="fixed left-0 top-0 h-full w-64 bg-white z-40 shadow-lg"
+      onClick={e => e.stopPropagation()}
+    >
+      {/* X icon always at top-right */}
+      <div className="flex justify-end items-center p-4 border-b border-gray-200">
+        <button
+          onClick={() => setIsSidebarOpen(false)}
+          aria-label="Close sidebar"
+          className="flex items-center gap-2 text-2xl text-black hover:text-red-600 transition mt-8"
+        >
+          <FaTimes />
+          <span className="text-base font-semibold">Close</span>
+        </button>
+      </div>
 
             {/* Sidebar Menu */}
             <div className="flex flex-col space-y-4 p-4">
