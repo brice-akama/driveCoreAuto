@@ -93,145 +93,98 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-blue-900 text-white px-6 py-10">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center md:text-left">
+    <footer className="bg-blue-900 text-white px-6 py-12">
+  <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-center sm:text-left">
 
-        {/* Company Logo */}
-          {/* Company Logo + Short Description */}
-<div className="flex flex-col items-center md:items-start">
-  <Link href="/">
-    <Image
-      src="/assets/logos.png"
-      alt="DriveCore Auto Logo"
-      width={150}
-      height={50}
-      className="object-contain"
-      priority
-    />
-  </Link>
-  <p className=" text-sm max-w-xs text-center md:text-left text-gray-300">
-    {/* Your very short description here */}
-    Quality automotive parts and expert swaps for your vehicle.
-  </p>
-</div>
-
-        {/* Contact Info */}
-        <div>
-          <h3 className="font-semibold text-lg">{translatedTexts.contactUs}</h3>
-          <address className="mt-2 not-italic text-sm space-y-2">
-            <p>1234 DriveCore Street</p>
-            <p>Auto City, AC 56789</p>
-            <p>
-              Phone:{" "}
-              <a
-                href="tel:+1234567890"
-                className="underline hover:text-blue-300"
-              >
-                +1 (234) 567-890
-              </a>
-            </p>
-            <p>
-              Email:{" "}
-              <a
-                href="mailto:support@drivecoreauto.com"
-                className="underline hover:text-blue-300"
-              >
-                support@drivecoreauto.com
-              </a>
-            </p>
-          </address>
-        </div>
-
-        {/* Newsletter Subscription */}
-        <div>
-          <h3 className="font-semibold text-lg">{translatedTexts.newsletter}</h3>
-          <p className="text-sm mt-2">{translatedTexts.newsletterDesc}</p>
-          <form
-            onSubmit={handleSubscribe}
-            className="flex mt-4 max-w-xs mx-auto md:mx-0"
-          >
-            <input
-              type="email"
-              placeholder={translatedTexts.placeholder}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="p-2 w-full rounded-l-md border border-gray-300 text-white"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 px-4 rounded-r-md hover:bg-blue-700 transition"
-            >
-              {translatedTexts.subscribe}
-            </button>
-          </form>
-        </div>
-
-        {/* Social Media */}
-        <div>
-          <h3 className="font-semibold text-lg">{translatedTexts.followUs}</h3>
-          <div className="flex justify-center md:justify-start space-x-4 mt-4">
-            <Link
-              href=""
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:text-blue-300"
-              aria-label="Facebook"
-            >
-              <FaFacebookF size={20} />
-            </Link>
-
-            <Link
-              href=""
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#c32aa3] hover:text-[#7232bd]"
-              aria-label="Instagram"
-            >
-              <FaInstagram size={20} />
-            </Link>
-          </div>
-        </div>
+    {/* Company Logo */}
+    <div className="flex flex-col items-center sm:items-start">
+      <Link href="/">
+        <Image
+          src="/assets/logos.png"
+          alt="DriveCore Auto Logo"
+          width={150}
+          height={50}
+          className="object-contain mb-4"
+          priority
+        />
+      </Link>
+      <div className="text-gray-400 text-sm mb-4">
+     <p className="text-gray-300 text-sm mb-4">
+        DriveCore Auto is your trusted source for high-quality automotive parts and expert swaps.
+      </p>
       </div>
+      
+    </div>
 
-      {/* Payment Methods */}
-      <div className="mt-10 text-center">
-        <h4 className="text-sm font-semibold mb-4 text-gray-200">
-          {translatedTexts.weAccept}
-        </h4>
-        <div className="flex justify-center items-center flex-wrap gap-3">
-          <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-blue-50 shadow">
-            <FaPaypal size={16} className="text-blue-600" />
-            <span className="text-[8px] mt-0.5 text-blue-800 font-medium">PayPal</span>
-          </div>
+    {/* Shop Links */}
+    <div>
+      <h3 className="font-semibold text-lg mb-4 pb-2">SHOP</h3>
+      <ul className="space-y-3 text-sm">
+        <li><Link href="/privacy-policy" className="hover:underline">Engines</Link></li>
+        <li><Link href="/terms" className="hover:underline">Transmissions</Link></li>
+        <li><Link href="/refund-policy" className="hover:underline">Swaps</Link></li>
+        <li><Link href="/refund-policy" className="hover:underline">Return Policy</Link></li>
+        <li><Link href="/privacy-policy" className="hover:underline">Privacy Policy</Link></li>
+      </ul>
+    </div>
 
-          <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-green-50 shadow">
-            <SiCashapp size={16} className="text-green-500" />
-            <span className="text-[8px] mt-0.5 text-green-800 font-medium">Cash App</span>
-          </div>
+    {/* Customer Support */}
+    <div>
+      <h3 className="font-semibold text-lg mb-4  pb-2">Customer Support</h3>
+      <ul className="space-y-3 text-sm">
+        <li><Link href="/track-order" className="hover:underline">Track Order</Link></li>
+        <li><Link href="/warranty" className="hover:underline">Warranty</Link></li>
+        <li><Link href="/faq" className="hover:underline">FAQs</Link></li>
+        <li><Link href="/installation-guide" className="hover:underline">Installation Guide</Link></li>
+        <li><Link href="/shipping-info" className="hover:underline">{translatedTexts.shippingInfo}</Link></li>
+        <li><a href="mailto:support@drivecoreauto.com" className="hover:underline">support@drivecoreauto.com</a></li>
+      </ul>
+    </div>
 
-          <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-yellow-50 shadow">
-            <FaBitcoin size={16} className="text-yellow-500" />
-            <span className="text-[8px] mt-0.5 text-yellow-800 font-medium">Bitcoin</span>
-          </div>
+    {/* Newsletter Subscription */}
+    <div>
+      <h3 className="font-semibold text-lg mb-4  pb-2">{translatedTexts.newsletter}</h3>
+      <p className="text-sm mb-4">{translatedTexts.newsletterDesc}</p>
+      <form onSubmit={handleSubscribe} className="flex max-w-xs mx-auto sm:mx-0">
+        <input
+          type="email"
+          placeholder={translatedTexts.placeholder}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="p-2 w-full rounded-l-md border border-gray-300 text-white bg-blue-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+          required
+        />
+        <button
+          type="submit"
+          className="bg-blue-600 px-5 rounded-r-md hover:bg-blue-700 transition"
+        >
+          {translatedTexts.subscribe}
+        </button>
+      </form>
+    </div>
+  </div>
 
-          <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-indigo-50 shadow">
-            <FaCcVisa size={16} className="text-indigo-600" />
-            <span className="text-[8px] mt-0.5 text-indigo-800 font-medium">Visa</span>
-          </div>
+  {/* Social Media & Payment Methods */}
+  <div className="mt-12 flex flex-col md:flex-row items-center justify-between  pt-6">
+    {/* Social Icons */}
+    <div className="flex space-x-6 mb-6 md:mb-0">
+      <Link href="" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-white hover:text-blue-300 transition">
+        <FaFacebookF size={22} />
+      </Link>
+      <Link href="" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-[#c32aa3] hover:text-[#7232bd] transition">
+        <FaInstagram size={22} />
+      </Link>
+    </div>
 
-          <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-red-50 shadow">
-            <FaCcMastercard size={16} className="text-red-600" />
-            <span className="text-[8px] mt-0.5 text-red-800 font-medium">MasterCard</span>
-          </div>
-        </div>
-      </div>
+   
+  </div>
 
-      {/* Copyright */}
-      <div className="mt-4 text-center text-sm text-gray-300">
-        {translatedTexts.copyright}
-      </div>
-    </footer>
+  {/* Copyright */}
+  <div className="mt-6 text-center text-sm text-gray-300">
+    {translatedTexts.copyright}
+  </div>
+</footer>
+
   );
 };
 
