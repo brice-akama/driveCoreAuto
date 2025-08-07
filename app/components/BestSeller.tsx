@@ -284,7 +284,7 @@ function ProductCard({
             <div className="absolute top-3 right-1 flex flex-col space-y-3 z-10">
               <button
                 aria-label={translatedTexts.addtoWishlist}
-                className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 w-10 h-10"
+                className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 w-10 h-10 mt-5"
                 onClick={e => {
                   e.preventDefault();
                   addToWishlist(

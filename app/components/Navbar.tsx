@@ -367,10 +367,9 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     { name: await translate("Toyota Swaps"), link: "/swaps/toyota" },
     { name: await translate("Nissan Swaps"), link: "/swaps/nissan" },
     { name: await translate("Honda Swaps"), link: "/swaps/honda" },
-    { name: await translate("Lexus Swaps"), link: "/swaps/lexus" },
-    { name: await translate("Acura Swaps"), link: "/swaps/acura" },
+    
     { name: await translate("Subaru Swaps"), link: "/swaps/subaru" },
-    { name: await translate("Scion Swaps"), link: "/swaps/scion" },
+    
     { name: await translate("Infiniti Swaps"), link: "/swaps/infiniti" },
   ]
 },

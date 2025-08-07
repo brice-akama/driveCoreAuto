@@ -1,13 +1,15 @@
+
+
 'use client';
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useWishlist } from "@/app/context/WishlistContext";
-import { useSearchParams, useRouter } from "next/navigation";
+
 import { useLanguage } from "@/app/context/LanguageContext";
 import { Menu, X } from "lucide-react"
-import BrandLinksNav from "../components/BrandLinksNav";
+import BrandLinksNav from "@/app/components/BrandLinksNav";
 import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
 
@@ -23,11 +25,10 @@ type Product = {
 
 const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
 
-export default function ToyotaPage() {
+export default function SubframePage() {
   const { language, translate } = useLanguage();
   const currentLang = language || "en";
-  const router = useRouter();
-  const searchParams = useSearchParams();
+ 
   const productsRef = useRef<HTMLDivElement>(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
    const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
@@ -36,14 +37,13 @@ export default function ToyotaPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [categories, setCategories] = useState<string[]>([]);
-  const [vehicleModels, setVehicleModels] = useState<string[]>([]);
+ 
+  
   const [isMobile, setIsMobile] = useState(false);
+  const [appliedPriceRange, setAppliedPriceRange] = useState<string | null>(null);
 
 
-  // Controlled input values
-  const [vehicleModelInput, setVehicleModelInput] = useState("");
-  const [engineCodeInput, setEngineCodeInput] = useState("");
+  
 
   // Applied filters (only updated on APPLY clicks)
   const [appliedVehicleModel, setAppliedVehicleModel] = useState<string | null>(
@@ -53,31 +53,10 @@ export default function ToyotaPage() {
     null
   );
 
-  const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
-  const params = new URLSearchParams();
-
-  params.set("subframe", "true"); // keep this always
-
-  if (engineCode && engineCode.trim() !== "") {
-    params.set("category", engineCode.trim().toUpperCase());
-  } else {
-    params.delete("category");
-  }
-
-  if (vehicleModel && vehicleModel.trim() !== "") {
-    params.set("vehicleModel", vehicleModel.trim());
-  } else {
-    params.delete("vehicleModel");
-  }
-
- 
-  router.push(`subframe?${params.toString()}`);
-};
+  
 
 
-  // Suggestion dropdown visibility
-  const [showVehicleSuggestions, setShowVehicleSuggestions] = useState(false);
-  const [showEngineSuggestions, setShowEngineSuggestions] = useState(false);
+  
 
   const { addToWishlist } = useWishlist();
 
@@ -188,12 +167,12 @@ export default function ToyotaPage() {
         });
         const uniqueModels = Array.from(modelsSet).sort();
 
-        setCategories(uniqueCategories);
-        setVehicleModels(uniqueModels);
+        
+      
       } catch (e) {
         console.error("Failed to fetch data for filters", e);
-        setCategories([]);
-        setVehicleModels([]);
+       
+       
       }
     })();
   }, [currentLang]);
@@ -237,19 +216,36 @@ export default function ToyotaPage() {
     setCurrentPage(1);
   };
 
-  // Sort products per selected option
-  const sortedProducts = [...products];
-  if (sortOption === "priceLowToHigh")
-    sortedProducts.sort((a, b) => a.price - b.price);
-  else if (sortOption === "priceHighToLow")
-    sortedProducts.sort((a, b) => b.price - a.price);
+  // Filter products by price first
+let filteredProducts = [...products];
 
-  // Pagination
-  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
-  const currentProducts = sortedProducts.slice(
-    (currentPage - 1) * productsPerPage,
-    currentPage * productsPerPage
-  );
+if (appliedPriceRange === "750-1500") {
+  filteredProducts = filteredProducts.filter(p => p.price >= 750 && p.price <= 1500);
+} else if (appliedPriceRange === "1500-2250") {
+  filteredProducts = filteredProducts.filter(p => p.price > 1500 && p.price <= 2250);
+} else if (appliedPriceRange === "2250plus") {
+  filteredProducts = filteredProducts.filter(p => p.price > 2250);
+}
+else if (appliedPriceRange === "0-500") {
+  filteredProducts = filteredProducts.filter(p => p.price >= 0 && p.price <= 500);
+} else if (appliedPriceRange === "500-1000") {
+  filteredProducts = filteredProducts.filter(p => p.price > 500 && p.price <= 1000);
+} else if (appliedPriceRange === "1000-1400") {
+  filteredProducts = filteredProducts.filter(p => p.price > 1000 && p.price <= 1400);
+}
+// Sort products per selected option
+const sortedProducts = [...filteredProducts];
+if (sortOption === "priceLowToHigh")
+  sortedProducts.sort((a, b) => a.price - b.price);
+else if (sortOption === "priceHighToLow")
+  sortedProducts.sort((a, b) => b.price - a.price);
+
+// Pagination
+const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
+const currentProducts = sortedProducts.slice(
+  (currentPage - 1) * productsPerPage,
+  currentPage * productsPerPage
+);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -270,52 +266,32 @@ export default function ToyotaPage() {
     );
   };
 
-  const extractModel = (name: string): string => {
-    const match = name.match(/subframe\s+\w+/i);
-    return match ? match[0].toUpperCase() : "SUBFRAME ENGINE";
-  };
+  // Brand list to detect in product names
+const BRANDS = ["Toyota", "Nissan", "Subaru","Top Sellers","Subframe", "Honda", "Mazda","Accessories", "Free Shipping","Scion", "Acure","lexus",];
 
-  // Suggestion filters based on input text
-  const filteredVehicleModels = vehicleModels.filter((model) =>
-    model.toLowerCase().startsWith(vehicleModelInput.toLowerCase())
-  );
+const extractModel = (name: string): string => {
+  if (!name) return "UNKNOWN ENGINE";
 
-  const filteredEngineCodes = categories.filter((code) =>
-    code.toLowerCase().startsWith(engineCodeInput.toLowerCase())
-  );
+  const brandPattern = BRANDS.join("|");
+  const regex = new RegExp(`(${brandPattern})\\s+(\\w+)`, "i");
 
-  // Select suggestion just sets input value & closes suggestions (do not apply filter here)
-  const selectVehicleModel = (model: string) => {
-  setVehicleModelInput(model);
-  setAppliedVehicleModel(model);
-  setShowVehicleSuggestions(false);
+  const match = name.match(regex);
+  if (match && match[1] && match[2]) {
+    return `${match[1].toUpperCase()} ${match[2].toUpperCase()}`;
+  }
 
-  // Also update URL with both filters
-  updateUrl(model, appliedEngineCode);
+  const fallback = name.split(" ").slice(0, 2).join(" ");
+  return fallback.toUpperCase() || "UNKNOWN ENGINE";
 };
 
+  
+ 
 
-  const selectEngineCode = (code: string) => {
- const slug = code.trim().toUpperCase();
-setEngineCodeInput(slug);
-router.push(`/subframe?category=${slug}`);
 
-  setShowEngineSuggestions(false);
-};
 
-useEffect(() => {
-  const categoryParam = searchParams.get("category");
-  const vehicleModelParam = searchParams.get("vehicleModel");
 
-  if (categoryParam) {
-    setAppliedEngineCode(categoryParam.toUpperCase());
-    setEngineCodeInput(categoryParam.toUpperCase());
-  }
-  if (vehicleModelParam) {
-    setAppliedVehicleModel(vehicleModelParam);
-    setVehicleModelInput(vehicleModelParam);
-  }
-}, [searchParams]);
+ 
+
 
   
 
@@ -324,7 +300,7 @@ useEffect(() => {
     <>
     <div className=" md:mt-0">
      
-  <BrandLinksNav currentBrand="subframe" />
+  <BrandLinksNav currentBrand="Subframe" />
 </div>
 
     <div className="max-w-7xl mx-auto px-4 py-10 ">
@@ -366,170 +342,182 @@ useEffect(() => {
       <div className="sm:hidden mb-4 flex justify-between items-center">
         <h2 className="text-xl font-bold">   {translatedTexts.engineCodes}</h2>
          <button
-    onClick={() => setShowMobileFilters((v) => !v)}
-    className="p-2 border rounded"
-    aria-label={showMobileFilters ? "Close filters" : "Open filters"}
+    onClick={() => setShowMobileFilters(true)}
+    className="p-2 border rounded flex items-center gap-2"
+    aria-label="Show sidebar"
   >
-    {showMobileFilters ? <X size={20} /> : <Menu size={20} />}
+    <Menu size={20} />
+    <span className="text-sm font-medium">Show sidebar</span>
   </button>
   {showMobileFilters && (
-  <div className="sm:hidden mb-4 space-y-4">
-    {/* Vehicle Model Input (Mobile) */}
-    <div>
-      <label htmlFor="vehicleModelInputMobile" className="block font-bold mb-2">
-         {translatedTexts.vehicleModel}
-      </label>
-      <input
-        id="vehicleModelInputMobile"
-        type="text"
-        placeholder={translatedTexts.placeholderVehicleModel}
-        value={vehicleModelInput}
-        onChange={(e) => {
-          setVehicleModelInput(e.target.value);
-          setShowVehicleSuggestions(true);
-        }}
-        onFocus={() => setShowVehicleSuggestions(true)}
-        onBlur={() => setTimeout(() => setShowVehicleSuggestions(false), 150)}
-        className="w-full border rounded px-3 py-2"
-        autoComplete="off"
-      />
-      {showVehicleSuggestions && filteredVehicleModels.length > 0 && (
-        <ul className="border border-gray-300 rounded mt-1 max-h-48 overflow-auto bg-white shadow z-10">
-          {filteredVehicleModels.map((model) => (
-            <li
-              key={model}
-              onMouseDown={() => selectVehicleModel(model)}
-              className="cursor-pointer px-3 py-1 hover:bg-blue-600 hover:text-white"
-            >
-              {model}
-            </li>
-          ))}
-        </ul>
-      )}
-        
-    </div>
+  <>
+    {/* Overlay */}
+    <div
+      className="fixed inset-0 bg-opacity-30 z-40"
+      onClick={() => setShowMobileFilters(false)}
+    />
 
-    {/* Engine Code Input (Mobile) */}
-    <div>
-      <label htmlFor="engineCodeInputMobile" className="block font-bold mb-2">
-          {translatedTexts.engineCodes}
-      </label>
-      <input
-        id="engineCodeInputMobile"
-        type="text"
-        placeholder={translatedTexts.placeholderEngineCode}
-        value={engineCodeInput}
-        onChange={(e) => {
-          setEngineCodeInput(e.target.value);
-          setShowEngineSuggestions(true);
-        }}
-        onFocus={() => setShowEngineSuggestions(true)}
-        onBlur={() => setTimeout(() => setShowEngineSuggestions(false), 150)}
-        className="w-full border rounded px-3 py-2"
-        autoComplete="off"
-      />
-      {showEngineSuggestions && filteredEngineCodes.length > 0 && (
-        <ul className="border border-gray-300 rounded mt-1 max-h-48 overflow-auto bg-white shadow z-10">
-          {filteredEngineCodes.map((code) => (
-            <li
-              key={code}
-              onMouseDown={() => selectEngineCode(code)}
-              className="cursor-pointer px-3 py-1 hover:bg-blue-600 hover:text-white"
+    {/* Sidebar */}
+    <aside
+      className="fixed top-0 right-0 h-full w-80 max-w-full bg-white shadow-lg z-50 flex flex-col p-6 transition-transform duration-300"
+      style={{ transform: showMobileFilters ? "translateX(0)" : "translateX(100%)" }}
+    >
+      {/* Close button */}
+      <button
+        className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+        onClick={() => setShowMobileFilters(false)}
+        aria-label="Close sidebar"
+      >
+        <X size={24} />
+      </button>
+
+     
+
+      {/* Filter by Price */}
+      <div className="mt-6">
+        <label className="block font-bold mb-2">Filter by Price</label>
+        <ul className="space-y-2">
+          <li>
+            <button
+              className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition ${!appliedPriceRange ? "bg-blue-100 font-semibold" : ""}`}
+              onClick={() => {
+  setAppliedPriceRange("750-1500");
+  setShowMobileFilters(false);
+  productsRef.current?.scrollIntoView({ behavior: "smooth" });
+}}
+
             >
-              {code}
-            </li>
-          ))}
+              All
+            </button>
+          </li>
+          <li>
+            <button
+              className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition ${appliedPriceRange === "0-500" ? "bg-blue-100 font-semibold" : ""}`}
+              onClick={() => {
+  setAppliedPriceRange("750-1500");
+  setShowMobileFilters(false);
+  productsRef.current?.scrollIntoView({ behavior: "smooth" });
+}}
+
+            >
+              $0.00 - $500.00
+            </button>
+          </li>
+          <li>
+            <button
+              className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition ${appliedPriceRange === "500-1000" ? "bg-blue-100 font-semibold" : ""}`}
+              onClick={() => {
+  setAppliedPriceRange("750-1500");
+  setShowMobileFilters(false);
+  productsRef.current?.scrollIntoView({ behavior: "smooth" });
+}}
+
+            >
+              $500.00 - $1,000.00
+            </button>
+          </li>
+          <li>
+            <button
+              className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition ${appliedPriceRange === "1000-1400" ? "bg-blue-100 font-semibold" : ""}`}
+              onClick={() => {
+  setAppliedPriceRange("750-1500");
+  setShowMobileFilters(false);
+  productsRef.current?.scrollIntoView({ behavior: "smooth" });
+}}
+
+            >
+              $1,000.00 - $1,400.00
+            </button>
+          </li>
         </ul>
-      )}
-    </div>
-  </div>
+      </div>
+    </aside>
+  </>
 )}
 
       </div>
+
+      {/* Breadcrumb for md+ screens */}
+<nav
+  className="hidden md:flex items-center justify-between  text-sm text-gray-600"
+  aria-label="Breadcrumb"
+>
+  <ol className="inline-flex items-center space-x-2">
+    <li>
+      <Link href="/" className="text-blue-600 hover:underline">
+        {translatedTexts.home}
+      </Link>
+    </li>
+    <li>/</li>
+    <li className="text-gray-900 font-medium">{translatedTexts.toyota}</li>
+    {(appliedEngineCode || appliedVehicleModel) && (
+      <>
+        <li>/</li>
+        <li className="text-gray-900 font-medium">
+          {appliedVehicleModel ? `Model: ${appliedVehicleModel}` : ""}
+          {appliedEngineCode
+            ? ` ${appliedVehicleModel ? " | " : ""}Code: ${appliedEngineCode}`
+            : ""}
+        </li>
+      </>
+    )}
+  </ol>
+ 
+</nav>
 
         
 
       <div className="flex gap-6">
         {/* Filter inputs sidebar for medium+ */}
         <aside className="hidden sm:flex flex-col w-56 shrink-0 gap-6 relative mt-5">
-          {/* Vehicle Model Input */}
-          <div>
-            <label
-              htmlFor="vehicleModelInput"
-              className="block font-bold mb-2"
-            >
-            {translatedTexts.vehicleModel}
-            </label>
-            <input
-              id="vehicleModelInput"
-              type="text"
-              placeholder={translatedTexts.placeholderVehicleModel}
-              value={vehicleModelInput}
-              onChange={(e) => {
-                setVehicleModelInput(e.target.value);
-                setShowVehicleSuggestions(true);
-              }}
-              onFocus={() => setShowVehicleSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowVehicleSuggestions(false), 150)}
-              className="w-full border rounded px-3 py-2"
-              autoComplete="off"
-            />
-            {showVehicleSuggestions && filteredVehicleModels.length > 0 && (
-              <ul className="border border-gray-300 rounded mt-1 max-h-48 overflow-auto bg-white absolute z-10 w-56 shadow-md">
-                {filteredVehicleModels.map((model) => (
-                  <li
-                    key={model}
-                    onMouseDown={() => selectVehicleModel(model)}
-                    className="cursor-pointer px-3 py-1 hover:bg-blue-600 hover:text-white"
-                  >
-                    {model}
-                  </li>
-                ))}
-              </ul>
-            )}
-            
-          </div>
+         
 
-          {/* Engine Code Input */}
-          <div>
-            <label htmlFor="engineCodeInput" className="block font-bold mb-2">
-                {translatedTexts.engineCodes}
-            </label>
-            <input
-              id="engineCodeInput"
-              type="text"
-              placeholder={translatedTexts.placeholderEngineCode}
-              value={engineCodeInput}
-              onChange={(e) => {
-                setEngineCodeInput(e.target.value);
-                setShowEngineSuggestions(true);
-              }}
-              onFocus={() => setShowEngineSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowEngineSuggestions(false), 150)}
-              className="w-full border rounded px-3 py-2"
-              autoComplete="off"
-            />
-            {showEngineSuggestions && filteredEngineCodes.length > 0 && (
-              <ul className="border border-gray-300 rounded mt-1 max-h-48 overflow-auto bg-white absolute z-10 w-56 shadow-md">
-                {filteredEngineCodes.map((code) => (
-                  <li
-                    key={code}
-                    onMouseDown={() => selectEngineCode(code)}
-                    className="cursor-pointer px-3 py-1 hover:bg-blue-600 hover:text-white"
-                  >
-                    {code}
-                  </li>
-                ))}
-              </ul>
-            )}
-            
-          </div>
+          
+          {/* Filter by Price */}
+<div className="mt-6">
+  <label className="block font-bold mb-2">Filter by Price</label>
+  <ul className="space-y-2">
+    <li>
+      <button
+        className={`w-full text-left px-3 py-2  hover:bg-blue-50 transition ${!appliedPriceRange ? "bg-blue-100 font-semibold" : ""}`}
+        onClick={() => setAppliedPriceRange(null)}
+      >
+        All
+      </button>
+    </li>
+    <li>
+      <button
+        className={`w-full text-left px-3 py-2  hover:bg-blue-50 transition ${appliedPriceRange === "750-1500" ? "bg-blue-100 font-semibold" : ""}`}
+        onClick={() => setAppliedPriceRange("750-1500")}
+      >
+         $0.00 - $500.00
+      </button>
+    </li>
+    <li>
+      <button
+        className={`w-full text-left px-3 py-2  hover:bg-blue-50 transition ${appliedPriceRange === "1500-2250" ? "bg-blue-100 font-semibold" : ""}`}
+        onClick={() => setAppliedPriceRange("1500-2250")}
+      >
+         $500.00 - $1,000.00
+      </button>
+    </li>
+    <li>
+      <button
+        className={`w-full text-left px-3 py-2  hover:bg-blue-50 transition ${appliedPriceRange === "2250plus" ? "bg-blue-100 font-semibold" : ""}`}
+        onClick={() => setAppliedPriceRange("2250plus")}
+      >
+          $1,000.00+
+      </button>
+    </li>
+  </ul>
+</div>
         </aside>
 
         
-
+   
         {/* Products List */}
         <section className="flex-grow" ref={productsRef}>
+          
           {/* Sort by */}
           <div className="flex justify-end mb-4">
             <select
@@ -569,13 +557,59 @@ useEffect(() => {
 />
 
 {/* Icon buttons on hover */}
-<div className="absolute top-3 right-1 flex flex-col space-y-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-  {/* Quick View Icon */}
-  <div
-    className="relative cursor-pointer"
-    onMouseEnter={() => setHoveredIcon(product._id + "-search")}
-    onMouseLeave={() => setHoveredIcon(null)}
-  >
+{/* Icons Container */}
+<div className="absolute top-3 right-1 z-10">
+  {/* Large Devices (Hover to show icons) */}
+  <div className="hidden lg:flex flex-col space-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+    {/** Search Icon with Tooltip */}
+    <div
+      className="relative cursor-pointer"
+      onMouseEnter={() => setHoveredIcon(product._id + "-search")}
+      onMouseLeave={() => setHoveredIcon(null)}
+    >
+      <button
+        aria-label="Quick view"
+        className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+        onClick={(e) => {
+          e.preventDefault();
+          alert(`Open quick view for ${product.name[currentLang] || product.name.en}`);
+        }}
+      >
+        <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+      </button>
+      {hoveredIcon === product._id + "-search" && (
+        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100" style={{ minWidth: "80px" }}>
+          Quick view
+        </span>
+      )}
+    </div>
+
+    {/** Heart Icon with Tooltip */}
+    <div
+      className="relative cursor-pointer"
+      onMouseEnter={() => setHoveredIcon(product._id + "-wishlist")}
+      onMouseLeave={() => setHoveredIcon(null)}
+    >
+      <button
+        aria-label={translatedTexts.addToWishList}
+        className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+        onClick={(e) => {
+          e.preventDefault();
+          handleAddToWishlist(product);
+        }}
+      >
+        <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+      </button>
+      {hoveredIcon === product._id + "-wishlist" && (
+        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100" style={{ minWidth: "110px" }}>
+          {translatedTexts.addToWishList}
+        </span>
+      )}
+    </div>
+  </div>
+
+  {/* Medium Devices - Always Show Both Icons */}
+  <div className="hidden md:flex lg:hidden flex-col space-y-3">
     <button
       aria-label="Quick view"
       className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
@@ -586,22 +620,7 @@ useEffect(() => {
     >
       <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
     </button>
-    {hoveredIcon === product._id + "-search" && (
-      <span
-        className="absolute right-full mr-2 md:mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100"
-        style={{ minWidth: "80px" }}
-      >
-        Quick view
-      </span>
-    )}
-  </div>
 
-  {/* Wishlist Icon */}
-  <div
-    className="relative cursor-pointer"
-    onMouseEnter={() => setHoveredIcon(product._id + "-wishlist")}
-    onMouseLeave={() => setHoveredIcon(null)}
-  >
     <button
       aria-label={translatedTexts.addToWishList}
       className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
@@ -612,16 +631,23 @@ useEffect(() => {
     >
       <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
     </button>
-    {hoveredIcon === product._id + "-wishlist" && (
-      <span
-        className="absolute right-full mr-2 md:mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100"
-        style={{ minWidth: "110px" }}
-      >
-        {translatedTexts.addToWishList}
-      </span>
-    )}
+  </div>
+
+  {/* Small Devices - Only Show Heart Icon */}
+  <div className="flex md:hidden">
+    <button
+      aria-label={translatedTexts.addToWishList}
+      className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 w-10 h-10"
+      onClick={(e) => {
+        e.preventDefault();
+        handleAddToWishlist(product);
+      }}
+    >
+      <FiHeart className="text-gray-900 w-5 h-5" />
+    </button>
   </div>
 </div>
+
 
                     </div>
                   </Link>
@@ -633,6 +659,7 @@ useEffect(() => {
                       </h3>
                     </Link>
                     <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
+                   
 
                     <div
   onMouseEnter={() => setHoveredIcon(product._id + "-cart")}

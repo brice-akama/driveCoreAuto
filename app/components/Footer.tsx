@@ -4,12 +4,11 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";  // import next/image for optimized image handling
 import {
+  FaBitcoin,
   FaFacebookF,
   FaInstagram,
   FaPaypal,
-  FaBitcoin,
-  FaCcVisa,
-  FaCcMastercard,
+  
 } from "react-icons/fa";
 import { SiCashapp } from "react-icons/si";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -108,24 +107,13 @@ const Footer: React.FC = () => {
           priority
         />
       </Link>
-      <div className="text-gray-400 text-sm mb-4">
-     <p className="text-gray-300 text-sm mb-4">
-        DriveCore Auto is your trusted source for high-quality automotive parts and expert swaps.
-      </p>
+      <div className="text-gray-300 text-sm mb-4"> 
+         <p className="text-gray-300 text-sm mb-10">
+    DriveCore Auto is your trusted source for high-quality automotive parts and expert swaps.
+  </p>
       </div>
+     
       
-    </div>
-
-    {/* Shop Links */}
-    <div>
-      <h3 className="font-semibold text-lg mb-4 pb-2">SHOP</h3>
-      <ul className="space-y-3 text-sm">
-        <li><Link href="/privacy-policy" className="hover:underline">Engines</Link></li>
-        <li><Link href="/terms" className="hover:underline">Transmissions</Link></li>
-        <li><Link href="/refund-policy" className="hover:underline">Swaps</Link></li>
-        <li><Link href="/refund-policy" className="hover:underline">Return Policy</Link></li>
-        <li><Link href="/privacy-policy" className="hover:underline">Privacy Policy</Link></li>
-      </ul>
     </div>
 
     {/* Customer Support */}
@@ -137,9 +125,26 @@ const Footer: React.FC = () => {
         <li><Link href="/faq" className="hover:underline">FAQs</Link></li>
         <li><Link href="/installation-guide" className="hover:underline">Installation Guide</Link></li>
         <li><Link href="/shipping-info" className="hover:underline">{translatedTexts.shippingInfo}</Link></li>
+         <li><Link href="/refund-policy" className="hover:underline">Return Policy</Link></li>
         <li><a href="mailto:support@drivecoreauto.com" className="hover:underline">support@drivecoreauto.com</a></li>
       </ul>
     </div>
+
+    {/* Shop Links */}
+    <div>
+      <h3 className="font-semibold text-lg mb-4 pb-2">SHOP</h3>
+      <ul className="space-y-3 text-sm">
+        <li><Link href="/privacy-policy" className="hover:underline">Engines</Link></li>
+        <li><Link href="/terms" className="hover:underline">Transmissions</Link></li>
+        <li><Link href="/refund-policy" className="hover:underline">Swaps</Link></li>
+        
+        <li><Link href="/refund-policy" className="hover:underline">Accessories</Link></li>
+       
+        
+      </ul>
+    </div>
+
+    
 
     {/* Newsletter Subscription */}
     <div>
@@ -175,6 +180,30 @@ const Footer: React.FC = () => {
         <FaInstagram size={22} />
       </Link>
     </div>
+{/* Payment Methods */}
+<div className="mt-10 text-center">
+  <h4 className="text-sm font-semibold mb-4 text-gray-100">We Accept</h4>
+  <div className="flex justify-center items-center flex-wrap gap-3">
+    {/* PayPal */}
+    <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-blue-50 shadow">
+      <FaPaypal size={16} className="text-blue-600" />
+      <span className="text-[8px] mt-0.5 text-blue-800 font-medium">PayPal</span>
+    </div>
+
+    {/* Cash App */}
+    <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-green-50 shadow">
+      <SiCashapp size={16} className="text-green-500" />
+      <span className="text-[8px] mt-0.5 text-green-800 font-medium">Cash App</span>
+    </div>
+
+    {/* Bitcoin */}
+    <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-yellow-50 shadow">
+      <FaBitcoin size={16} className="text-yellow-500" />
+      <span className="text-[8px] mt-0.5 text-yellow-800 font-medium">Bitcoin</span>
+    </div>
+  </div>
+</div>
+
 
    
   </div>

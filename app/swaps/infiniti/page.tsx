@@ -1,8 +1,3 @@
-
-
-
-
-
 'use client';
 
 import { useState, useEffect, useRef } from "react";
@@ -28,7 +23,7 @@ type Product = {
 
 const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
 
-export default function TopSellersPage() {
+export default function SwapsInfinitiPage() {
   const { language, translate } = useLanguage();
   const currentLang = language || "en";
   const router = useRouter();
@@ -62,7 +57,7 @@ export default function TopSellersPage() {
   const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
   const params = new URLSearchParams();
 
-  params.set("topSellers", "true"); // keep this always
+  params.set("swapsInfiniti", "true"); // keep this always
 
   if (engineCode && engineCode.trim() !== "") {
     params.set("category", engineCode.trim().toUpperCase());
@@ -77,7 +72,7 @@ export default function TopSellersPage() {
   }
 
  
-  router.push(`/top-sellers?${params.toString()}`);
+  router.push(`/swaps/infiniti?${params.toString()}`);
 };
 
 
@@ -98,7 +93,7 @@ export default function TopSellersPage() {
     addToCart: "Add to Cart",
     addToWishList: "Add to Wishlist",
       home: " Home",
-      toyota: "Top Sellers",
+      toyota: "Swaps Infiniti",
       engineCodes: "Engine Codes",
        vehicleModel: "VEHICLE MODEL",
          sortedBy: "Sort By",
@@ -116,7 +111,7 @@ export default function TopSellersPage() {
   async function fetchTranslations() {
     try {
       const addToCart = await translate("Add to Cart");
-      const toyota = await translate("Top Sellers");
+      const toyota = await translate("Swaps Infiniti");
       const engineCodes = await translate("Engine Codes");
       const addToWishList = await translate("Add to Wishlist");
       const home = await translate("Home");
@@ -131,7 +126,7 @@ export default function TopSellersPage() {
         addToCart: addToCart || "Add to Cart",
         addToWishList: addToWishList || "Add to Wishlist",
         home: home || "Home",
-        toyota: toyota || "Top Sellers",
+        toyota: toyota || "Swaps Infiniti",
         engineCodes: engineCodes || "Engine Codes",
         vehicleModel: vehicleModel || "VEHICLE MODEL",
         sortedBy: sortedBy || "Sort By",
@@ -145,7 +140,7 @@ export default function TopSellersPage() {
         addToCart: "Add to Cart",
         addToWishList: "Add to Wishlist",
         home: "Home",
-        toyota: "Top Sellers",
+        toyota: "Swaps Infiniti",
         engineCodes: "Engine Codes",
         vehicleModel: "VEHICLE MODEL",
         sortedBy: "Sort By",
@@ -174,7 +169,7 @@ export default function TopSellersPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/products?topSellers=true");
+        const res = await fetch("/api/products?swapsInfiniti=true");
         const data = await res.json();
         const productList: Product[] = data.data || [];
 
@@ -187,7 +182,7 @@ export default function TopSellersPage() {
         const modelsSet = new Set<string>();
         productList.forEach((p) => {
           const name = p.name[currentLang] || p.name.en || "";
-          const match = name.match(/Top Sellers\s+(\w+)/i);
+          const match = name.match(/Infiniti\s+(\w+)/i);
           if (match && match[1]) {
             modelsSet.add(match[1]);
           }
@@ -208,7 +203,7 @@ export default function TopSellersPage() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      let apiUrl = "/api/products?topSellers=true";
+      let apiUrl = "/api/products?swapsInfiniti=true";
 
       if (appliedVehicleModel && appliedVehicleModel.trim() !== "") {
         apiUrl += `&vehicleModel=${encodeURIComponent(appliedVehicleModel.trim())}`;
@@ -293,23 +288,10 @@ const currentProducts = sortedProducts.slice(
     );
   };
 
-  // Brand list to detect in product names
-const BRANDS = ["Toyota", "Nissan", "Subaru","Top Sellers", "Honda", "Mazda","Accessories", "Free Shipping","Scion", "Acure","lexus",];
-
-const extractModel = (name: string): string => {
-  if (!name) return "UNKNOWN ENGINE";
-
-  const brandPattern = BRANDS.join("|");
-  const regex = new RegExp(`(${brandPattern})\\s+(\\w+)`, "i");
-
-  const match = name.match(regex);
-  if (match && match[1] && match[2]) {
-    return `${match[1].toUpperCase()} ${match[2].toUpperCase()}`;
-  }
-
-  const fallback = name.split(" ").slice(0, 2).join(" ");
-  return fallback.toUpperCase() || "UNKNOWN ENGINE";
-};
+  const extractModel = (name: string): string => {
+    const match = name.match(/Infiniti\s+\w+/i);
+    return match ? match[0].toUpperCase() : "INFINITI ENGINE";
+  };
 
   // Suggestion filters based on input text
   const filteredVehicleModels = vehicleModels.filter((model) =>
@@ -337,7 +319,7 @@ const extractModel = (name: string): string => {
   const selectEngineCode = (code: string) => {
  const slug = code.trim().toUpperCase();
 setEngineCodeInput(slug);
-router.push(`/top-Sellers?category=${slug}`);
+router.push(`/swaps/infiniti?category=${slug}`);
 setShowMobileFilters(false);
 
   setShowEngineSuggestions(false);
@@ -364,7 +346,7 @@ useEffect(() => {
     <>
     <div className=" md:mt-0">
      
-  <BrandLinksNav currentBrand="Top Sellers" />
+  <BrandLinksNav currentBrand="Swaps Infiniti" />
 </div>
 
     <div className="max-w-7xl mx-auto px-4 py-10 ">
@@ -642,7 +624,7 @@ useEffect(() => {
 
           {/* Engine Code Input */}
           <div>
-            <label htmlFor="engineCodeInput" className="block font-bold mt-3">
+            <label htmlFor="engineCodeInput" className="block font-bold mb-2">
                 {translatedTexts.engineCodes}
             </label>
             <input
@@ -860,7 +842,6 @@ useEffect(() => {
                       </h3>
                     </Link>
                     <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
-                     <span className="text-blue-400 text-sm font-medium">Top Sellers</span>
 
                     <div
   onMouseEnter={() => setHoveredIcon(product._id + "-cart")}

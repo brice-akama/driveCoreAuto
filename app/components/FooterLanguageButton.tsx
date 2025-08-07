@@ -17,32 +17,34 @@ export default function FooterLanguageButton() {
   const langInfo = languageOptions.find((l) => l.code === language) || languageOptions[0];
 
   return (
-    <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2">
+    <div className="block md:block lg:hidden fixed bottom-5 left-1/2 transform -translate-x-1/2 md:left-5 md:translate-x-0 z-50">
+      {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-transparent border border-gray-300 px-4 py-2 rounded-full text-blue-500 shadow-md backdrop-blur-md flex items-center md:hidden"
+        className="bg-transparent border border-gray-300 px-4 py-2 rounded-full text-black shadow-md backdrop-blur-md flex items-center"
       >
         <ReactWorldFlag code={langInfo.flag} style={{ width: 30, height: 20, marginRight: 8 }} />
-        <span className="md:hidden whitespace-nowrap">Language</span>
+        <span className="whitespace-nowrap">Select Language</span>
       </button>
 
+      {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-white shadow-lg rounded-lg border p-2 w-40">
-          <select
-            id="language"
-            value={language}
-            onChange={(e) => {
-              setLanguage(e.target.value);
-              setIsOpen(false);
-            }}
-            className="w-full p-2 border rounded-md"
-          >
-            {languageOptions.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-white shadow-lg rounded-lg border w-48">
+          {languageOptions.map((lang) => (
+            <div
+              key={lang.code}
+              onClick={() => {
+                setLanguage(lang.code);
+                setIsOpen(false);
+              }}
+              className={`flex items-center px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                language === lang.code ? "bg-gray-200 font-semibold" : ""
+              }`}
+            >
+              <ReactWorldFlag code={lang.flag} style={{ width: 20, height: 14 }} />
+              <span className="ml-2 text-sm">{lang.name}</span>
+            </div>
+          ))}
         </div>
       )}
     </div>

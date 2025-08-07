@@ -26,7 +26,7 @@ const HeroImage = () => {
   }, [translate]);
 
   return (
-    <div className="relative w-full h-[500px] sm:h-[500px] md:h-[600px] lg:h-[650px] xl:h-[750px] overflow-hidden">
+    <div className="relative w-full h-[500px] sm:h-[500px] md:h-[500px] lg:h-[650px] xl:h-[750px] overflow-hidden">
       <Image
         src={image}
         alt="DriveCore Auto hero image"
