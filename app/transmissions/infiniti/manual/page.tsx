@@ -1,7 +1,5 @@
 
 
-
-
 'use client';
 
 import { useState, useEffect, useRef } from "react";
@@ -27,7 +25,7 @@ type Product = {
 
 const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
 
-export default function TransmissionsToyotaManualPage() {
+export default function TransmissionsInfinitiManualPage() {
   const { language, translate } = useLanguage();
   const currentLang = language || "en";
   const router = useRouter();
@@ -61,7 +59,7 @@ export default function TransmissionsToyotaManualPage() {
   const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
   const params = new URLSearchParams();
 
-  params.set("transmissionsToyotaManuel", "true"); // keep this always
+  params.set("transmissionsInfinitManuel", "true"); // keep this always
 
   if (engineCode && engineCode.trim() !== "") {
     params.set("category", engineCode.trim().toUpperCase());
@@ -76,7 +74,7 @@ export default function TransmissionsToyotaManualPage() {
   }
 
  
-  router.push(`/transmissions/toyota/manual?${params.toString()}`);
+  router.push(`/transmissions/infiniti/manual?${params.toString()}`);
 };
 
 
@@ -97,7 +95,7 @@ export default function TransmissionsToyotaManualPage() {
     addToCart: "Add to Cart",
     addToWishList: "Add to Wishlist",
       home: " Home",
-      toyota: "Transmissions Toyota Manual",
+      toyota: "Transmissions Infiniti Manual",
       engineCodes: "Engine Codes",
        vehicleModel: "VEHICLE MODEL",
          sortedBy: "Sort By",
@@ -115,7 +113,7 @@ export default function TransmissionsToyotaManualPage() {
   async function fetchTranslations() {
     try {
       const addToCart = await translate("Add to Cart");
-      const toyota = await translate("Transmissions Toyota Manual");
+      const toyota = await translate("Transmissions Infiniti Manual");
       const engineCodes = await translate("Engine Codes");
       const addToWishList = await translate("Add to Wishlist");
       const home = await translate("Home");
@@ -130,7 +128,7 @@ export default function TransmissionsToyotaManualPage() {
         addToCart: addToCart || "Add to Cart",
         addToWishList: addToWishList || "Add to Wishlist",
         home: home || "Home",
-        toyota: toyota || "Transmissions Toyota Manual",
+        toyota: toyota || "Transmissions Infiniti Manual",
         engineCodes: engineCodes || "Engine Codes",
         vehicleModel: vehicleModel || "VEHICLE MODEL",
         sortedBy: sortedBy || "Sort By",
@@ -144,7 +142,7 @@ export default function TransmissionsToyotaManualPage() {
         addToCart: "Add to Cart",
         addToWishList: "Add to Wishlist",
         home: "Home",
-        toyota: "Transmissions Toyota Manual",
+        toyota: "Transmissions Infiniti Manual",
         engineCodes: "Engine Codes",
         vehicleModel: "VEHICLE MODEL",
         sortedBy: "Sort By",
@@ -173,7 +171,7 @@ export default function TransmissionsToyotaManualPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/products?transmissionsToyotaManuel=true");
+        const res = await fetch("/api/products?transmissionsInfinitManuel=true");
         const data = await res.json();
         const productList: Product[] = data.data || [];
 
@@ -186,7 +184,7 @@ export default function TransmissionsToyotaManualPage() {
         const modelsSet = new Set<string>();
         productList.forEach((p) => {
           const name = p.name[currentLang] || p.name.en || "";
-          const match = name.match(/Transmissions Toyota Manual\s+(\w+)/i);
+          const match = name.match(/Transmissions Infiniti Manual\s+(\w+)/i);
           if (match && match[1]) {
             modelsSet.add(match[1]);
           }
@@ -207,7 +205,7 @@ export default function TransmissionsToyotaManualPage() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      let apiUrl = "/api/products?transmissionsToyotaManuel=true";
+      let apiUrl = "/api/products?transmissionsInfinitManuel=true";
 
       if (appliedVehicleModel && appliedVehicleModel.trim() !== "") {
         apiUrl += `&vehicleModel=${encodeURIComponent(appliedVehicleModel.trim())}`;
@@ -293,7 +291,7 @@ const currentProducts = sortedProducts.slice(
   };
 
  // Brand list to detect in product names
-const BRANDS = ["Toyota", "Nissan", "Subaru", "Honda", "Mazda","Accessories","Scion", "Acure","lexus",];
+const BRANDS = ["Toyota", "Nissan", "Subaru", "Honda", "Mazda","Accessories","Scion", "Acura","lexus",];
 
 const extractModel = (name: string): string => {
   if (!name) return "UNKNOWN ENGINE";
@@ -336,7 +334,7 @@ const extractModel = (name: string): string => {
   const selectEngineCode = (code: string) => {
  const slug = code.trim().toUpperCase();
 setEngineCodeInput(slug);
-router.push(`/transmissions/toyota/manual?category=${slug}`);
+router.push(`/transmissions/infiniti/manual?category=${slug}`);
 setShowMobileFilters(false);
 
   setShowEngineSuggestions(false);
@@ -363,7 +361,7 @@ useEffect(() => {
     <>
     <div className=" md:mt-0">
      
-  <BrandLinksNav currentBrand="Transmissions Toyota Manual" />
+  <BrandLinksNav currentBrand="Transmissions Infiniti Manual" />
 </div>
 
     <div className="max-w-7xl mx-auto px-4 py-10 ">

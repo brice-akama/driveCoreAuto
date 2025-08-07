@@ -33,7 +33,7 @@ const TRANSMISSION_LINKS = [
   { href: '/transmissions/subaru/automatic', label: 'Subaru Transmissions Automatic' },
   { href: '/transmissions/subaru/manual', label: 'Subaru Transmissions Manual' },
   { href: '/transmissions/lexus/automatic', label: 'Lexus Transmissions Automatic' },
-  { href: '/transmissions/lexus/manual', label: 'Lexus Transmissions Manual' },
+  
   { href: '/transmissions/infiniti/automatic', label: 'Infiniti Transmissions Automatic' },
   { href: '/transmissions/infiniti/manual', label: 'Infiniti Transmissions Manual' },
   { href: '/transmissions/scion/automatic', label: 'Scion Transmissions Automatic' },
@@ -118,8 +118,20 @@ export default function BrandLinksNav({ currentBrand, currentPath }: BrandLinksN
   };
 
   return (
-    <section className="w-full bg-black mt-20 lg:mt-40 rounded">
+    <section className="w-full bg-black pt-20 lg:pt-40 rounded">
+
       {/* Brands section - always visible on md+ */}
+      
+    {currentBrand && (
+        <h1
+  className="text-4xl font-bold text-center text-blue-400 "
+  style={{ marginTop: "2.5rem", marginBottom: "1.5rem" }}
+>
+  {currentBrand.charAt(0).toUpperCase() + currentBrand.slice(1)}
+</h1>
+
+      )}
+
       <div className="hidden md:flex flex-wrap justify-center items-center gap-6 px-4 py-12">
   {BRANDS.map((brand) => {
   const label = translatedBrands[brand] || getDefaultLabel(brand);

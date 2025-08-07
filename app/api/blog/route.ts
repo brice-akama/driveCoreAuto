@@ -149,7 +149,7 @@ export async function GET(req: Request) {
   const category: string | null = searchParams.get("category");
 
   const client = await clientPromise;
- const db = client.db("autodrive");
+  const db = client.db("autodrive");
 
   try {
     // Fetch by ID
@@ -164,6 +164,7 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
       }
 
+      // Prepare translated main post
       const translatedPost = {
         ...post,
         id: post._id.toString(),
@@ -173,30 +174,66 @@ export async function GET(req: Request) {
         metaDescription: post.translations?.[lang]?.metaDescription || post.metaDescription,
       };
 
-      return NextResponse.json({ data: translatedPost });
+      // Fetch related posts based on same category (exclude current post)
+      const relatedPostsRaw = await db.collection("news")
+        .find({
+          category: post.category,
+          _id: { $ne: post._id },
+        })
+        .sort({ createdAt: -1 })
+        .limit(6)
+        .toArray();
+
+      // Translate related posts
+      const relatedPosts = relatedPostsRaw.map((p) => ({
+        ...p,
+        id: p._id.toString(),
+        title: p.translations?.[lang]?.title || p.title,
+        content: p.translations?.[lang]?.content || p.content,
+      }));
+
+      return NextResponse.json({ data: { post: translatedPost, relatedPosts } });
     }
 
     // Fetch by slug in specific language
-if (slug) {
-  const post = await db.collection("news").findOne({ [`slug.${lang}`]: slug });
+    if (slug) {
+      const post = await db.collection("news").findOne({ [`slug.${lang}`]: slug });
 
-  if (!post) {
-    return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
-  }
+      if (!post) {
+        return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
+      }
 
-  const translatedPost = {
-    ...post,
-    id: post._id.toString(),
-    title: post.title?.[lang] || post.title?.en || "",
-    content: post.content?.[lang] || post.content?.en || "",
-    metaTitle: post.metaTitle?.[lang] || "",
-    metaDescription: post.metaDescription?.[lang] || "",
-    slug: post.slug?.[lang] || "",
-  };
+      // Prepare translated main post
+      const translatedPost = {
+        ...post,
+        id: post._id.toString(),
+        title: post.title?.[lang] || post.title?.en || "",
+        content: post.content?.[lang] || post.content?.en || "",
+        metaTitle: post.metaTitle?.[lang] || "",
+        metaDescription: post.metaDescription?.[lang] || "",
+        slug: post.slug?.[lang] || "",
+      };
 
-  return NextResponse.json({ data: translatedPost });
-}
+      // Fetch related posts based on same category (exclude current post)
+      const relatedPostsRaw = await db.collection("news")
+        .find({
+          category: post.category,
+          _id: { $ne: post._id },
+        })
+        .sort({ createdAt: -1 })
+        .limit(6)
+        .toArray();
 
+      // Translate related posts
+      const relatedPosts = relatedPostsRaw.map((p) => ({
+        ...p,
+        id: p._id.toString(),
+        title: p.translations?.[lang]?.title || p.title,
+        content: p.translations?.[lang]?.content || p.content,
+      }));
+
+      return NextResponse.json({ data: { post: translatedPost, relatedPosts } });
+    }
 
     // Build query (e.g., filter by category)
     const query: Record<string, string> = {};
@@ -251,6 +288,7 @@ if (slug) {
     return NextResponse.json({ error: "Failed to fetch blog posts" }, { status: 500 });
   }
 }
+
 
 export async function DELETE(req: Request) {
   try {

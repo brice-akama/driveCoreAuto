@@ -72,7 +72,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
       const items: MenuItem[] = [
         {
           name: await translate("ENGINES"),
-          link: "/engines",
+          link: "/toyota",
           customDropdownType: "category",
           subLinks: [
             {
@@ -191,12 +191,12 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
       
       {
   name: await translate("TRANSMISSION"),  // plural sounds better here
-  link: "/transmissions",
+    link: "/transmissions/toyota/automatic",
   customDropdownType: "transmissionCategory",
   subLinks: [
     {
       name: await translate("Toyota Transmissions"),
-      link: "/transmissions/toyota",
+       link: "/transmissions/toyota/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -217,7 +217,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     },
     {
       name: await translate("Honda Transmissions"),
-      link: "/transmissions/honda",
+       link: "/transmissions/honda/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -237,7 +237,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     },
     {
       name: await translate("Nissan Transmissions"),
-      link: "/transmissions/nissan",
+      link: "/transmissions/nissan/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -257,7 +257,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     },
     {
       name: await translate("Subaru Transmissions"),
-      link: "/transmissions/subaru",
+     link: "/transmissions/subaru/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -278,7 +278,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     },
     {
       name: await translate("Acura Transmissions"),
-      link: "/transmissions/acura",
+      link: "/transmissions/acura/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -298,7 +298,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     },
     {
       name: await translate("Infiniti Transmissions"),
-      link: "/transmissions/infiniti",
+       link: "/transmissions/infiniti/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -318,7 +318,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     },
     {
       name: await translate("Scion Transmissions"),
-      link: "/transmissions/scion",
+       link: "/transmissions/scion/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -338,7 +338,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     },
     {
       name: await translate("Lexus Transmissions"),
-      link: "/transmissions/lexus",
+      link: "/transmissions/lexus/automatic",
       subMenu: [
         {
           name: await translate("Automatic"),
@@ -347,13 +347,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
             { name: "ModelA1", link: `/transmissions/lexus?model=${toSlug("ModelA1")}` }
           ]
         },
-        {
-          name: await translate("Manual"),
-          link: "/transmissions/lexus/manual",
-          subMenu: [
-            { name: "ModelM1", link: `/transmissions/lexus?model=${toSlug("ModelM1")}` }
-          ]
-        }
+        
       ]
     },
    
@@ -362,7 +356,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 
 {
   name: await translate("SWAPS"),
-  link: "/swaps",
+  link: "/swaps/toyota",
   subLinks: [
     { name: await translate("Toyota Swaps"), link: "/swaps/toyota" },
     { name: await translate("Nissan Swaps"), link: "/swaps/nissan" },
@@ -680,6 +674,7 @@ useEffect(() => {
           <span className="text-base font-semibold">Close</span>
         </button>
       </div>
+      
 
             {/* Sidebar Menu */}
             <div className="flex flex-col space-y-4 p-4">
