@@ -8,6 +8,12 @@ import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import ReviewList from "./ReviewList";
 import { useLanguage } from "@/app/context/LanguageContext";
+import  ProductMetaInfo  from "@/app/components/ProductMetaInfo";
+import { FiX } from "react-icons/fi";
+import { useCurrency } from "@/app/context/CurrencyContext";
+
+
+
 
 interface Product {
   _id: string;
@@ -20,6 +26,10 @@ interface Product {
   Warranty: Record<string, string>;
   mainImage: string;
   thumbnails: string[];
+   // ✅ Add these two new fields
+  sku: string;
+  category: string;
+  brand: string;
 }
 
 interface Props {
@@ -54,8 +64,7 @@ const stripHtmlToParagraphs = (html: string): string[] => {
 
 const ProductDetailsPage: React.FC<Props> = ({ product }) => {
   const [selectedThumbnail, setSelectedThumbnail] = useState<number>(0);
-  const [showDeposit, setShowDeposit] = useState(false);
-  const [showFullPayment, setShowFullPayment] = useState(false);
+
   const [quantity, setQuantity] = useState(1);
   const [showDescription, setShowDescription] = useState(true);
   const [showReviewList, setShowReviewList] = useState(false);
@@ -65,11 +74,14 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
   const [showWarranty, setShowWarranty] = useState(false);
   const { addToCart, openCart } = useCart();
   const { addToWishlist } = useWishlist();
-  const [viewers, setViewers] = useState(51);
-  const [showImageOverlay, setShowImageOverlay] = useState(false);
+  const [viewers, setViewers] = useState(80);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { symbol } = useCurrency();
+  
 
   const { language } = useLanguage();
 
+  
   const handleAddToCart = () => {
     if (product) {
       addToCart({
@@ -196,79 +208,63 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
         ></script>
       </Head>
 
-      <section className="max-w-6xl mx-auto px-4 py-10 mt-20">
+      <section className="max-w-6xl mx-auto px-4 py-10 mt-20 lg:mt-40">
+
         <div className="flex flex-col md:flex-row gap-10">
           {/* Left: Main Image and Thumbnails */}
           <div className="w-full md:w-1/2">
-            <div className="relative">
-              <Image
-                src={product.thumbnails[selectedThumbnail] || product.mainImage}
-                alt={product.name?.[language] || product.name?.en || ""}
-                width={500}
-                height={500}
-                className="rounded-lg"
-              />
-            </div>
+   <div
+  className={`relative rounded-lg cursor-zoom-in overflow-hidden transition-transform duration-500 ease-in-out
+    md:scale-95 md:hover:scale-110
+    ${isModalOpen ? "scale-100 md:scale-100 md:hover:scale-100" : ""}
+  `}
+  onClick={() => setIsModalOpen(true)}
+>
+  <Image
+    src={product.thumbnails[selectedThumbnail] || product.mainImage}
+    alt={product.name?.[language] || product.name?.en || ""}
+    width={500}
+    height={500}
+    className="rounded-lg"
+  />
+</div>
 
-            {/* Thumbnails */}
-            <div className="flex gap-4 mt-4">
-              {[product.mainImage, ...product.thumbnails].map((thumb: string, index: number) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedThumbnail(index)}
-                  className={`cursor-pointer ${
-                    selectedThumbnail === index ? "border-2 border-blue-500" : ""
-                  }`}
-                >
-                  <Image
-                    src={thumb}
-                    alt={`Thumbnail ${index + 1}`}
-                    width={100}
-                    height={100}
-                    className="rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+
+  {/* Thumbnails */}
+  <div className="flex gap-4 mt-4">
+    {[product.mainImage, ...product.thumbnails].map((thumb: string, index: number) => (
+      <div
+        key={index}
+        onClick={() => setSelectedThumbnail(index)}
+        className={`cursor-pointer ${
+          selectedThumbnail === index ? "border-2 border-blue-500" : ""
+        }`}
+      >
+        <Image
+          src={thumb}
+          alt={`Thumbnail ${index + 1}`}
+          width={100}
+          height={100}
+          className="rounded-lg"
+        />
+      </div>
+    ))}
+  </div>
+</div>
 
           {/* Right: Product Details */}
-          <div className="w-full md:w-1/2 mt-10 md:mt-20">
+          <div className="w-full md:w-1/2">
             <h1 className="text-3xl font-semibold text-gray-900">
               {product.name?.[language] || product.name?.en || ""}
             </h1>
 
-            <p className="text-xl text-blue-600 mt-2">${product.price}</p>
+             <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
 
             <div className="border-t border-gray-300 my-4"></div>
 
-            {/* Payment Options */}
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={showDeposit}
-                onChange={() => setShowDeposit(!showDeposit)}
-                className="cursor-pointer"
-              />
-              <span className="cursor-pointer text-sm text-blue-600" onClick={() => setShowDeposit(!showDeposit)}>
-                Pay Deposit
-              </span>
-            </div>
-            {showDeposit && <p className="text-sm mt-2 text-gray-500">Pay a deposit of 50% per item</p>}
+            
 
-            <div className="flex items-center gap-3 mt-4">
-              <input
-                type="checkbox"
-                checked={showFullPayment}
-                onChange={() => setShowFullPayment(!showFullPayment)}
-                className="cursor-pointer"
-              />
-              <span className="cursor-pointer text-sm text-blue-600" onClick={() => setShowFullPayment(!showFullPayment)}>
-                Pay Full Payment
-              </span>
-            </div>
-
-            <div className="border-t border-gray-300 my-4"></div>
+            <div className="  my-4"></div>
 
             {/* Quantity Control */}
             <div className="flex items-center gap-4 mt-4">
@@ -310,6 +306,8 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
                 {viewers} {viewers === 1 ? "person" : "people"} watching this product now!
               </span>
             </div>
+            <ProductMetaInfo sku={product.sku} category={product.category} />
+
           </div>
         </div>
 
@@ -345,9 +343,12 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
             </span>
             {showSpecifications &&
               stripHtmlToParagraphs(product.Specifications?.[language] || product.Specifications?.en || "No specifications available.").map((para, idx) => (
-                <p key={idx} className="mb-2 mt-2">
-                  {para}
-                </p>
+                <p
+    key={idx}
+    className="before:content-['•'] before:text-black before:mr-2 before:font-bold"
+  >
+    {para}
+  </p>
               ))}
           </div>
 
@@ -368,6 +369,7 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
                 </p>
               ))}
           </div>
+
 
           {/* Warranty */}
           <div>
@@ -408,6 +410,33 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
           </div>
         </div>
       </section>
+      {/* Modal Popup */}
+    {isModalOpen && (
+      <div
+        className="fixed inset-0  bg-opacity-70 flex items-center justify-center z-50"
+        onClick={() => setIsModalOpen(false)} // Close when clicking outside image
+      >
+        <div
+          className="relative bg-white rounded p-4 max-w-[90vw] max-h-[90vh] overflow-auto"
+          onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside modal content
+        >
+          <button
+            className="absolute top-2 right-2 text-gray-700 hover:text-black"
+            onClick={() => setIsModalOpen(false)}
+            aria-label="Close image preview"
+          >
+            <FiX size={24} />
+          </button>
+          <Image
+            src={product.thumbnails[selectedThumbnail] || product.mainImage}
+            alt={product.name?.[language] || product.name?.en || ""}
+            width={800}
+            height={800}
+            className="rounded"
+          />
+        </div>
+      </div>
+    )}
     </>
   );
 };
@@ -417,7 +446,6 @@ export default ProductDetailsPage;
 
 
 
-//...........z
 
 
 
