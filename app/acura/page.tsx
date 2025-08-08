@@ -390,7 +390,7 @@ useEffect(() => {
 
       {/* Mobile menu button */}
       <div className="sm:hidden mb-4 flex justify-between items-center">
-        <h2 className="text-xl font-bold">   {translatedTexts.engineCodes}</h2>
+        
          <button
     onClick={() => setShowMobileFilters(true)}
     className="p-2 border rounded flex items-center gap-2"

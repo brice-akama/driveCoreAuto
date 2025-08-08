@@ -270,7 +270,8 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    const slug = searchParams.get("slug");                  //      transmissionsInfinitManuel
+    const slug = searchParams.get("slug");    
+    const lang = searchParams.get("lang") || "en";              //      transmissionsInfinitManuel
     const toyota = searchParams.get("toyota") === "true";
     const transmissionsToyotaAutomatic = searchParams.get("transmissionsToyotaAutomatic") === "true";
     const transmissionsToyotaManuel = searchParams.get("transmissionsToyotaManuel") === "true";
@@ -419,7 +420,8 @@ const swapsInfiniti = searchParams.get("swapsInfiniti") === "true";
 
     // Fetch product by slug
     if (slug) {
-      const product = await db.collection("products").findOne({ slug });
+  const product = await db.collection("products").findOne({ [`slug.${lang}`]: slug });
+
       if (!product) {
         return NextResponse.json({ error: "Product not found" }, { status: 404 });
       }
