@@ -1,5 +1,7 @@
 import { FaFacebookF, FaTwitter, FaEnvelope } from "react-icons/fa";
+import { FiCopy } from "react-icons/fi";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 interface ProductMetaInfoProps {
   sku?: string; // optional, but we'll use fixed SKU anyway
@@ -10,6 +12,14 @@ const ProductMetaInfo = ({ sku, category }: ProductMetaInfoProps) => {
   const pathname = usePathname();
   const shareUrl = `https://yourdomain.com${pathname}`; // replace with your actual domain
   const fixedSku = "AUTO12345"; // fixed SKU as you wanted
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // hide after 2 seconds
+    });
+  };
 
   return (
     <div className="mt-4 text-sm text-gray-700 space-y-1">
@@ -50,6 +60,20 @@ const ProductMetaInfo = ({ sku, category }: ProductMetaInfoProps) => {
         >
           <FaEnvelope className="text-gray-600 hover:scale-110 transition cursor-pointer" />
         </a>
+
+        {/* Copy Link Icon */}
+        <button
+          onClick={handleCopyClick}
+          aria-label="Copy link to clipboard"
+          className="relative text-gray-600 hover:text-gray-900 transition cursor-pointer"
+        >
+          <FiCopy className="w-5 h-5" />
+          {copied && (
+            <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 select-none">
+              Copied!
+            </span>
+          )}
+        </button>
       </div>
     </div>
   );

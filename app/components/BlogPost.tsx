@@ -17,7 +17,7 @@ export default function BlogPost() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { language, translate } = useLanguage(); // Get current language and translate function
+  const { language, translate } = useLanguage(); // current language
 
   const [translatedTexts, setTranslatedTexts] = useState({
     latestTitle: "DriveCore Journal",
@@ -101,7 +101,7 @@ export default function BlogPost() {
               />
               <div className="p-6">
                 <h3 className="text-2xl font-semibold mb-3 truncate max-w-full">{post.title[language]}</h3>
-                <Link href={`/blog/${post.slug[language]}`} className="inline-block mt-4">
+                <Link href={`/blog/${post.slug[language]}?lang=${language}`} className="inline-block mt-4">
                   <span className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
                     {translatedTexts.readMore}
                   </span>

@@ -11,6 +11,39 @@ import { useLanguage } from "@/app/context/LanguageContext";
 import  ProductMetaInfo  from "@/app/components/ProductMetaInfo";
 import { FiX } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
+import Link from "next/link";
+import RelatedProducts from "./RelatedProduct";
+
+import parse, {
+  domToReact,
+  HTMLReactParserOptions,
+  Element as DomElement,
+  DOMNode,
+} from "html-react-parser";
+
+
+const parseOptions: HTMLReactParserOptions = {
+  replace: (domNode: DOMNode) => {
+    if ((domNode as DomElement).type === "tag" && (domNode as DomElement).name === "a") {
+      const element = domNode as DomElement;
+      const href = element.attribs?.href;
+
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline hover:text-blue-800"
+        >
+          {domToReact(element.children as unknown as DOMNode[], parseOptions)}
+
+        </a>
+      );
+    }
+    return undefined;
+  },
+};
+
 
 
 
@@ -61,6 +94,9 @@ const stripHtmlToParagraphs = (html: string): string[] => {
 
   return result;
 };
+
+
+
 
 const ProductDetailsPage: React.FC<Props> = ({ product }) => {
   const [selectedThumbnail, setSelectedThumbnail] = useState<number>(0);
@@ -254,6 +290,24 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
 
           {/* Right: Product Details */}
           <div className="w-full md:w-1/2">
+           <div className="w-full md:w-1/2 ">
+  <nav
+    className="inline-block text-sm text-gray-600 mb-4"
+    aria-label="Breadcrumb"
+  >
+    <ol className="inline-flex items-center space-x-1 md:space-x-2">
+      <li>
+        <Link href="/" className="text-blue-600 hover:underline">Home</Link>
+      </li>
+      <li>/</li>
+      
+      <li>/</li>
+      <li className="text-gray-900 truncate max-w-[200px]">
+        {product.name?.[language] || product.name?.en || ""}
+      </li>
+    </ol>
+  </nav>
+</div>
             <h1 className="text-3xl font-semibold text-gray-900">
               {product.name?.[language] || product.name?.en || ""}
             </h1>
@@ -313,6 +367,7 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
 
         {/* Product Description and Reviews Section */}
         <div className="mt-9 flex flex-col gap-4 md:gap-6">
+         
           {/* Product Description */}
           <div>
             <span
@@ -323,12 +378,13 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
             >
               Product Description
             </span>
-            {showDescription &&
-              stripHtmlToParagraphs(product.description?.[language] || product.description?.en || "").map((para, idx) => (
-                <p key={idx} className="mb-2 mt-2">
-                  {para}
-                </p>
-              ))}
+           {showDescription && (
+  <div className="space-y-2">
+    {parse(product.description?.[language] || product.description?.en || "", parseOptions)}
+  </div>
+)}
+
+
           </div>
 
           {/* Specifications */}
@@ -409,6 +465,8 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
             )}
           </div>
         </div>
+        <RelatedProducts currentProductSlug={product.slug?.[language] || product.slug?.en || ""} />
+
       </section>
       {/* Modal Popup */}
     {isModalOpen && (

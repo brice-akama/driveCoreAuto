@@ -18,6 +18,7 @@ type Product = {
   slug: Record<string, string>;
   price: number;
   mainImage: string;
+  thumbnails?: string[];
   category: string;
 };
 
@@ -40,6 +41,8 @@ export default function ToyotaPage() {
   const [vehicleModels, setVehicleModels] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [appliedPriceRange, setAppliedPriceRange] = useState<string | null>(null);
+  const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
+
 
 
   // Controlled input values
@@ -727,17 +730,34 @@ useEffect(() => {
                   className="border rounded-lg overflow-hidden shadow group relative"
                 >
                   <Link href={`/products/${product.slug[currentLang] || product.slug.en}`}>
-                    <div className="relative w-full h-48 bg-white">
-                      <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
-                        {extractModel(product.name[currentLang] || product.name.en)}
-                      </div>
-                      <Image
-  src={product.mainImage}
-  alt={product.name[currentLang] || product.name.en}
-  fill
-  className="object-cover group-hover:scale-105 transition-transform duration-300"
-  unoptimized
-/>
+                    <div
+  className="relative w-full h-48 bg-white"
+  onMouseEnter={() => setHoveredProductId(product._id)}
+  onMouseLeave={() => setHoveredProductId(null)}
+>
+  <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
+    {extractModel(product.name[currentLang] || product.name.en)}
+  </div>
+
+  {hoveredProductId === product._id && product.thumbnails?.[0] ? (
+    <Image
+      src={product.thumbnails[0]} // first thumbnail image
+      alt={`${product.name[currentLang] || product.name.en} thumbnail`}
+      fill
+      className="object-cover transition-transform duration-300"
+      unoptimized
+    />
+  ) : (
+    <Image
+      src={product.mainImage}
+      alt={product.name[currentLang] || product.name.en}
+      fill
+      className="object-cover group-hover:scale-105 transition-transform duration-300"
+      unoptimized
+    />
+  )}
+
+  
 
 {/* Icon buttons on hover */}
 {/* Icons Container */}

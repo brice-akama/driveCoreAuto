@@ -16,6 +16,7 @@ type Product = {
   edibles: boolean;
   popularProduct: boolean;
   mainImage: string;
+   thumbnails?: string[];
   slug: Record<string, string>;
 };
 
@@ -136,7 +137,7 @@ function ProductCard({
   addToWishlist,
   translatedTexts,
 }: {
-  product: Product;
+  product: Product & { thumbnails?: string[] }; // <-- add thumbnails here
   currentLang: string;
   addToWishlist: (
     id: string,
@@ -159,31 +160,63 @@ function ProductCard({
 
   const slugForLang = product.slug?.[currentLang] || product.slug?.en || "";
   const nameForLang = product.name?.[currentLang] || product.name?.en || "";
+  const thumbnail = product.thumbnails?.[0];
+const hasThumbnail = Boolean(thumbnail);
 
-  return (
-    <div
-      className="relative group flex flex-col h-full"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => {
-        setHovered(false);
-        setHoveredIcon(null);
-      }}
-    >
-      <Link href={`/products/${slugForLang}`}>
-        <div className="w-full aspect-square relative overflow-hidden mt-3">
-          <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
-            {extractModel(product.name[currentLang] || product.name.en)}
-          </div>
+return (
+  <div
+    className="relative group flex flex-col h-full"
+    onMouseEnter={() => setHovered(true)}
+    onMouseLeave={() => {
+      setHovered(false);
+      setHoveredIcon(null);
+    }}
+  >
+    <Link href={`/products/${slugForLang}`}>
+      <div className="w-full aspect-square relative overflow-hidden mt-3">
+        <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
+          {extractModel(product.name[currentLang] || product.name.en)}
+        </div>
 
+        {/* Main Image - hidden on hover if thumbnail exists */}
+        <Image
+          src={product.mainImage}
+          alt={nameForLang}
+          fill
+          unoptimized
+          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${
+            hovered && hasThumbnail ? "hidden" : "block"
+          }`}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          priority
+        />
+
+        {/* Show single thumbnail on hover if available */}
+        {hovered && hasThumbnail && (
+          <Image
+            src={thumbnail!}
+            alt={`${nameForLang} thumbnail`}
+            fill
+            unoptimized
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          />
+        )}
+
+        {/* If hovered but no thumbnail, show mainImage again */}
+        {hovered && !hasThumbnail && (
           <Image
             src={product.mainImage}
             alt={nameForLang}
             fill
             unoptimized
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            priority
           />
+        )}
+
+       
+
 
           {/* Large screens: show icons on hover */}
           {breakpoint === "lg" && hovered && (
