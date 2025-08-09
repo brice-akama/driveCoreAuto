@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useLanguage } from '@/app/context/LanguageContext';
+import RelatedPosts from './RelatedPosts';
 
 interface BlogPost {
   title: string | Record<string, string>;
@@ -124,6 +125,13 @@ export default function BlogDetails({ post }: { post: BlogPost }) {
           },
         })}
       </div>
+      <RelatedPosts
+  lang={currentLang}
+  translatedTexts={{ readMore: currentLang === 'es' ? 'Leer más' : 'Read More' }}
+  category="relatedBlog"  // or your category
+  limit={3}
+/>
+
     </div>
   );
 }
