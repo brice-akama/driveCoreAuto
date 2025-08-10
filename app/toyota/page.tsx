@@ -729,7 +729,8 @@ useEffect(() => {
                   key={product._id}
                   className="border rounded-lg overflow-hidden shadow group relative"
                 >
-                  <Link href={`/products/${product.slug[currentLang] || product.slug.en}`}>
+                 <Link href={`/products/${product.slug.en}?lang=${currentLang}`}>
+
                     <div
   className="relative w-full h-48 bg-white"
   onMouseEnter={() => setHoveredProductId(product._id)}
@@ -856,7 +857,8 @@ useEffect(() => {
                   </Link>
 
                   <div className="p-4 text-center">
-                    <Link href={`/products/${product.slug[currentLang] || product.slug.en}`}>
+                    <Link href={`/products/${product.slug.en}?lang=${currentLang}`}>
+
                       <h3 className="font-semibold text-lg line-clamp-2">
                         {product.name[currentLang] || product.name.en}
                       </h3>

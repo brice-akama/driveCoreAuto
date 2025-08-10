@@ -1,6 +1,7 @@
 import ReactWorldFlag from "react-world-flags";
 import { useLanguage } from "../context/LanguageContext";
 import { useState, useRef } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation"; // Next.js 13+ client hooks
 
 const languageOptions = [
   { code: "en", name: "English", flag: "GB" },
@@ -12,7 +13,12 @@ const languageOptions = [
 export default function SelectLanguageButton() {
   const { language, setLanguage } = useLanguage();
   const [isHovered, setIsHovered] = useState(false);
-  const timeoutRef = useRef<number | null>(null); // ✅ Correctly typed
+  const timeoutRef = useRef<number | null>(null);
+
+  // Next.js router & helpers
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const langInfo =
     languageOptions.find((l) => l.code === language) || languageOptions[0];
@@ -28,6 +34,17 @@ export default function SelectLanguageButton() {
     timeoutRef.current = window.setTimeout(() => {
       setIsHovered(false);
     }, 400);
+  };
+
+  const handleLanguageChange = (newLang: string) => {
+    setLanguage(newLang);
+
+    // Build new URLSearchParams object to update lang param
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    params.set("lang", newLang);
+
+    // Push new URL with updated lang param — this triggers page reload & re-render
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -48,7 +65,7 @@ export default function SelectLanguageButton() {
           {languageOptions.map((lang) => (
             <div
               key={lang.code}
-              onClick={() => setLanguage(lang.code)}
+              onClick={() => handleLanguageChange(lang.code)}
               className={`flex items-center px-3 py-2 cursor-pointer hover:bg-gray-100 ${
                 language === lang.code ? "bg-gray-200 font-semibold" : ""
               }`}

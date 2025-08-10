@@ -101,13 +101,13 @@ export default function BlogPage() {
       {currentPosts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
           {currentPosts.map((post) => {
-            const localizedSlug = post.slug[currentLang] || post.slug['en'] || '';
             const localizedTitle = post.title[currentLang] || post.title['en'] || '';
             const localizedImage = post.imageUrl || '';
+            const englishSlug = post.slug['en'] || '';
 
             return (
               <article
-                key={localizedSlug}
+                key={englishSlug}  // Use English slug as React key
                 className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300"
               >
                 <img
@@ -118,12 +118,11 @@ export default function BlogPage() {
                 />
                 <div className="p-6">
                   <h2 className="text-2xl font-semibold mb-3">{localizedTitle}</h2>
-                  <Link href={`/blog/${post.slug[currentLang]}?lang=${currentLang}`} className="inline-block mt-4">
-  <span className="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-    Read More
-  </span>
-</Link>
-
+                  <Link href={`/blog/${englishSlug}?lang=${currentLang}`} className="inline-block mt-4">
+                    <span className="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                      Read More
+                    </span>
+                  </Link>
                 </div>
               </article>
             );

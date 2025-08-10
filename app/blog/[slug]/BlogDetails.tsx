@@ -18,6 +18,8 @@ export default function BlogDetails({ post }: { post: BlogPost }) {
   const { language } = useLanguage();
   const currentLang = language || 'en';
 
+  
+
   if (!post) return <div className="text-center py-10">Loading blog post...</div>;
 
   // Determine title based on whether it's string or object

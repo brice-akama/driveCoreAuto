@@ -54,7 +54,8 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
-        const response = await fetch(`/api/products?slug=${currentProductSlug}`);
+       const response = await fetch(`/api/products?slug=${currentProductSlug}&lang=${language || "en"}`);
+
         const data = await response.json();
 
         if (!response.ok) {
@@ -103,13 +104,13 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   const handleAddToWishlist = (product: RelatedProduct) => {
     // Access localized name and slug when adding to wishlist
     const localizedName = product.name?.[language] || product.name?.en || "";
-    const localizedSlug = product.slug?.[language] || product.slug?.en || "";
+   const englishSlug = product.slug?.en || product.slug?.[language] || "";
     addToWishlist({ 
       _id: product.id, 
       name: localizedName, 
       price: product.price.toString(), 
       mainImage: product.mainImage, 
-      slug: localizedSlug 
+      slug: englishSlug 
     });
   };
 
@@ -125,7 +126,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {relatedProducts.map((product) => {
           const localizedName = product.name?.[language] || product.name?.en || "";
-          const localizedSlug = product.slug?.[language] || product.slug?.en || "";
+         const englishSlug = product.slug?.en || product.slug?.[language] || "";
 
           return (
             <div key={product.id} className="group">
@@ -134,7 +135,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
                     {extractModel(product.name?.[language] || product.name?.en || "")}
                   </div>
                   
-                <Link href={`/products/${localizedSlug}`} className="block w-full h-full relative">
+                <Link  href={`/products/${englishSlug}?lang=${language || "en"}`} className="block w-full h-full relative">
                 <Image
                   src={product.mainImage}
                   alt={localizedName}
@@ -245,7 +246,10 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
               </div>
 
              <div className="mt-2 text-center">
-  <h3 className="text-lg font-medium">{localizedName}</h3>
+  <Link href={`/products/${englishSlug}?lang=${language || "en"}`}>
+  <h3 className="text-lg font-medium cursor-pointer hover:underline">{localizedName}</h3>
+</Link>
+
   <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
 <button
   className="mt-2 px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800 transition flex items-center justify-center mx-auto"

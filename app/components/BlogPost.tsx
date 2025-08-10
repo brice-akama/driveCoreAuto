@@ -79,7 +79,7 @@ export default function BlogPost() {
     <div className="container mx-auto px-4 py-10 mt-7">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">{translatedTexts.latestTitle}</h2>
-        <Link href="/blog" className="text-green-600 hover:text-green-800 flex items-center space-x-1">
+        <Link href={`/blog?lang=${language}`} className="text-green-600 hover:text-green-800 flex items-center space-x-1">
           <span className="text-lg font-medium">{translatedTexts.viewAll}</span>
           <span>&gt;</span>
         </Link>
@@ -88,20 +88,22 @@ export default function BlogPost() {
         {posts.length > 0 ? (
           posts.map((post) => (
             <div
-              key={post.slug[language]}
+              key={post.slug.en} // Always English slug as key
               className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300"
             >
               <Image
                 src={post.imageUrl}
-                alt={post.title[language]}
+                alt={post.title[language] || post.title.en}
                 width={500}
                 height={300}
                 unoptimized
                 className="w-full h-56 object-cover"
               />
               <div className="p-6">
-                <h3 className="text-2xl font-semibold mb-3 truncate max-w-full">{post.title[language]}</h3>
-                <Link href={`/blog/${post.slug[language]}?lang=${language}`} className="inline-block mt-4">
+                <h3 className="text-2xl font-semibold mb-3 truncate max-w-full">
+                  {post.title[language] || post.title.en}
+                </h3>
+                <Link href={`/blog/${post.slug.en}?lang=${language}`} className="inline-block mt-4">
                   <span className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
                     {translatedTexts.readMore}
                   </span>

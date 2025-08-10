@@ -195,45 +195,46 @@ export async function GET(req: Request) {
       return NextResponse.json({ data: { post: translatedPost, relatedPosts } });
     }
 
-    // Fetch by slug in specific language
-    if (slug) {
-      const post = await db.collection("news").findOne({ [`slug.${lang}`]: slug });
+    // Fetch by slug using English slug always, but translate content by lang param
+if (slug) {
+  // Always filter by slug.en regardless of lang in URL
+  const post = await db.collection("news").findOne({ "slug.en": slug });
 
-      if (!post) {
-        return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
-      }
+  if (!post) {
+    return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
+  }
 
-      // Prepare translated main post
-      const translatedPost = {
-        ...post,
-        id: post._id.toString(),
-        title: post.title?.[lang] || post.title?.en || "",
-        content: post.content?.[lang] || post.content?.en || "",
-        metaTitle: post.metaTitle?.[lang] || "",
-        metaDescription: post.metaDescription?.[lang] || "",
-        slug: post.slug?.[lang] || "",
-      };
+  // Return the translation based on lang param
+  const translatedPost = {
+    ...post,
+    id: post._id.toString(),
+    title: post.translations?.[lang]?.title || post.title,
+    content: post.translations?.[lang]?.content || post.content,
+    metaTitle: post.translations?.[lang]?.metaTitle || post.metaTitle,
+    metaDescription: post.translations?.[lang]?.metaDescription || post.metaDescription,
+    slug: post.slug?.en, // slug remains English for consistency
+  };
 
-      // Fetch related posts based on same category (exclude current post)
-      const relatedPostsRaw = await db.collection("news")
-        .find({
-          category: post.category,
-          _id: { $ne: post._id },
-        })
-        .sort({ createdAt: -1 })
-        .limit(6)
-        .toArray();
+  // Fetch related posts based on same category (exclude current post)
+  const relatedPostsRaw = await db.collection("news")
+    .find({
+      category: post.category,
+      _id: { $ne: post._id },
+    })
+    .sort({ createdAt: -1 })
+    .limit(6)
+    .toArray();
 
-      // Translate related posts
-      const relatedPosts = relatedPostsRaw.map((p) => ({
-        ...p,
-        id: p._id.toString(),
-        title: p.translations?.[lang]?.title || p.title,
-        content: p.translations?.[lang]?.content || p.content,
-      }));
+  // Translate related posts
+  const relatedPosts = relatedPostsRaw.map((p) => ({
+    ...p,
+    id: p._id.toString(),
+    title: p.translations?.[lang]?.title || p.title,
+    content: p.translations?.[lang]?.content || p.content,
+  }));
 
-      return NextResponse.json({ data: { post: translatedPost, relatedPosts } });
-    }
+  return NextResponse.json({ data: { post: translatedPost, relatedPosts } });
+}
 
     // Build query (e.g., filter by category)
     const query: Record<string, string> = {};

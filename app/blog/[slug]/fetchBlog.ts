@@ -81,16 +81,25 @@ export async function generateMetadata(
 }
 
 export async function getBlogPost(slug: string, lang: string = 'en') {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/blog?slug=${encodeURIComponent(slug)}&lang=${lang}`,
-    { cache: 'no-store' }
-  );
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/blog?slug=${encodeURIComponent(slug)}&lang=${lang}`
+,
+      { cache: 'no-store' }
+    );
 
-  if (!res.ok) throw new Error('Failed to fetch blog post');
-  const data = await res.json();
-  return data.data?.post || null;
+    if (!res.ok) {
+      console.error('API error fetching blog post:', res.status);
+      return null;
+    }
 
+    const data = await res.json();
+    return data.data?.post || null;
+
+  } catch (err) {
+    console.error('Fetch failed:', err);
+    return null;
+  }
 }
-
 
 

@@ -60,36 +60,40 @@ export default function RelatedPosts({
     <section className="max-w-6xl mx-auto px-4 py-10">
       <h2 className="text-2xl font-bold mb-6">Related Posts</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {posts.map((post) => (
-          <div
-            key={post.id}
-            className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300"
-          >
-            {post.imageUrl && (
-              <Image
-                src={post.imageUrl}
-                alt={post.title[lang] || post.title['en'] || ''}
-                width={500}
-                height={300}
-                unoptimized
-                className="w-full h-56 object-cover"
-              />
-            )}
-            <div className="p-6">
-              <h3 className="text-2xl font-semibold mb-3 truncate max-w-full">
-                {post.title[lang] || post.title['en'] || ''}
-              </h3>
-              <Link
-                href={`/blog/${post.slug[lang] || post.slug['en']}?lang=${lang}`}
-                className="inline-block mt-4"
-              >
-                <span className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
-                  {translatedTexts.readMore}
-                </span>
-              </Link>
+        {posts.map((post) => {
+          const englishSlug = post.slug['en'] || '';
+          const localizedTitle = post.title[lang] || post.title['en'] || '';
+          return (
+            <div
+              key={post.id}
+              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300"
+            >
+              {post.imageUrl && (
+                <Image
+                  src={post.imageUrl}
+                  alt={localizedTitle}
+                  width={500}
+                  height={300}
+                  unoptimized
+                  className="w-full h-56 object-cover"
+                />
+              )}
+              <div className="p-6">
+                <h3 className="text-2xl font-semibold mb-3 truncate max-w-full">
+                  {localizedTitle}
+                </h3>
+                <Link
+                  href={`/blog/${englishSlug}?lang=${lang}`}
+                  className="inline-block mt-4"
+                >
+                  <span className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
+                    {translatedTexts.readMore}
+                  </span>
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

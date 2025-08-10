@@ -158,7 +158,8 @@ function ProductCard({
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
   const breakpoint = useBreakpoint();
 
-  const slugForLang = product.slug?.[currentLang] || product.slug?.en || "";
+  const slugForLang = product.slug.en || "";
+
   const nameForLang = product.name?.[currentLang] || product.name?.en || "";
   const thumbnail = product.thumbnails?.[0];
 const hasThumbnail = Boolean(thumbnail);
@@ -172,7 +173,8 @@ return (
       setHoveredIcon(null);
     }}
   >
-    <Link href={`/products/${slugForLang}`}>
+    <Link href={`/products/${slugForLang}?lang=${currentLang}`}>
+
       <div className="w-full aspect-square relative overflow-hidden mt-3">
         <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
           {extractModel(product.name[currentLang] || product.name.en)}
@@ -337,7 +339,8 @@ return (
       </Link>
 
       <div className="mt-6 text-center flex flex-col flex-grow">
-        <Link href={`/products/${slugForLang}`}>
+       <Link href={`/products/${slugForLang}?lang=${currentLang}`}>
+
           <h3 className="text-lg font-semibold hover:underline min-h-[3.5rem] leading-tight">
             {nameForLang}
           </h3>

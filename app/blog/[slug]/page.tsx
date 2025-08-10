@@ -11,11 +11,12 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const lang = searchParams?.lang || 'en';
+
+  // Fetch by English slug + lang (already your slug param)
   const post = await getBlogPost(params.slug, lang);
 
   if (!post) return {};
 
-  // Safe access for metaTitle and metaDescription
   const metaTitle =
     (post.metaTitle && (post.metaTitle[lang] || post.metaTitle['en'])) ||
     post.title?.[lang] ||
@@ -28,6 +29,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     '';
 
   const imageUrl = post.imageUrl;
+
+  // Always build canonical URL with English slug (params.slug is English slug)
   const canonicalUrl = `https://www.16zip.com/blog/${params.slug}`;
 
   return {
@@ -53,10 +56,10 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-export const revalidate = 60;
-
 export default async function Page({ params, searchParams }: Props) {
   const lang = searchParams?.lang || 'en';
+
+  // Fetch post with English slug + lang param
   const post = await getBlogPost(params.slug, lang);
 
   if (!post) return <div>Post not found</div>;
