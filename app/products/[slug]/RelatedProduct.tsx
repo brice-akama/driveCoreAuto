@@ -102,17 +102,10 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   }, [currentProductSlug]);
 
   const handleAddToWishlist = (product: RelatedProduct) => {
-    // Access localized name and slug when adding to wishlist
-    const localizedName = product.name?.[language] || product.name?.en || "";
-   const englishSlug = product.slug?.en || product.slug?.[language] || "";
-    addToWishlist({ 
-      _id: product.id, 
-      name: localizedName, 
-      price: product.price.toString(), 
-      mainImage: product.mainImage, 
-      slug: englishSlug 
-    });
-  };
+  const englishSlug = product.slug?.en || product.slug?.[language] || "";
+  addToWishlist(englishSlug, language || "en");
+};
+
 
   if (loading) return <p>Loading related products...</p>;
   if (error) return <p className="text-red-500 mt-10">Error: {error}</p>;

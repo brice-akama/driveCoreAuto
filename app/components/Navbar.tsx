@@ -370,6 +370,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
 
 
        { name: await translate("ABOUT US"), link: "/about-us" },
+        { name: await translate("BLOG"), link: "/blog" },
         
         {
           name: await translate("SUPPORT"), link: "/support",
@@ -377,7 +378,7 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
             { name: await translate("FAQS"), link: "/support/faqs" },
             { name: await translate("Contact Us"), link: "/support/contact-us" },
             { name: await translate("Buyer Services"), link: "/support/buyer-services" },
-            { name: await translate("BLOG"), link: "/blog" },
+           
           ]
         },
 
@@ -560,7 +561,7 @@ useEffect(() => {
           </div>
         </div>
 
-        <div className="flex items-center w-1/2 bg-gray-50 rounded-full shadow-inner px-6 py-3 mx-auto mt-3 hidden md:flex">
+        <div className="items-center w-1/2 bg-gray-50 rounded-full shadow-inner px-6 py-3 mx-auto mt-3 hidden md:flex">
           <input
             type="text"
             value={searchQuery}
@@ -674,6 +675,28 @@ useEffect(() => {
           <span className="text-base font-semibold">Close</span>
         </button>
       </div>
+
+      {/* Search input below Close button */}
+<div className="relative w-full border-gray-200">
+  <input
+    type="text"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    placeholder="Search..."
+    className="w-full py-2 pl-4 pr-16 border border-gray-300 rounded-md focus:outline-none focus:ring-0"
+  />
+  <button
+    onClick={() => {
+      handleSearch();
+      setIsSidebarOpen(false);
+    }}
+    className="absolute right-0 top-0 bottom-0 bg-blue-800 w-12 flex items-center justify-center rounded-r-md"
+  >
+    <FaSearch className="text-white text-lg" />
+  </button>
+</div>
+
+
       
 
             {/* Sidebar Menu */}
@@ -707,7 +730,7 @@ useEffect(() => {
                       );
                     }
 
-                    if (item.link === "/swaps") {
+                    if (item.link === "/swaps/toyota") {
                       return (
                         <button key={idx} onClick={() => setMode("swapList")} className={commonClasses}>
                           {item.name} <ChevronRight />
@@ -805,7 +828,7 @@ useEffect(() => {
                     <FaTimes /> Back
                   </button>
                   {translatedMenuItems
-                    .find(item => item.link === "/swaps")
+                    .find(item => item.link ===  "/swaps/toyota",)
                     ?.subLinks?.map(sub => {
                       if (typeof sub === "string") {
                         return (

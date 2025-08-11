@@ -2,63 +2,64 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
-// Define the product type
 interface WishlistItem {
   _id: string;
-  name: string;
-  price: string;
-  mainImage: string;
   slug: string;
+  name: string;
+  price?: number;
+  mainImage: string;
+  
 }
 
 interface WishlistContextType {
   wishlist: WishlistItem[];
-  addToWishlist: (item: WishlistItem) => Promise<void>;
-  removeFromWishlist: (_id: string) => Promise<void>;
+  addToWishlist: (slug: string, language: string) => Promise<void>;
+  removeFromWishlist: (slug: string) => Promise<void>;
+  refreshWishlist: () => Promise<void>;
 }
 
-// Create the context
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
-// Provide the context
 export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
 
-  // Fetch wishlist items from the API on mount
+  const fetchWishlist = async () => {
+    try {
+      const response = await fetch("/api/wishlist");
+      const data = await response.json();
+      // your backend returns { wishlist: { items: [...] } } or similar
+      setWishlist(Array.isArray(data.wishlist?.items) ? data.wishlist.items : []);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      setWishlist([]);
+    }
+  };
+
   useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        const response = await fetch("/api/wishlist");
-        const data = await response.json();
-        setWishlist(Array.isArray(data.wishlist) ? data.wishlist : []); // Ensure it's an array
-      } catch (error) {
-        console.error("Error fetching wishlist:", error);
-        setWishlist([]); // Set an empty array on error
-      }
-    };
-  
     fetchWishlist();
   }, []);
-  
 
-  // Function to add an item to the wishlist
-  const addToWishlist = async (item: WishlistItem) => {
+  const refreshWishlist = fetchWishlist;
+
+  const addToWishlist = async (slug: string, language: string) => {
     try {
       const response = await fetch("/api/wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(item),
+        body: JSON.stringify({ slug, language }),
       });
-      
+
       if (response.ok) {
-        setWishlist((prev) => [...prev, item]);
+        // refresh wishlist after add
+        await fetchWishlist();
+      } else {
+        console.error("Failed to add to wishlist:", await response.text());
       }
     } catch (error) {
       console.error("Error adding to wishlist:", error);
     }
   };
 
-  // Function to remove an item from the wishlist
   const removeFromWishlist = async (slug: string) => {
     try {
       const response = await fetch("/api/wishlist", {
@@ -66,24 +67,24 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug }),
       });
-  
       if (response.ok) {
-        setWishlist((prev) => prev.filter((item) => item.slug !== slug));
+        // refresh wishlist after remove
+        await fetchWishlist();
       }
     } catch (error) {
       console.error("Error removing from wishlist:", error);
     }
   };
-  
 
   return (
-    <WishlistContext.Provider value={{ wishlist, addToWishlist, removeFromWishlist }}>
+    <WishlistContext.Provider
+      value={{ wishlist, addToWishlist, removeFromWishlist, refreshWishlist }}
+    >
       {children}
     </WishlistContext.Provider>
   );
 };
 
-// Custom hook to use the wishlist context
 export const useWishlist = () => {
   const context = useContext(WishlistContext);
   if (!context) {

@@ -7,6 +7,7 @@ import { FiSearch, FiHeart, FiShoppingCart } from "react-icons/fi";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { useCurrency } from "@/app/context/CurrencyContext";
+import { useCart } from "../context/CartContext";
 
 type Product = {
   id: string;
@@ -55,6 +56,7 @@ export default function BestSeller() {
   const { addToWishlist } = useWishlist();
   const { translate, language } = useLanguage();
   const currentLang = language || "en";
+   const { addToCart, openCart } = useCart();
 
   const [translatedTexts, setTranslatedTexts] = useState({
     title: "Best-Selling Engine Components",
@@ -95,15 +97,34 @@ export default function BestSeller() {
     fetchProducts();
   }, []);
 
+  // Updated handlers: extract string slug and name here, pass to cart/wishlist
+  const handleAddToCart = (
+  _id: string,
+  slugObj: Record<string, string>,
+  nameObj: Record<string, string>,
+  price: number,
+  mainImage: string,
+  currentLang: string
+) => {
+  const slug = slugObj[currentLang] || slugObj["en"] || "";
+  const name = nameObj[currentLang] || nameObj["en"] || "";
+
+  addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);  // pass currentLang here
+
+  openCart();
+};
+
+
   const handleAddToWishlist = (
-    id: string,
-    slug: string,
-    name: string,
-    price: number,
-    mainImage: string
-  ) => {
-    addToWishlist({ _id: id, name, price: price.toString(), mainImage, slug });
-  };
+  slugObj: Record<string, string>,
+  currentLang: string
+) => {
+  const slug = slugObj[currentLang] || slugObj["en"] || "";
+
+  addToWishlist(slug, currentLang);
+};
+
+
 
   return (
     <div className="p-4">
@@ -117,12 +138,18 @@ export default function BestSeller() {
 
       {/* Products Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
+         {products.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
             currentLang={currentLang}
-            addToWishlist={handleAddToWishlist}
+            addToWishlist={() =>
+  handleAddToWishlist(product.slug, currentLang)
+}
+
+            addToCart={(id, slug, name, price, mainImage) =>
+              handleAddToCart(id, product.slug, product.name, price, mainImage, currentLang)
+            }
             translatedTexts={translatedTexts}
           />
         ))}
@@ -135,11 +162,19 @@ function ProductCard({
   product,
   currentLang,
   addToWishlist,
+  addToCart,
   translatedTexts,
 }: {
-  product: Product & { thumbnails?: string[] }; // <-- add thumbnails here
+  product: Product & { thumbnails?: string[] };
   currentLang: string;
   addToWishlist: (
+    id: string,
+    slug: string,
+    name: string,
+    price: number,
+    mainImage: string
+  ) => void;
+  addToCart: (
     id: string,
     slug: string,
     name: string,
@@ -159,10 +194,10 @@ function ProductCard({
   const breakpoint = useBreakpoint();
 
   const slugForLang = product.slug.en || "";
-
   const nameForLang = product.name?.[currentLang] || product.name?.en || "";
   const thumbnail = product.thumbnails?.[0];
-const hasThumbnail = Boolean(thumbnail);
+  const hasThumbnail = Boolean(thumbnail);
+
 
 return (
   <div
@@ -355,7 +390,7 @@ return (
           <button
             className="w-full bg-blue-800 border border-black text-white px-4 py-1 rounded shadow-sm flex items-center justify-center transition-colors duration-200 hover:bg-black"
             onClick={() =>
-              addToWishlist(
+              addToCart(
                 product.id,
                 slugForLang,
                 nameForLang,

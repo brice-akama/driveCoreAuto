@@ -15,6 +15,7 @@ import FooterLanguageButton from "./components/FooterLanguageButton";
 import ScrollToTop from "./components/ScrollToTop";
 import CurrencySelector from "./components/CurrencySelector";
 import { CurrencyProvider } from "./context/CurrencyContext";
+import CartDrawer from "./components/CartDrawer";
 
 
 const geistSans = Geist({
@@ -43,9 +44,11 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
          <CurrencyProvider> 
          <WishlistProvider>
-        <CartProvider>
         <LanguageProvider>
+        <CartProvider>
+       
           {!isAdminRoute  && <Navbar />}
+          {!isAdminRoute && <CartDrawer />} 
            {!isAdminRoute && <CurrencySelector />}  {/* Add CurrencySelector here */}
 
           <main>
@@ -57,9 +60,10 @@ export default function RootLayout({
            {!isAdminRoute && <Footer />}
             {!isAdminRoute && <FooterLanguageButton />} {/* Render only on non-admin pages */}
            {!isAdminRoute  && <CookieConsent />}
-        </LanguageProvider>
+        
         
         </CartProvider>
+        </LanguageProvider>
        </WishlistProvider>
         </CurrencyProvider>
        

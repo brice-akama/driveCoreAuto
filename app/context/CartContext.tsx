@@ -4,15 +4,11 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { usePathname } from 'next/navigation'; // Import usePathname
 
 interface CartItem {
-  slug: string; // Ensure slug is the identifier
-  name: string;
-  price: string;
+  slug: string;      // language-specific slug string (e.g., 'piece-moteur-123')
+  name: string;      // language-specific product name string
+  price: number;     // price stored as number, NOT string
   quantity: number;
   mainImage: string;
-  option?: string | null;
-
-  
-  
 }
 
 interface CartContextType {
@@ -20,13 +16,14 @@ interface CartContextType {
   totalPrice: number;
   cartCount: number;
   isCartOpen: boolean;
-  addToCart: (item: CartItem) => void;
-  updateQuantity: (slug: string, quantity: number) => void;  // Use slug instead of id
-  removeFromCart: (slug: string) => void;  // Use slug instead of id
+  addToCart: (item: CartItem, language: string) => Promise<void>; // <-- update here
+  updateQuantity: (slug: string, quantity: number) => void;
+  removeFromCart: (slug: string) => void;
   openCart: () => void;
   closeCart: () => void;
   fetchCart: () => void;
 }
+
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -41,7 +38,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsClient(true);
   }, []);
 
-  const totalPrice = cartItems.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
+  const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
 
   const fetchCart = async () => {
     try {
@@ -59,7 +57,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     fetchCart();
   }, []);
 
-  const addToCart = async (item: CartItem) => {
+ const addToCart = async (item: CartItem, language: string) => {
     // Use slug to identify items in the cart
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.slug === item.slug); // Use slug, not _id
@@ -72,28 +70,20 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     try {
-      const res = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          slug: item.slug,
-          quantity: item.quantity,
-          price: item.price,
-          option: item.option,
-          name: item.name,
-          mainImage: item.mainImage,
-        }),
-        
-      });
-      const data = await res.json();
-      if (data.cart) {
-        setCartItems(data.cart.items);
-      }
-    } catch (error) {
-      console.error('Error adding item to cart:', error);
+    const res = await fetch('/api/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ slug: item.slug, quantity: item.quantity, language }), // send language here
+    });
+    const data = await res.json();
+    if (data.cart) {
+      setCartItems(data.cart.items);
     }
+  } catch (error) {
+    console.error('Error adding item to cart:', error);
+  }
 
     setIsCartOpen(true);
   };
