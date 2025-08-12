@@ -187,3 +187,70 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'Failed to remove item' }, { status: 500 });
   }
 }
+
+export async function PUT(req: Request) {
+  const { slug, quantity, language } = await req.json();
+
+  if (!slug) {
+    return NextResponse.json({ error: 'Product slug is required' }, { status: 400 });
+  }
+  if (!language) {
+    return NextResponse.json({ error: 'Language is required' }, { status: 400 });
+  }
+  if (!Number.isInteger(quantity)) {
+    return NextResponse.json({ error: 'Quantity must be an integer' }, { status: 400 });
+  }
+
+  const cookies = req.headers.get('cookie') || '';
+  const guestId =
+    cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1];
+
+  if (!guestId) {
+    return NextResponse.json({ error: 'No cart found' }, { status: 400 });
+  }
+
+  try {
+    const client = await clientPromise;
+    const db = client.db("autodrive");
+    const cartCollection = db.collection('cart');
+    const productsCollection = db.collection("products");
+
+    // Fetch product by slug
+    const product = await productsCollection.findOne({ [`slug.${language}`]: slug });
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    // Fetch cart
+    let cart = await cartCollection.findOne({ guestId });
+
+    if (!cart) {
+      return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
+    }
+
+    const itemIndex = cart.items.findIndex((item: { slug: any; }) => item.slug === slug);
+
+    if (itemIndex === -1) {
+      return NextResponse.json({ error: 'Item not found in cart' }, { status: 404 });
+    }
+
+    if (quantity <= 0) {
+      cart.items.splice(itemIndex, 1);
+    } else {
+      cart.items[itemIndex].quantity = quantity;
+    }
+
+    if (cart.items.length > 0) {
+      await cartCollection.updateOne({ guestId }, { $set: { items: cart.items } });
+    } else {
+      await cartCollection.deleteOne({ guestId });
+    }
+
+    const updatedCart = await cartCollection.findOne({ guestId });
+
+    return NextResponse.json({ message: 'Cart updated', cart: updatedCart });
+  } catch (error) {
+    console.error('Error updating cart:', error);
+    return NextResponse.json({ error: 'Failed to update cart' }, { status: 500 });
+  }
+}

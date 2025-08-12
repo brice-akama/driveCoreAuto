@@ -7,6 +7,8 @@ import { useWishlist } from "@/app/context/WishlistContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
+import { useCart } from "@/app/context/CartContext";
+
 
 interface RelatedProduct {
   id: string;
@@ -14,13 +16,23 @@ interface RelatedProduct {
   slug: Record<string, string>; // slug is a lang object
   mainImage: string;
   price: number;
+  
 }
 
 interface RelatedProductsProps {
   currentProductSlug: string;
 }
 
+
+
 const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug }) => {
+  const [quickViewProduct, setQuickViewProduct] = useState<RelatedProduct & {
+  description?: Record<string, string>;
+  Specifications?: Record<string, string>;
+  Shipping?: Record<string, string>;
+  Warranty?: Record<string, string>;
+} | null>(null);
+
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -30,6 +42,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
   const [hoveredCartButton, setHoveredCartButton] = useState<string | null>(null);
    const { symbol } = useCurrency();
+   const { addToCart, openCart } = useCart();
 
 
 
@@ -50,6 +63,25 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
     return fallback.toUpperCase() || "UNKNOWN ENGINE";
   };
 
+  const handleAddToCart = (
+    _id: string,
+    slugObj: Record<string, string>,
+    nameObj: Record<string, string>,
+    price: number,
+    mainImage: string,
+    currentLang: string
+  ) => {
+    const slug = slugObj[currentLang] || slugObj["en"] || "";
+    const name = nameObj[currentLang] || nameObj["en"] || "";
+
+    addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);
+    openCart();
+  };
+
+  const handleAddToWishlist = (slugObj: Record<string, string>, currentLang: string) => {
+    const slug = slugObj[currentLang] || slugObj["en"] || "";
+    addToWishlist(slug, currentLang);
+  };
 
   useEffect(() => {
     const fetchRelatedProducts = async () => {
@@ -101,10 +133,9 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
     fetchRelatedProducts();
   }, [currentProductSlug]);
 
-  const handleAddToWishlist = (product: RelatedProduct) => {
-  const englishSlug = product.slug?.en || product.slug?.[language] || "";
-  addToWishlist(englishSlug, language || "en");
-};
+  if (relatedProducts.length === 0 && loading) {
+    return <p className="text-center mt-10">Loading related products...</p>;
+  }
 
 
   if (loading) return <p>Loading related products...</p>;
@@ -158,7 +189,8 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
         className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
         onClick={(e) => {
           e.preventDefault();
-          alert(`Quick view: ${localizedName}`);
+          setQuickViewProduct(product);
+
         }}
       >
         <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
@@ -181,7 +213,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
         className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
         onClick={(e) => {
           e.preventDefault();
-          handleAddToWishlist(product);
+          handleAddToWishlist(product.slug, language);
         }}
       >
         <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
@@ -202,7 +234,8 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
       className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
       onClick={(e) => {
         e.preventDefault();
-        alert(`Quick view: ${localizedName}`);
+        setQuickViewProduct(product);
+
       }}
     >
       <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
@@ -214,7 +247,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
       className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
       onClick={(e) => {
         e.preventDefault();
-        handleAddToWishlist(product);
+        handleAddToWishlist(product.slug, language);
       }}
     >
       <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
@@ -228,7 +261,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
       className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 w-10 h-10"
       onClick={(e) => {
         e.preventDefault();
-        handleAddToWishlist(product);
+        handleAddToWishlist(product.slug, language);
       }}
     >
       <FiHeart className="text-gray-900 w-5 h-5" />
@@ -246,7 +279,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
 <button
   className="mt-2 px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800 transition flex items-center justify-center mx-auto"
-  onClick={() => handleAddToWishlist(product)}
+  onClick={() => handleAddToCart(product.id, product.slug, product.name, product.price, product.mainImage, language)}
   onMouseEnter={() => setHoveredCartButton(product.id)}
   onMouseLeave={() => setHoveredCartButton(null)}
 >
@@ -263,6 +296,103 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
           );
         })}
       </div>
+      {/* Quick View Modal */}
+{quickViewProduct && (
+  <div
+    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    onClick={() => setQuickViewProduct(null)}
+  >
+    <div
+      className="bg-white w-full max-w-4xl min-h-[500px] rounded-lg shadow-lg flex overflow-hidden relative"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Close Button */}
+      <button
+        className="absolute top-3 right-6 text-gray-500 hover:text-black z-20"
+        onClick={() => setQuickViewProduct(null)}
+        aria-label="Close modal"
+      >
+        ✕
+      </button>
+
+      {/* Left: Image */}
+      <div className="w-1/2 relative group">
+        <Image
+          src={quickViewProduct.mainImage}
+          alt={quickViewProduct.name[language] || quickViewProduct.name.en}
+          fill
+          className="object-cover"
+        />
+
+        <Link
+          href={`/products/${quickViewProduct.slug.en}?lang=${language}`}
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
+        >
+          View Details
+        </Link>
+      </div>
+
+      {/* Right: Details */}
+      <div className="w-1/2 p-6 flex flex-col justify-between max-h-[500px] overflow-y-auto">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">
+            {quickViewProduct.name[language] || quickViewProduct.name.en}
+          </h2>
+          <p className="text-lg font-semibold mb-4">
+            {symbol}{quickViewProduct.price}
+          </p>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-4 mb-6">
+            <button
+              className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-black"
+              onClick={() => {
+                handleAddToCart(
+                  quickViewProduct.id,
+                  quickViewProduct.slug,
+                  quickViewProduct.name,
+                  quickViewProduct.price,
+                  quickViewProduct.mainImage,
+                  language
+                );
+                setQuickViewProduct(null);
+              }}
+            >
+              Add to Cart
+            </button>
+
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center gap-2"
+              onClick={() => {
+                handleAddToWishlist(quickViewProduct.slug, language);
+                setQuickViewProduct(null);
+              }}
+            >
+              <FiHeart />
+              Add to Wishlist
+            </button>
+          </div>
+
+          {/* Description & Other Sections */}
+          {quickViewProduct.description && (
+            <>
+              <h3 className="font-semibold text-lg mb-1">Description</h3>
+              <p>{quickViewProduct.description[language] || quickViewProduct.description.en}</p>
+            </>
+          )}
+          {/* Description & Other Sections */}
+          {quickViewProduct.Specifications && (
+            <>
+              <h3 className="font-semibold text-lg mb-1">Specifications</h3>
+              <p>{quickViewProduct.Specifications[language] || quickViewProduct.Specifications.en}</p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

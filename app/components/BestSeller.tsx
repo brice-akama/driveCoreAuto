@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FiSearch, FiHeart, FiShoppingCart } from "react-icons/fi";
+import { FiSearch, FiHeart, FiShoppingCart, FiFacebook, FiTwitter } from "react-icons/fi";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { useCurrency } from "@/app/context/CurrencyContext";
@@ -194,7 +194,7 @@ if (quickViewProduct) {
         {/* View Details button on hover */}
         <Link
   href={`/products/${quickViewProduct?.slug.en}?lang=${currentLang}`}
-  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
 >
   View Details
 </Link>
@@ -212,6 +212,62 @@ if (quickViewProduct) {
           <p className="text-lg font-semibold mb-4">
             {symbol}{quickViewProduct.price}
           </p>
+           {/* Buttons: Add to Cart + Wishlist + Share icons */}
+    <div className="flex items-center gap-4 mb-6">
+      <button
+        className="bg-blue-800 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-black"
+        onClick={() => {
+          handleAddToCart(
+            quickViewProduct.id,
+            quickViewProduct.slug,
+            quickViewProduct.name,
+            quickViewProduct.price,
+            quickViewProduct.mainImage,
+            currentLang
+          );
+          setQuickViewProduct(null);
+        }}
+      >
+        {translatedTexts.addtoCart}
+      </button>
+
+      <button
+        className="bg-red-500 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-red-700 flex items-center gap-2"
+        onClick={() => {
+  handleAddToWishlist(quickViewProduct.slug, currentLang);
+  setQuickViewProduct(null);
+}}
+
+        aria-label="Add to Wishlist"
+      >
+        <FiHeart />
+        {translatedTexts.addtoWishlist}
+
+      </button>
+
+      {/* Share icons */}
+      <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:text-blue-800"
+      aria-label="Share on Facebook"
+    >
+      <FiFacebook size={24} />
+    </a>
+
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}&text=${encodeURIComponent(`Check out this product: ${quickViewProduct.name[currentLang] || quickViewProduct.name.en}`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-400 hover:text-blue-600"
+      aria-label="Share on Twitter"
+    >
+      <FiTwitter size={24} />
+    </a>
+
+      {/* Add more share icons as needed */}
+    </div>
 
           {/* Description */}
           {/* ...inside Quick View modal right side */}
@@ -269,22 +325,7 @@ if (quickViewProduct) {
 
         </div>
 
-        <button
-          className="mt-6 bg-blue-800 text-white px-4 py-2 rounded hover:bg-black self-start"
-          onClick={() => {
-            handleAddToCart(
-              quickViewProduct.id,
-              quickViewProduct.slug,
-              quickViewProduct.name,
-              quickViewProduct.price,
-              quickViewProduct.mainImage,
-              currentLang
-            );
-            setQuickViewProduct(null);
-          }}
-        >
-          {translatedTexts.addtoCart}
-        </button>
+        
       </div>
     </div>
   </div>

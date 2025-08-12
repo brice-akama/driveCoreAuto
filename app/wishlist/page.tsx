@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
 import React from 'react';
+import Link from 'next/link';
 
 interface WishlistItem {
   _id: string;
@@ -40,8 +41,19 @@ export default function WishlistPage() {
   };
 
   if (wishlist.length === 0) {
-    return <p className="p-6 text-center">Your wishlist is empty.</p>;
-  }
+  return (
+    <div className="p-6 text-center mt-40">
+      <p className="mb-4 text-lg font-semibold">Your wishlist is empty.</p>
+       <Link
+        href="/toyota"
+        className="inline-block mt-2 px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900 transition"
+      >
+        Continue Shopping
+      </Link>
+    </div>
+  );
+}
+
 
   return (
     <div className="wishlist-page p-6 max-w-5xl mx-auto mt-40">

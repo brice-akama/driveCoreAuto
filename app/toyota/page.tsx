@@ -10,6 +10,9 @@ import { Menu, X } from "lucide-react"
 import BrandLinksNav from "../components/BrandLinksNav";
 import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
+import { useCart } from "../context/CartContext";
+import QuickViewModal from "../components/QuickViewModal"; 
+
 
 
 type Product = {
@@ -20,6 +23,10 @@ type Product = {
   mainImage: string;
   thumbnails?: string[];
   category: string;
+   description: Record<string, string>; // add optional description because modal might expect it
+   Specifications: Record<string, string>;
+  Shipping: Record<string, string>;
+  Warranty: Record<string, string>; 
 };
 
 const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
@@ -33,6 +40,11 @@ export default function ToyotaPage() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
    const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
   const { symbol } = useCurrency();
+  const { addToCart, openCart } = useCart();
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+
+
+  
   
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -276,20 +288,22 @@ const currentProducts = sortedProducts.slice(
 
   // Wishlist & Cart
   const handleAddToWishlist = (product: Product) => {
-    addToWishlist({
-      _id: product._id,
-      name: product.name[currentLang] || product.name.en || "",
-      price: product.price.toString(),
-      mainImage: product.mainImage,
-      slug: product.slug[currentLang] || product.slug.en || "",
-    });
-  };
+  const slug = product.slug[currentLang] || product.slug["en"] || "";
+  addToWishlist(slug, currentLang);
+};
+
 
   const handleAddToCart = (product: Product) => {
-    console.log(
-      `Adding ${product.name[currentLang] || product.name.en} to cart!`
-    );
-  };
+  const slug = product.slug[currentLang] || product.slug["en"] || "";
+  const name = product.name[currentLang] || product.name["en"] || "";
+
+  addToCart(
+    { slug, name, price: product.price, mainImage: product.mainImage, quantity: 1 },
+    currentLang
+  );
+  openCart();
+};
+
 
   const extractModel = (name: string): string => {
     const match = name.match(/Toyota\s+\w+/i);
@@ -772,15 +786,16 @@ useEffect(() => {
       onMouseLeave={() => setHoveredIcon(null)}
     >
       <button
-        aria-label="Quick view"
-        className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-        onClick={(e) => {
-          e.preventDefault();
-          alert(`Open quick view for ${product.name[currentLang] || product.name.en}`);
-        }}
-      >
-        <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-      </button>
+  aria-label="Quick view"
+  className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+  onClick={(e) => {
+    e.preventDefault();
+    setQuickViewProduct(product);
+  }}
+>
+  <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+</button>
+
       {hoveredIcon === product._id + "-search" && (
         <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100" style={{ minWidth: "80px" }}>
           Quick view
@@ -815,15 +830,16 @@ useEffect(() => {
   {/* Medium Devices - Always Show Both Icons */}
   <div className="hidden md:flex lg:hidden flex-col space-y-3">
     <button
-      aria-label="Quick view"
-      className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-      onClick={(e) => {
-        e.preventDefault();
-        alert(`Open quick view for ${product.name[currentLang] || product.name.en}`);
-      }}
-    >
-      <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-    </button>
+  aria-label="Quick view"
+  className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+  onClick={(e) => {
+    e.preventDefault();
+    setQuickViewProduct(product);
+  }}
+>
+  <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+</button>
+
 
     <button
       aria-label={translatedTexts.addToWishList}
@@ -870,13 +886,13 @@ useEffect(() => {
   onMouseLeave={() => setHoveredIcon(null)}
 >
   <button
-    onClick={() => handleAddToWishlist(product)}
+    onClick={() => handleAddToCart(product)}
     className="mt-3 w-full border border-gray-700 rounded py-2 hover:bg-black hover:text-white transition bg-blue-800 text-white flex items-center justify-center"
   >
     {hoveredIcon === product._id + "-cart" ? (
       <FiShoppingCart className="w-5 h-5" />
     ) : (
-      translatedTexts.addToCart
+      translatedTexts.addToCart    
     )}
   </button>
 </div>
@@ -907,6 +923,24 @@ useEffect(() => {
         </section>
       </div>
     </div>
+{quickViewProduct && (
+  <QuickViewModal
+    product={quickViewProduct}
+    onClose={() => setQuickViewProduct(null)}
+    handleAddToCart={handleAddToCart}
+    handleAddToWishlist={handleAddToWishlist} // <-- add this prop
+    currentLang={currentLang}
+    translatedTexts={{
+      addtoCart: translatedTexts.addToCart,
+      addToWishlist: translatedTexts.addToWishList // <-- add wishlist text here
+    }}
+    symbol="$"
+  />
+)}
+
+
+
+
     </>
   );
 }

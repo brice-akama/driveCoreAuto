@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const CartDrawer: React.FC = () => {
-  const { cartItems, totalPrice, removeFromCart, isCartOpen, closeCart } = useCart();
+  const { cartItems, totalPrice, removeFromCart, updateQuantity: contextUpdateQuantity, isCartOpen, closeCart } = useCart();
   const [quantities, setQuantities] = useState<{ [slug: string]: number }>({});
 
   // Initialize quantities when the cart items change
@@ -21,11 +21,15 @@ const CartDrawer: React.FC = () => {
 
   // Update the quantity and recalculate the total price
   const updateQuantity = (slug: string, value: number) => {
-    setQuantities((prev) => {
-      const newQuantity = Math.max(1, (prev[slug] || 1) + value);
-      return { ...prev, [slug]: newQuantity };
-    });
-  };
+  setQuantities((prev) => {
+    const newQuantity = Math.max(1, (prev[slug] || 1) + value);
+
+    // Update backend + global cart state
+    contextUpdateQuantity(slug, newQuantity /*, pass language here if needed */);
+
+    return { ...prev, [slug]: newQuantity };
+  });
+};
 
   // Function to handle closing the cart when a link is clicked
   const handleLinkClick = () => {

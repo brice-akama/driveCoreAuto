@@ -118,30 +118,26 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
   const { language } = useLanguage();
 
   
-  const handleAddToCart = () => {
-    if (product) {
-      addToCart({
-        slug: product.slug?.[language] || product.slug?.en || "",
-        name: product.name?.[language] || product.name?.en || "",
-        price: product.price.toString(),
-        mainImage: product.mainImage,
-        quantity,
-      });
-      openCart();
-    }
+  const handleAddToCart = (
+    _id: string,
+    slugObj: Record<string, string>,
+    nameObj: Record<string, string>,
+    price: number,
+    mainImage: string,
+    currentLang: string
+  ) => {
+    const slug = slugObj[currentLang] || slugObj["en"] || "";
+    const name = nameObj[currentLang] || nameObj["en"] || "";
+
+    addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);
+    openCart();
   };
 
-  const handleAddToWishlist = () => {
-    if (product) {
-      addToWishlist({
-        _id: product._id,
-        name: product.name?.[language] || product.name?.en || "",
-        price: product.price.toString(),
-        mainImage: product.mainImage,
-        slug: product.slug?.[language] || product.slug?.en || "",
-      });
-    }
+  const handleAddToWishlist = (slugObj: Record<string, string>, currentLang: string) => {
+    const slug = slugObj[currentLang] || slugObj["en"] || "";
+    addToWishlist(slug, currentLang);
   };
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -339,7 +335,16 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
 
             <button
               className="bg-black text-white py-3 mt-4 w-full rounded-md"
-              onClick={handleAddToCart}
+              onClick={() =>
+                handleAddToCart(
+                  product._id,
+                  product.slug,
+                  product.name,
+                  product.price,
+                  product.mainImage,
+                  language
+                )
+              }
             >
               Add to Cart
             </button>
@@ -347,7 +352,7 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
             {/* Add to Wishlist Button with Heart Icon */}
             <button
               className="mt-3 w-full flex items-center justify-center gap-2 text-blue-600 font-semibold border border-blue-600 rounded px-4 py-2 hover:bg-blue-600 hover:text-white transition"
-              onClick={handleAddToWishlist}
+              onClick={() => handleAddToWishlist(product.slug, language)}
             >
               <FiHeart className="w-5 h-5" />
               <span>Add to Wishlist</span>
