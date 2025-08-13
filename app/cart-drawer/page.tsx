@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
+import CartProduct from "../components/CartProduct";
 
 
 
@@ -208,7 +209,7 @@ return (
       </div>
     )}
     
-    
+    <CartProduct />
   </div>
 );
 }

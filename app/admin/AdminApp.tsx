@@ -25,6 +25,11 @@ import BlogPostShow from "./BlogPostShow";
 import BlogPostCreate from "./BlogPostCreate";
 import BlogPostEdit from "./BlogPostEdit";
 import ArticleIcon from '@mui/icons-material/Article'
+import CategoryEdit from "./CategoryEdit";
+import CategoryCreate from "./CategoryCreate";
+import CategoryList from "./CategoryList";
+import CategoryShow from "./CategoryShow";
+import CategoryIcon from "@mui/icons-material/Category"
 
 
 
@@ -50,7 +55,14 @@ const AdminPage = () => {
        <Resource name="blog" list={BlogPostList} show={BlogPostShow} edit={BlogPostEdit} create={BlogPostCreate} icon={() => <ArticleIcon sx={{ color: "red" }} />} />
    
 
-  
+   <Resource
+    name="category"
+    list={CategoryList}
+    edit={CategoryEdit}
+    create={CategoryCreate}
+    show={CategoryShow}
+    icon={() => <CategoryIcon sx={{ color: "teal" }} />}
+  />
 
 
       

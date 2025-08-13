@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext"; // Adjust the path as necessary
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const CartDrawer: React.FC = () => {
   const { cartItems, totalPrice, removeFromCart, updateQuantity: contextUpdateQuantity, isCartOpen, closeCart } = useCart();
   const [quantities, setQuantities] = useState<{ [slug: string]: number }>({});
+  const router = useRouter();
 
   // Initialize quantities when the cart items change
   useEffect(() => {
@@ -18,6 +20,11 @@ const CartDrawer: React.FC = () => {
     }, {} as { [slug: string]: number });
     setQuantities(initialQuantities);
   }, [cartItems]);
+
+  const handleViewCartClick = () => {
+  closeCart();
+  router.push("/cart-drawer");
+};
 
   // Update the quantity and recalculate the total price
   const updateQuantity = (slug: string, value: number) => {
@@ -127,20 +134,21 @@ const CartDrawer: React.FC = () => {
           </div>
 
           {/* Total and Buttons */}
-          <div className="mt-4">
-            <h3 className="font-bold">
-              Total: ${cartItems.reduce(
-                (acc, item) => acc + item.price * (quantities[item.slug] || 1),
-                0
-              ).toFixed(2)}
-            </h3>
-            <Link href="/cart-drawer" className="mt-4 block text-blue-600 text-center py-2" onClick={handleLinkClick}>
-              View Cart
-            </Link>
-            <Link href="/checkout" className="block mt-4 bg-blue-600 text-white text-center py-2 rounded" onClick={handleLinkClick}>
-              Checkout
-            </Link>
-          </div>
+          
+          <div className="mt-10 text-center">
+  <h3 className="font-bold">
+    Total: ${cartItems.reduce(
+      (acc, item) => acc + item.price * (quantities[item.slug] || 1),
+      0
+    ).toFixed(2)}
+  </h3>
+  <button
+    onClick={handleViewCartClick}
+    className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition"
+  >
+    View Cart
+  </button>
+</div>
         </div>
       )}
     </div>

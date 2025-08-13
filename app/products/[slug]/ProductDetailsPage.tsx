@@ -116,6 +116,12 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
   
 
   const { language } = useLanguage();
+  const [totalPrice, setTotalPrice] = useState(product.price);
+
+useEffect(() => {
+  setTotalPrice(product.price * quantity);
+}, [quantity, product.price]);
+
 
   
   const handleAddToCart = (
@@ -123,13 +129,14 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
     slugObj: Record<string, string>,
     nameObj: Record<string, string>,
     price: number,
+    quantity: number,
     mainImage: string,
     currentLang: string
   ) => {
     const slug = slugObj[currentLang] || slugObj["en"] || "";
     const name = nameObj[currentLang] || nameObj["en"] || "";
 
-    addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);
+    addToCart({ slug, name, price, mainImage, quantity }, currentLang);
     openCart();
   };
 
@@ -308,7 +315,10 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
               {product.name?.[language] || product.name?.en || ""}
             </h1>
 
-             <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
+             <p className="text-gray-600 mt-1 font-semibold">
+  {symbol}{totalPrice.toFixed(2)}
+</p>
+
 
             <div className="border-t border-gray-300 my-4"></div>
 
@@ -341,6 +351,7 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
                   product.slug,
                   product.name,
                   product.price,
+                  quantity,
                   product.mainImage,
                   language
                 )
