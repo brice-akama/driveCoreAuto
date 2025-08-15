@@ -6,21 +6,14 @@ import Link from "next/link";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/context/LanguageContext";
-import { Menu, X } from "lucide-react"
+import { Menu, X } from "lucide-react";
 import BrandLinksNav from "../components/BrandLinksNav";
 import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { useCart } from "../context/CartContext";
 import QuickViewModal from "../components/QuickViewModal"; 
 
-
-
-type ToyotaPageProps = {
-  categorySlug?: string;
-  
-};
-
-type Product = {
+export type Product = {
   _id: string;
   name: Record<string, string>;
   slug: Record<string, string>;
@@ -28,72 +21,76 @@ type Product = {
   mainImage: string;
   thumbnails?: string[];
   category: string;
-   description: Record<string, string>; // add optional description because modal might expect it
-   Specifications: Record<string, string>;
+  description: Record<string, string>;
+  Specifications: Record<string, string>;
   Shipping: Record<string, string>;
   Warranty: Record<string, string>; 
+   // Add these for SEO
+  metaTitle?: Record<string, string>;
+  metaDescription?: Record<string, string>;
+  imageUrl?: string;
+};
+
+export type ToyotaPageProps = {
+  categorySlug?: string;
+  initialProducts?: Product[];
+  initialCategories?: string[];
+  initialVehicleModels?: string[];
 };
 
 const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
 
-export default function ToyotaPage({ categorySlug }: ToyotaPageProps) {
+export default function ToyotaPage({
+  categorySlug,
+  initialProducts = [],
+  initialCategories = [],
+  initialVehicleModels = [],
+}: ToyotaPageProps) {
   const { language, translate } = useLanguage();
   const currentLang = language || "en";
   const router = useRouter();
   const searchParams = useSearchParams();
   const productsRef = useRef<HTMLDivElement>(null);
+
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+  const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
   const { symbol } = useCurrency();
   const { addToCart, openCart } = useCart();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
+  // Use server-side props as initial state
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [categories, setCategories] = useState<string[]>(initialCategories);
+  const [vehicleModels, setVehicleModels] = useState<string[]>(initialVehicleModels);
 
-  
-  
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const [categories, setCategories] = useState<string[]>([]);
-  const [vehicleModels, setVehicleModels] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [appliedPriceRange, setAppliedPriceRange] = useState<string | null>(null);
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
 
-
-
-  // Controlled input values
   const [vehicleModelInput, setVehicleModelInput] = useState("");
   const [engineCodeInput, setEngineCodeInput] = useState("");
-
-  // Applied filters (only updated on APPLY clicks)
-  const [appliedVehicleModel, setAppliedVehicleModel] = useState<string | null>(
-    null
-  );
-  const [appliedEngineCode, setAppliedEngineCode] = useState<string | null>(
-    null
-  );
+  const [appliedVehicleModel, setAppliedVehicleModel] = useState<string | null>(null);
+  const [appliedEngineCode, setAppliedEngineCode] = useState<string | null>(null);
 
   const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
-  const params = new URLSearchParams();
+    const params = new URLSearchParams();
+    params.set("toyota", "true");
 
-  params.set("toyota", "true"); // keep this always
+    if (engineCode && engineCode.trim() !== "") {
+      params.set("category", engineCode.trim().toUpperCase());
+    } else {
+      params.delete("category");
+    }
 
-  if (engineCode && engineCode.trim() !== "") {
-    params.set("category", engineCode.trim().toUpperCase());
-  } else {
-    params.delete("category");
-  }
+    if (vehicleModel && vehicleModel.trim() !== "") {
+      params.set("vehicleModel", vehicleModel.trim());
+    } else {
+      params.delete("vehicleModel");
+    }
 
-  if (vehicleModel && vehicleModel.trim() !== "") {
-    params.set("vehicleModel", vehicleModel.trim());
-  } else {
-    params.delete("vehicleModel");
-  }
-
- 
-  router.push(`toyota?${params.toString()}`);
-};
+    router.push(`toyota?${params.toString()}`);
+  };
 
 
   // Suggestion dropdown visibility
@@ -186,67 +183,8 @@ export default function ToyotaPage({ categorySlug }: ToyotaPageProps) {
 
 
   // Fetch product data for categories and vehicle models on mount
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/products?toyota=true");
-        const data = await res.json();
-        const productList: Product[] = data.data || [];
-
-        // Unique engine codes (categories)
-        const uniqueCategories = Array.from(
-          new Set(productList.map((p) => p.category))
-        ).sort();
-
-        // Unique vehicle models from product names: extract first word after "Toyota"
-        const modelsSet = new Set<string>();
-        productList.forEach((p) => {
-          const name = p.name[currentLang] || p.name.en || "";
-          const match = name.match(/Toyota\s+(\w+)/i);
-          if (match && match[1]) {
-            modelsSet.add(match[1]);
-          }
-        });
-        const uniqueModels = Array.from(modelsSet).sort();
-
-        setCategories(uniqueCategories);
-        setVehicleModels(uniqueModels);
-      } catch (e) {
-        console.error("Failed to fetch data for filters", e);
-        setCategories([]);
-        setVehicleModels([]);
-      }
-    })();
-  }, [currentLang]);
-
   
-
   // Fetch filtered products when applied filters change
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      let apiUrl = "/api/products?toyota=true";
-
-      if (appliedVehicleModel && appliedVehicleModel.trim() !== "") {
-        apiUrl += `&vehicleModel=${encodeURIComponent(appliedVehicleModel.trim())}`;
-      }
-      if (appliedEngineCode && appliedEngineCode.trim() !== "") {
-        apiUrl += `&engineCode=${encodeURIComponent(appliedEngineCode.trim())}`;
-      }
-
-      try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        setProducts(Array.isArray(data.data) ? data.data : []);
-        setCurrentPage(1);
-      } catch (e) {
-        console.error("Failed to fetch filtered products", e);
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [appliedVehicleModel, appliedEngineCode]);
 
   // Scroll top on page change
   useEffect(() => {
@@ -326,28 +264,49 @@ const currentProducts = sortedProducts.slice(
     code.toLowerCase().startsWith(engineCodeInput.toLowerCase())
   );
 
+  // helpers
+const slugifyEngineCodeForUrl = (code: string) =>
+  code.trim().toLowerCase().replace(/\s+/g, "-");
+
   // Select suggestion just sets input value & closes suggestions (do not apply filter here)
   const selectVehicleModel = (model: string) => {
   setVehicleModelInput(model);
-  setShowMobileFilters(false);
   setAppliedVehicleModel(model);
   setShowVehicleSuggestions(false);
+  setShowMobileFilters(false);
 
-  // Also update URL with both filters
-  updateUrl(model, appliedEngineCode);
+  const params = new URLSearchParams(window.location.search);
+
+  if (model && model.trim()) params.set("vehicleModel", model.trim());
+  else params.delete("vehicleModel");
+
+  // keep existing category if present
+  router.push(`/toyota?${params.toString()}`);
 };
+
 
 
 
 
   const selectEngineCode = (code: string) => {
- const slug = code.trim().toUpperCase();
-setEngineCodeInput(slug);
-router.push(`/toyota?category=${slug}`);
-setShowMobileFilters(false);
+  const slug = code.trim().toUpperCase();
+  setEngineCodeInput(slug);
+  const params = new URLSearchParams(window.location.search);
+  const engineSlug = slugifyEngineCodeForUrl(code);
 
+  if (engineSlug) params.set("category", engineSlug);
+  else params.delete("category");
+  setShowMobileFilters(false);
   setShowEngineSuggestions(false);
+
+  // IMPORTANT: only set vehicleModel if it already exists & is non-empty
+  const vm = params.get("vehicleModel");
+  if (!vm) params.delete("vehicleModel");
+
+  router.push(`/toyota?${params.toString()}`);
 };
+
+
 
 useEffect(() => {
   const categoryParam = searchParams.get("category");
@@ -362,6 +321,27 @@ useEffect(() => {
     setVehicleModelInput(vehicleModelParam);
   }
 }, [searchParams]);
+
+useEffect(() => {
+  const category = searchParams.get("category");
+  const vehicleModel = searchParams.get("vehicleModel");
+
+  async function fetchFilteredProducts() {
+    setLoading(true);
+    const params = new URLSearchParams();
+    params.set("toyota", "true");
+    if (category) params.set("engineCode", category.toUpperCase());
+    if (vehicleModel) params.set("vehicleModel", vehicleModel);
+
+    const res = await fetch(`/api/products?${params.toString()}`, { cache: 'no-store' });
+    const data = await res.json();
+    setProducts(data.data || []);
+    setLoading(false);
+  }
+
+  fetchFilteredProducts();
+}, [searchParams]);
+
 
   
 

@@ -1,41 +1,79 @@
-// page.tsx
-import { Metadata } from "next";
-import BlogPage from "./BlogPage";
-import React from "react";
+// app/blog/page.tsx
+import { Metadata } from 'next';
+import BlogPage, { BlogPost as BlogPostType } from './BlogPage';
+import { cookies } from 'next/headers';
 
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams?: { lang?: string };
+}): Promise<Metadata> {
+  // Determine language from cookie or query
+  const langCookieStore = await cookies();
+  const langCookie = langCookieStore.get('language');
+  const currentLang = searchParams?.lang || langCookie?.value || 'en';
 
-// Metadata for SEO
-export const metadata: Metadata = {
-  title: " Blog - 16Zips",
-  description:
-    "Explore cannabis insights, product highlights, usage tips, and industry news on the 16Zips blog. Stay informed and inspired on your cannabis journey.",
-  keywords:
-    "cannabis blog, 16Zips blog, marijuana education, THC guides, CBD tips, cannabis news, weed blog, cannabis lifestyle, cannabis articles, cannabis guides",
-  robots: "index, follow",
-};
+  // Fetch blog posts from API
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog?lang=${currentLang}`, {
+    cache: 'no-store',
+  });
+  const data = await res.json();
+  const posts: BlogPostType[] = Array.isArray(data.data) ? data.data : [];
 
-export default function Page() {
+  const seoPost = posts[0]; // Use first post for metadata
+  const title = seoPost?.title?.[currentLang] || 'Blog - 16Zips';
+  const description =
+    seoPost?.content?.[currentLang]?.slice(0, 150) || 'Explore cannabis insights, product highlights, usage tips, and industry news on the 16Zips blog.';
+  const image = seoPost?.imageUrl || '/default-blog-image.jpg';
+  const pageUrl = `${process.env.NEXT_PUBLIC_API_URL}/blog`;
+
+  // Structured data (JSON-LD)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: "16Zips Blog",
-    url: "https://www.16zip.com/blog",
-    description:
-      "16Zips Blog features cannabis news, product reviews, and education to support your cannabis lifestyle and knowledge.",
-    publisher: {
+    "name": title,
+    "url": pageUrl,
+    "description": description,
+    "publisher": {
       "@type": "Organization",
-      name: "16Zips",
-      url: "https://www.16zip.com",
+      "name": "16Zips",
+      "url": process.env.NEXT_PUBLIC_API_URL,
     },
   };
 
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <BlogPage />
-    </>
-  );
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      images: [{ url: image, width: 800, height: 600 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
+    alternates: { canonical: pageUrl },
+    metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL!),
+    icons: { icon: '/favicon.ico' },
+    other: { 'application/ld+json': JSON.stringify(jsonLd) },
+  };
+}
+
+export default async function Page({ searchParams }: { searchParams?: { lang?: string } }) {
+  const langCookieStore = await cookies();
+  const langCookie = langCookieStore.get('language');
+  const currentLang = searchParams?.lang || langCookie?.value || 'en';
+
+  // Fetch blog posts for rendering
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog?lang=${currentLang}`, {
+    cache: 'no-store',
+  });
+  const data = await res.json();
+  const posts: BlogPostType[] = Array.isArray(data.data) ? data.data : [];
+
+  return <BlogPage initialPosts={posts} />;
 }

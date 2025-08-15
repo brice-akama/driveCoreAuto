@@ -46,6 +46,11 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 
 
+
+
+
+
+
 export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
@@ -273,6 +278,9 @@ export async function GET(req: NextRequest) {
     const slug = searchParams.get("slug");    
     const lang = searchParams.get("lang") || "en";              //      transmissionsInfinitManuel
     const toyota = searchParams.get("toyota") === "true";
+    const engineCode = searchParams.get("engineCode");
+const vehicleModel = searchParams.get("vehicleModel");
+
     const transmissionsToyotaAutomatic = searchParams.get("transmissionsToyotaAutomatic") === "true";
     const transmissionsToyotaManuel = searchParams.get("transmissionsToyotaManuel") === "true";
     const transmissionsHondataAutomatic = searchParams.get("transmissionsHondataAutomatic") === "true";
@@ -455,8 +463,6 @@ const swapsInfiniti = searchParams.get("swapsInfiniti") === "true";
 
     const filter: any = {};
 
-    const engineCode = searchParams.get("engineCode");
-    const vehicleModel = searchParams.get("vehicleModel");
     
 
     // 1. Brand filters (unchanged)
@@ -505,16 +511,44 @@ swapsInfiniti: searchParams.get("swapsInfiniti") === "true",
       }
     }
 
-    // 2. Engine code has priority
-    if (engineCode) {
-      filter.category = engineCode; // exact match, override vehicleModel
-    } else if (vehicleModel) {
-      const langKeys = ["en", "de", "fr", "es"];
-      filter.$or = langKeys.map((lang) => ({
-        [`name.${lang}`]: { $regex: new RegExp(vehicleModel, "i") },
-      }));
-    }
+   // 2. Engine code or vehicle model logic (applies to all selected brands, swaps, transmissions)
+if (engineCode) {
+  // Match category exactly with the engine code (case-insensitive)
+  filter.category = { $regex: new RegExp(`^${engineCode}$`, "i") };
+} else if (vehicleModel) {
+  // Search vehicle model by product name in all supported languages
+  const langKeys = ["en", "de", "fr", "es"];
+  filter.$or = langKeys.map((lang) => ({
+    [`name.${lang}`]: { $regex: new RegExp(`\\b${vehicleModel}\\b`, "i") },
+  }));
+}
 
+// Now filter only the selected brands/swaps/transmissions
+const brandAndSwapKeys = [
+  "toyota", "nissan", "subaru", "infiniti", "lexus", "honda", "scion", "acura",
+  "swapsToyota", "swapsHonda", "swapsAcura", "swapsScion", "swapsLexus",
+  "swapsNissan", "swapsSubaru", "swapsInfiniti",
+  "transmissionsToyotaAutomatic","transmissionsToyotaManuel",
+  "transmissionsHondataAutomatic","transmissionsHondaaManuel",
+  "transmissionsAcuretaAutomatic","transmissionsAcureaManuel",
+  "transmissionsInfinitAutomatic","transmissionsInfinitManuel",
+  "transmissionsSaburaAutomatic","transmissionsSaburaManuel",
+  "transmissionsScionAutomatic","transmissionScionburaManuel",
+  "transmissionsNissanAutomatic","transmissionNissanburaManuel",
+  "transmissionsLexusAutomatic","transmissionLexuxburaManuel"
+];
+
+brandAndSwapKeys.forEach((key) => {
+  const value = searchParams.get(key) === "true";
+  if (value) {
+    filter[key] = true;
+  }
+});
+
+
+
+
+    
     if (partsFluids) filter.partsFluids = true;
 if (wheelsTires) filter.wheelsTires = true;
 if (subframe) filter.subframe = true;
@@ -531,7 +565,8 @@ if (topSellers) filter.topSellers = true;
 
     const totalCount = await db.collection("products").countDocuments(filter);
 
-    // Build query
+    
+// Build query
     const query = db.collection("products").find(filter).sort({ [sortField]: sortOrder });
 
     if (limit > 0) {
@@ -539,6 +574,7 @@ if (topSellers) filter.topSellers = true;
     }
 
     const products = await query.toArray();
+
 
     const formattedProducts = products.map(product => ({
       id: product._id.toString(),

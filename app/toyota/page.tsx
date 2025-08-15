@@ -1,69 +1,146 @@
+import ToyotaPage, { Product as ToyotaProduct } from './ToyotaPage';
+import { cookies } from 'next/headers';
 import { Metadata } from 'next';
-import ToyotaPage from './ToyotaPage';
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams?: { category?: string; lang?: string };
-}): Promise<Metadata> {
-  const slug = searchParams?.category;
-  const lang = searchParams?.lang || 'en';
 
-  if (!slug) {
-    return {
-      title: 'Toyota Engine',
-      description: 'Browse all our categories and products.',
-    };
-  }
+export async function generateMetadata({ searchParams }: { searchParams?: { category?: string; vehicleModel?: string } }): Promise<Metadata> {
+  const categorySlug = searchParams?.category || '';
+  const vehicleModel = searchParams?.vehicleModel || '';
+  const engineCodeForApi = categorySlug ? categorySlug.toUpperCase() : '';
 
-  const formattedCategory = slug
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  let apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products?toyota=true`;
+  if (vehicleModel) apiUrl += `&vehicleModel=${encodeURIComponent(vehicleModel)}`;
+  if (engineCodeForApi) apiUrl += `&engineCode=${encodeURIComponent(engineCodeForApi)}`;
 
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/category`);
-    const result = await res.json();
+  const res = await fetch(apiUrl, { cache: 'no-store' });
+  const data = await res.json();
 
-    if (res.ok && result?.data) {
-      const category = result.data.find((cat: any) =>
-        Object.values(cat.slug).includes(slug)
-      );
+  const products: ToyotaProduct[] = (Array.isArray(data.data) ? data.data : []).map((p: any) => ({
+    _id: p._id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    mainImage: p.mainImage,
+    category: p.category,
+    description: p.description || {},
+    Specifications: p.Specifications || {},
+    Shipping: p.Shipping || {},
+    Warranty: p.Warranty || {},
+    thumbnails: p.thumbnails || [],
+    metaTitle: p.metaTitle || {},
+    metaDescription: p.metaDescription || {},
+    imageUrl: p.imageUrl || '',
+  }));
 
-      if (category) {
-        const title = category.metaTitle?.[lang] || `${formattedCategory} | Toyota Engine`;
-        const description =
-          category.metaDescription?.[lang] || `Browse our ${formattedCategory} products.`;
+  const seoProduct = products[0];
+  const cookieStore = await cookies();
+const langCookie = cookieStore.get('language');
 
-        return {
-          title,
-          description,
-          openGraph: {
-            title,
-            description,
-            images: [category.imageUrl],
-          },
-        };
-      }
+  const currentLang = langCookie?.value || 'en';
+
+  const title = seoProduct?.metaTitle?.[currentLang] || seoProduct?.name?.[currentLang] || 'Toyota Products';
+  const description = seoProduct?.metaDescription?.[currentLang] || seoProduct?.description?.[currentLang] || 'Explore Toyota engines, transmissions, swaps and more.';
+  const image = seoProduct?.imageUrl || '/default-image.jpg';
+  const pageUrl = `${process.env.NEXT_PUBLIC_API_URL}/toyota${categorySlug ? `?category=${categorySlug}` : ''}`;
+
+  // Structured data (JSON-LD)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": seoProduct?.name?.[currentLang] || "Toyota Product",
+    "image": [image],
+    "description": seoProduct?.description?.[currentLang] || description,
+    "sku": seoProduct?._id || "",
+    "offers": {
+      "@type": "Offer",
+      "url": pageUrl,
+      "priceCurrency": "USD",
+      "price": seoProduct?.price || 0,
+      "availability": "https://schema.org/InStock"
     }
+  };
 
-    return {
-      title: `${formattedCategory} | Toyota Engine`,
-      description: `Browse our ${formattedCategory} products.`,
-    };
-  } catch (error) {
-    console.error('SEO fetch error:', error);
-    return {
-      title: 'Toyota Engine',
-      description: 'Browse all our categories and products.',
-    };
-  }
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      images: [{ url: image, width: 800, height: 600 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
+    // Add JSON-LD structured data for Google
+    alternates: { canonical: pageUrl },
+    metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL!),
+    icons: { icon: '/favicon.ico' },
+    other: { 'application/ld+json': JSON.stringify(jsonLd) },
+  };
 }
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams?: { category?: string; lang?: string };
+  searchParams?: { category?: string; vehicleModel?: string };
 }) {
-  return <ToyotaPage categorySlug={searchParams?.category} />;
+  // Read from URL
+  const categorySlug = searchParams?.category || '';      // e.g. "1zz-fe"
+  const vehicleModel = searchParams?.vehicleModel || '';
+
+  // Convert to DB/API format (uppercase with dash)
+  const engineCodeForApi = categorySlug
+    ? categorySlug.toUpperCase()
+    : '';
+
+  // Build API URL
+  let apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products?toyota=true`;
+  if (vehicleModel) {
+    apiUrl += `&vehicleModel=${encodeURIComponent(vehicleModel)}`;
+  }
+  if (engineCodeForApi) {
+    apiUrl += `&engineCode=${encodeURIComponent(engineCodeForApi)}`;
+  }
+
+  // Always fetch fresh
+  const res = await fetch(apiUrl, { cache: 'no-store' });
+  const data = await res.json();
+
+  // Map the fetched data to match ToyotaPage.Product type
+  const products: ToyotaProduct[] = (Array.isArray(data.data) ? data.data : []).map((p: any) => ({
+    _id: p._id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    mainImage: p.mainImage,
+    category: p.category,
+    description: p.description || {},
+    Specifications: p.Specifications || {},
+    Shipping: p.Shipping || {},
+    Warranty: p.Warranty || {},
+    thumbnails: p.thumbnails || [],
+  }));
+
+  const uniqueCategories: string[] = Array.from(new Set(products.map(p => p.category))).sort();
+
+  const modelsSet = new Set<string>();
+  products.forEach((p) => {
+    const name = p.name['en'] || '';
+    const match = name.match(/Toyota\s+(\w+)/i);
+    if (match && match[1]) modelsSet.add(match[1]);
+  });
+  const vehicleModels: string[] = Array.from(modelsSet).sort();
+
+  return (
+    <ToyotaPage
+      initialProducts={products}
+      initialCategories={uniqueCategories}
+      initialVehicleModels={vehicleModels}
+      categorySlug={categorySlug} // still pass the lowercase slug for UI
+    />
+  );
 }
