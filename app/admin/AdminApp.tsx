@@ -30,6 +30,11 @@ import CategoryCreate from "./CategoryCreate";
 import CategoryList from "./CategoryList";
 import CategoryShow from "./CategoryShow";
 import CategoryIcon from "@mui/icons-material/Category"
+import ReviewCreate from "./ReviewCreate";
+import ReviewEdit from "./ReviewEdit";
+import ReviewShow from "./ReviewShow";
+import RateReviewIcon from "@mui/icons-material/RateReview";
+import ReviewList from "./ReviewList";
 
 
 
@@ -63,6 +68,15 @@ const AdminPage = () => {
     show={CategoryShow}
     icon={() => <CategoryIcon sx={{ color: "teal" }} />}
   />
+
+  <Resource 
+        name="review" 
+        list={ReviewList} 
+        edit={ReviewEdit} 
+        create={ReviewCreate}  
+        show={ReviewShow}
+        icon={() => <RateReviewIcon sx={{ color: "purple" }} />} 
+      />
 
 
       

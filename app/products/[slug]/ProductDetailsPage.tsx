@@ -13,6 +13,8 @@ import { FiX } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import Link from "next/link";
 import RelatedProducts from "./RelatedProduct";
+import { useReviewCount } from "./ReviewList";
+
 
 import parse, {
   domToReact,
@@ -113,9 +115,8 @@ const ProductDetailsPage: React.FC<Props> = ({ product }) => {
   const [viewers, setViewers] = useState(80);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { symbol } = useCurrency();
-  
-
   const { language } = useLanguage();
+   const reviewCount = useReviewCount(product.slug?.[language] || product.slug?.en || "");
   const [totalPrice, setTotalPrice] = useState(product.price);
 
 useEffect(() => {
@@ -462,24 +463,37 @@ useEffect(() => {
           </div>
 
           {/* Reviews */}
-          <div>
-            <span
-              className={`text-lg font-semibold cursor-pointer ${
-                showReviewList || showReviewForm ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-700"
-              }`}
-              onClick={toggleReviews}
-            >
-              Reviews
-            </span>
-            {(showReviewList || showReviewForm) && (
-              <div className="mt-2">
-                {showReviewList && <ReviewList productSlug={product.slug?.[language] || product.slug?.en || ""} />}
-                {showReviewForm && (
-                  <ReviewForm productName={product.name?.[language] || product.name?.en || ""} slug={product.slug?.[language] || product.slug?.en || ""} />
-                )}
-              </div>
-            )}
-          </div>
+         {/* Reviews */}
+<div>
+  <span
+    className={`text-lg font-semibold cursor-pointer ${
+      showReviewList || showReviewForm
+        ? "text-blue-600 border-b-2 border-blue-600"
+        : "text-gray-700"
+    }`}
+    onClick={toggleReviews}
+  >
+    Reviews (
+    <span className="text-yellow-500">{reviewCount}</span>
+    )
+  </span>
+
+  {(showReviewList || showReviewForm) && (
+    <div className="mt-2">
+      {showReviewList && (
+        <ReviewList productSlug={product.slug?.[language] || product.slug?.en || ""} />
+      )}
+      {showReviewForm && (
+        <ReviewForm
+          productName={product.name?.[language] || product.name?.en || ""}
+          slug={product.slug?.[language] || product.slug?.en || ""}
+        />
+      )}
+    </div>
+  )}
+</div>
+
+
         </div>
         <RelatedProducts currentProductSlug={product.slug?.[language] || product.slug?.en || ""} />
 
