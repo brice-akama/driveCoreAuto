@@ -1,0 +1,63 @@
+{
+  "warrantyPolicy": {
+    "pageTitle": "Garantiebedingungen",
+    "intro": "DiveCore Auto mit Sitz in den Vereinigten Staaten ist darauf spezialisiert, hochwertige gebrauchte japanische Motoren und Getriebe zu liefern. Unsere Garantiebedingungen definieren klar den Umfang der Abdeckung und die Einschränkungen, um Transparenz zu gewährleisten, damit Sie fundierte Entscheidungen treffen können und verstehen, wofür wir stehen.",
+    "warrantyCoverageTitle": "Garantieabdeckung",
+    "warrantyCoverageImportant": "WICHTIG: Versand- und Arbeitskosten sind nicht durch diese Garantie abgedeckt. Kunden sind für alle mit der Installation und dem Transport verbundenen Gebühren verantwortlich.",
+    "warrantyCoverageDesc": "Unsere Garantie deckt ausschließlich die interne mechanische Leistung des Motors oder Getriebes ab. Dies bedeutet, dass wir vor Fertigungsfehlern oder Schäden schützen, die vor dem Versand aufgetreten sind, jedoch keine Probleme abdecken, die durch Missbrauch, unsachgemäße Installation oder externe Faktoren verursacht wurden. Die Garantiezeiten variieren je nach Art des Motors oder Getriebes, um deren unterschiedliche Nutzung und Risikoprofile widerzuspiegeln.",
+    "coverageItems": [
+      "90-Tage-Garantie: Gilt für Standard- oder Nicht-Performance-Motoren. Dieser Garantiezeitraum beginnt am auf Ihrer Rechnung angegebenen Datum und bietet Sicherheit gegen frühe mechanische Ausfälle.",
+      "30-Tage-Startgarantie: Gilt für Performance-Motoren wie Turbomotoren, Kompressormotoren, VTEC, VVTI, VVL und MIVEC-Varianten. Aufgrund der höheren Belastung dieser Motoren deckt diese begrenzte Garantie nur Mängel ab, die während des ersten Betriebs festgestellt werden.",
+      "Keine Garantie für Wankelmotoren: Aufgrund der historisch hohen Ausfallrate und der speziellen Natur von Wankelmotoren werden alle Einheiten streng 'wie gesehen' verkauft, ohne jegliche Garantie.",
+      "30-Tage-Uneingeschränkte Kilometer-Garantie (Getriebe): Gilt für Standard- und Nicht-Performance-Getriebe. Diese Garantie schützt die internen Komponenten unabhängig von der Laufleistung während des Garantiezeitraums.",
+      "30-Tage-Startgarantie (Performance-Getriebe): Deckt nur interne Mängel ab, die während des ersten Starts und Betriebs festgestellt werden."
+    ],
+    "nonCoveredPartsTitle": "Nicht abgedeckte Teile umfassen unter anderem:",
+    "nonCoveredParts": [
+      "Kupplungen, Schwungräder und Drehmomentwandler, die als Verschleißteile gelten und von der Installationsqualität abhängen.",
+      "Elektrische Komponenten wie Verteiler, Zündspulen, Lichtmaschinen und Anlasser, die unterschiedliche Ausfallarten haben.",
+      "Zubehörpumpen einschließlich Klimaanlage und Servolenkungspumpen sowie Sensoren und Magnetventile, die oft fahrzeugspezifisch sind.",
+      "Ansaugkrümmer, Einspritzventile, Ventildeckel, Ölwanne und andere externe Motorteile, die während des Versands oder der Installation beschädigt werden können."
+    ],
+    "installationTitle": "Installationsanforderungen",
+    "installationDesc": "Um die Garantieansprüche aufrechtzuerhalten, muss der Motor oder das Getriebe von einem zertifizierten Fachmechaniker oder einer renommierten Autowerkstatt installiert werden. Dies ist entscheidend, da richtige Installationstechniken die Leistung und Lebensdauer des Produkts erheblich beeinflussen.",
+    "installationItems": [
+      "Wir bieten keinen technischen Support für die Installation. Die Verantwortung für die korrekte Installation liegt vollständig beim Installateur.",
+      "Wenn Ihr Motor oder Getriebe von einer nicht zertifizierten Person installiert wird oder eine unsachgemäße Installation vermutet wird, wird die Garantie als ungültig betrachtet."
+    ],
+    "installationNote": "Diese Richtlinie schützt sowohl den Kunden als auch DiveCore Auto, indem sichergestellt wird, dass die Produkte korrekt gehandhabt werden, das Risiko von Schäden durch Installationsfehler minimiert und ein fairer Anspruchsprozess gewährleistet wird.",
+    "warrantyExclusionsTitle": "Garantieausschlüsse",
+    "warrantyExclusionsDesc": "Die Garantie ist null und nichtig, und DiveCore Auto lehnt jegliche Verantwortung für Probleme oder Schäden ab, die durch Folgendes verursacht werden:",
+    "warrantyExclusionsItems": [
+      "Unsachgemäße oder falsche Installation, einschließlich Fehlanpassung oder Verwendung inkompatibler Teile.",
+      "Motoren, die für Rennen, Drehzahllimits oder andere Formen aggressiver Nutzung über die Herstellerspezifikationen hinaus eingesetzt wurden.",
+      "Ausfälle aufgrund von unzureichendem Öldruck, Ölmangel oder Verwendung von kontaminiertem oder minderwertigem Schmiermittel.",
+      "Schäden durch Überhitzung infolge schlechter Kühlmittelwartung, fehlendem Kühlmittel oder blockiertem Kühlerfluss.",
+      "Modifikationen mit Zwangsinduktionssystemen (Turbos, Kompressoren, Nitrox), die nicht Teil des Originalmotordesigns waren.",
+      "Aftermarket-ECU-Tuning, Leistungs-Chips oder Änderungen am Motorsteuerungssystem, die die Werkseinstellungen beeinflussen.",
+      "Nichtbeachtung des Austauschs von Zahnriemen, Ketten oder Spannern gemäß den Empfehlungen vor der Installation, was zu mechanischen Ausfällen führt.",
+      "Demontage oder Manipulation interner Komponenten wie Zylinderköpfe, Kolben oder Kurbelwellen, was die Herstellergarantie gefährdet.",
+      "Ausfälle von Nebensystemen wie Kraftstoffpumpen, Kühlern, Emissionskontrolle oder Kühlungsteilen.",
+      "Schäden oder Probleme kosmetischer Natur wie Kratzer, Dellen, gebrochene Kunststoffe oder Rost.",
+      "Motoren oder Getriebe, die die Emissions- oder Abgastests nicht bestehen."
+    ],
+    "returnPolicyTitle": "Rückgabe- & Erstattungsrichtlinie",
+    "returnPolicyDesc": "Wir bitten alle Kunden, die Kompatibilität und Passform vor dem Kauf zu überprüfen, um Unannehmlichkeiten zu vermeiden. Aufgrund der spezialisierten Natur von gebrauchten Autoteilen sind unsere Rückgabe- und Erstattungsrichtlinien sorgfältig strukturiert:",
+    "returnPolicyItems": [
+      "Keine Rückerstattung oder Austausch für Motoren oder Getriebe, es sei denn, ein nachgewiesener Defekt, der durch diese Garantie abgedeckt ist, liegt vor.",
+      "Anzahlungen werden nach 7 Werktagen ab dem Datum der Einzahlung nicht erstattet.",
+      "Zurückgegebene Schecks unterliegen einer obligatorischen Verwaltungsgebühr von 35,00 $ zur Deckung der Bearbeitungskosten.",
+      "Abgelehnte oder zurückgegebene Bestellungen unterliegen einer 25% Wiederauffüllungsgebühr zusätzlich zu allen Versandkosten."
+    ],
+    "contactTitle": "Kontakt",
+    "contactEmail": "E-Mail:",
+    "contactPhone": "Telefon:",
+    "contactWebsite": "Website:",
+    "contactInfo": {
+      "email": "support@divecoreauto.com",
+      "phone": "(123) 456-7890",
+      "website": "https://www.divecoreauto.com"
+    },
+    "contactNote": "DiveCore Auto behält sich das Recht vor, diese Garantiebedingungen jederzeit ohne vorherige Ankündigung zu ändern oder zu aktualisieren. Die aktuelle Version ist immer auf Ihrer Rechnung und auf unserer offiziellen Website verfügbar."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "warrantyPolicy": {
+    "pageTitle": "Política de Garantía",
+    "intro": "DiveCore Auto, con sede en Estados Unidos, se dedica a suministrar motores y transmisiones japonesas usadas de calidad. Nuestra política de garantía define claramente el alcance de la cobertura y sus limitaciones para garantizar transparencia, permitiéndole tomar decisiones informadas y comprender lo que respaldamos.",
+    "warrantyCoverageTitle": "Cobertura de Garantía",
+    "warrantyCoverageImportant": "IMPORTANTE: Los costos de envío y mano de obra no están cubiertos por esta garantía. Los clientes son responsables de todos los cargos relacionados con la instalación y el transporte.",
+    "warrantyCoverageDesc": "Nuestra garantía cubre estrictamente el rendimiento mecánico interno del motor o la transmisión. Esto significa que protegemos contra defectos de fabricación o daños ocurridos antes del envío, pero no cubrimos problemas causados por mal uso, instalación incorrecta o factores externos. Los períodos de garantía varían según el tipo de motor o transmisión para reflejar sus diferentes usos y perfiles de riesgo.",
+    "coverageItems": [
+      "Garantía de 90 Días: Aplica a motores estándar o no de alto rendimiento. Este período de garantía comienza en la fecha impresa en su factura y proporciona tranquilidad frente a fallas mecánicas tempranas.",
+      "Garantía de Inicio de 30 Días: Aplica a motores de alto rendimiento como turbo, supercargados, VTEC, VVTI, VVL y variantes MIVEC. Debido al mayor estrés que experimentan estos motores, esta garantía limitada cubre solo defectos identificados durante la operación inicial.",
+      "Sin Garantía en Motores Rotativos: Debido a la alta tasa histórica de fallas y la naturaleza especializada de los motores rotativos, todas estas unidades se venden estrictamente “tal cual” sin garantía.",
+      "Garantía de 30 Días y Kilometraje Ilimitado (Transmisiones): Aplica a transmisiones estándar y no de alto rendimiento. Esta garantía protege los componentes internos contra defectos independientemente del kilometraje durante el período de garantía.",
+      "Garantía de Inicio de 30 Días (Transmisiones de Alto Rendimiento): Cubre solo defectos internos descubiertos durante el arranque y operación inicial."
+    ],
+    "nonCoveredPartsTitle": "Las piezas no cubiertas incluyen, pero no se limitan a:",
+    "nonCoveredParts": [
+      "Embragues, volantes y convertidores de par, considerados piezas de desgaste y dependientes de la calidad de instalación.",
+      "Componentes eléctricos como distribuidores, bobinas, alternadores y arrancadores que tienen modos de falla separados.",
+      "Bombas accesorias incluyendo aire acondicionado y bomba de dirección asistida, así como sensores y solenoides, a menudo específicos del vehículo.",
+      "Múltiples, inyectores, tapas de válvula, cárteres de aceite y otros componentes externos del motor que pueden dañarse durante el envío o la instalación."
+    ],
+    "installationTitle": "Requisitos de Instalación",
+    "installationDesc": "Para mantener la elegibilidad de la garantía, el motor o la transmisión debe ser instalado por un mecánico profesional certificado o un taller de reparación de automóviles de confianza. Esto es vital ya que las técnicas de instalación correctas impactan significativamente en el rendimiento y la longevidad del producto.",
+    "installationItems": [
+      "No ofrecemos soporte técnico para la instalación. La responsabilidad de una instalación correcta recae completamente en el instalador.",
+      "Si su motor o transmisión es instalado por una persona no certificada o si se sospecha una instalación incorrecta, la garantía será considerada nula."
+    ],
+    "installationNote": "Esta política está diseñada para proteger tanto al cliente como a DiveCore Auto asegurando que los productos se manejen correctamente, minimizando el riesgo de daños por errores de instalación y asegurando un proceso de reclamación justo.",
+    "warrantyExclusionsTitle": "Exclusiones de la Garantía",
+    "warrantyExclusionsDesc": "La garantía será nula y DiveCore Auto declina toda responsabilidad por cualquier problema o daño causado por lo siguiente:",
+    "warrantyExclusionsItems": [
+      "Instalación incorrecta o inadecuada, incluyendo desalineación o uso de piezas incompatibles.",
+      "Motores sujetos a carreras, revoluciones máximas u otras formas de uso agresivo más allá de las especificaciones del fabricante.",
+      "Fallos debido a presión de aceite insuficiente, falta de aceite o uso de lubricantes contaminados o de baja calidad.",
+      "Daños causados por sobrecalentamiento debido a un mantenimiento inadecuado del sistema de enfriamiento, falta de refrigerante o flujo bloqueado del radiador.",
+      "Modificaciones que involucren sistemas de inducción forzada (turbocompresores, supercargadores, óxido nitroso) que no formaban parte del diseño original del motor.",
+      "Tuning de ECU aftermarket, chips de rendimiento o cualquier cambio en el sistema de gestión del motor que afecte la configuración de fábrica.",
+      "No reemplazo de correas, cadenas o tensores recomendados antes de la instalación, lo que provoca fallas mecánicas.",
+      "Desmontaje o manipulación de componentes internos como culatas, pistones o cigüeñales, comprometiendo la garantía de fábrica.",
+      "Fallos de sistemas periféricos, incluyendo bombas de combustible, radiadores, equipos de control de emisiones o partes del sistema de enfriamiento.",
+      "Daños o problemas de naturaleza cosmética como rayones, abolladuras, plásticos rotos o corrosión.",
+      "Motores o transmisiones que no cumplan con pruebas de emisiones o de control de smog."
+    ],
+    "returnPolicyTitle": "Política de Devolución y Reembolso",
+    "returnPolicyDesc": "Instamos a todos los clientes a verificar compatibilidad y ajuste antes de la compra para evitar inconvenientes. Debido a la naturaleza especializada de las piezas automotrices usadas, nuestras políticas de devolución y reembolso están cuidadosamente estructuradas:",
+    "returnPolicyItems": [
+      "No se conceden reembolsos o intercambios para motores o transmisiones salvo que exista un defecto verificado cubierto por esta garantía.",
+      "Los depósitos se vuelven no reembolsables después de 7 días hábiles desde la fecha de realización.",
+      "Los cheques devueltos incurrirán en una tarifa administrativa obligatoria de $35 para cubrir los costos de procesamiento.",
+      "Cualquier pedido rechazado o devuelto está sujeto a una tarifa de reposición del 25% además de todos los gastos de envío entrantes y salientes."
+    ],
+    "contactTitle": "Contacto",
+    "contactEmail": "Correo electrónico:",
+    "contactPhone": "Teléfono:",
+    "contactWebsite": "Sitio web:",
+    "contactInfo": {
+      "email": "support@divecoreauto.com",
+      "phone": "(123) 456-7890",
+      "website": "https://www.divecoreauto.com"
+    },
+    "contactNote": "DiveCore Auto se reserva el derecho de modificar o actualizar esta política de garantía en cualquier momento sin previo aviso. La versión más reciente siempre está disponible en su factura y en nuestro sitio oficial."
+  }
+}

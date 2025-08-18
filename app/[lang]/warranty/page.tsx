@@ -1,6 +1,8 @@
+import fs from "fs";
+import path from "path";
 import { Metadata } from "next";
-import React from "react";
-import WarrantyPolicy from "../components/WarrantyPolicy";
+
+import WarrantyPolicyPage from "./WarrantyPage";
 
 const metaTranslations = {
   title: {
@@ -26,14 +28,16 @@ const metaTranslations = {
 type Lang = "en" | "fr" | "es" | "de";
 const allowedLangs: Lang[] = ["en", "fr", "es", "de"];
 
+// --------------------------------------
+// Metadata generation for SEO
+// --------------------------------------
 export async function generateMetadata({
-  searchParams,
+  params,
 }: {
-  searchParams?: { lang?: string };
+  params: { lang: string };
 }): Promise<Metadata> {
-  const langParam = searchParams?.lang;
-  const lang: Lang = allowedLangs.includes(langParam as Lang)
-    ? (langParam as Lang)
+  const lang: Lang = allowedLangs.includes(params.lang as Lang)
+    ? (params.lang as Lang)
     : "en";
 
   return {
@@ -44,20 +48,47 @@ export async function generateMetadata({
   };
 }
 
-export default function Page({ searchParams }: { searchParams?: { lang?: string } }) {
-  const langParam = searchParams?.lang;
-  const lang: Lang = allowedLangs.includes(langParam as Lang)
-    ? (langParam as Lang)
+// --------------------------------------
+// SSR translations loader
+// --------------------------------------
+async function loadTranslations(lang: Lang) {
+  const translationsDir = path.join(
+    process.cwd(),
+    "public",
+    "translations",
+    "warranty"
+  );
+  const filePath = path.join(translationsDir, `${lang}.json`);
+
+  try {
+    const fileContents = await fs.promises.readFile(filePath, "utf-8");
+    return JSON.parse(fileContents);
+  } catch (err) {
+    console.error(`❌ Failed to load warranty translations for ${lang}:`, err);
+    return {};
+  }
+}
+
+// --------------------------------------
+// Main page
+// --------------------------------------
+interface Props {
+  params: { lang: string };
+}
+
+export default async function WarrantyPage({ params }: Props) {
+  const lang: Lang = allowedLangs.includes(params.lang as Lang)
+    ? (params.lang as Lang)
     : "en";
 
-  const baseUrl = "https://www.drivecoreauto.com";
+  const initialTranslations = await loadTranslations(lang);
 
-  // JSON-LD structured data
+  const baseUrl = "https://www.drivecoreauto.com";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: metaTranslations.title[lang],
-    url: `${baseUrl}/warranty?lang=${lang}`,
+    url: `${baseUrl}/${lang}/warranty`,
     description: metaTranslations.description[lang],
     publisher: {
       "@type": "Organization",
@@ -75,14 +106,17 @@ export default function Page({ searchParams }: { searchParams?: { lang?: string 
       />
 
       {/* Hreflang links */}
-      <link rel="alternate" hrefLang="en" href={`${baseUrl}/warranty?lang=en`} />
-      <link rel="alternate" hrefLang="fr" href={`${baseUrl}/warranty?lang=fr`} />
-      <link rel="alternate" hrefLang="es" href={`${baseUrl}/warranty?lang=es`} />
-      <link rel="alternate" hrefLang="de" href={`${baseUrl}/warranty?lang=de`} />
-      <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/warranty?lang=en`} />
+      <link rel="alternate" hrefLang="en" href={`${baseUrl}/en/warranty`} />
+      <link rel="alternate" hrefLang="fr" href={`${baseUrl}/fr/warranty`} />
+      <link rel="alternate" hrefLang="es" href={`${baseUrl}/es/warranty`} />
+      <link rel="alternate" hrefLang="de" href={`${baseUrl}/de/warranty`} />
+      <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/en/warranty`} />
 
-      {/* Main component */}
-      <WarrantyPolicy />
+      {/* Warranty page with SSR translations */}
+      <WarrantyPolicyPage
+        initialLanguage={lang}
+        initialTranslations={initialTranslations}
+      />
     </>
   );
 }

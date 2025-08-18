@@ -1,0 +1,64 @@
+{
+  "warrantyPolicy": {
+    "pageTitle": "Warranty Policy",
+    "intro": "DiveCore Auto, based in the United States, is dedicated to supplying quality used Japanese engines and transmissions. Our warranty policy clearly defines the scope of coverage and limitations to ensure transparency, so you can make informed decisions with confidence and understand what we stand behind.",
+    "warrantyCoverageTitle": "Warranty Coverage",
+    "warrantyCoverageImportant": "IMPORTANT: Please note that shipping and labor costs are not covered by this warranty. Customers are responsible for all associated fees related to installation and transport.",
+    "warrantyCoverageDesc": "Our warranty strictly covers the internal mechanical performance of the engine or transmission. This means we protect against manufacturing defects or damages that occurred before shipment but do not cover issues caused by misuse, improper installation, or external factors. The warranty periods vary based on the type of engine or transmission to reflect their different usage and risk profiles.",
+    "coverageItems": [
+      "90-Day Warranty: Applies to standard or non-performance engines. This warranty period begins on the date printed on your invoice and provides peace of mind against early mechanical failures.",
+      "30-Day Start-Up Warranty: Applies to performance engines such as turbocharged, supercharged, VTEC, VVTI, VVL, and MIVEC variants. Given the higher stress these engines experience, this limited warranty covers defects identified during initial operation only.",
+      "No Warranty on Rotary Engines: Due to the historically high failure rate and specialized nature of rotary engines, all such units are sold strictly “as-is” without any warranty.",
+      "30-Day Unlimited Mileage Warranty (Transmissions): Applies to standard, non-performance transmissions. This warranty protects the internal components against defects regardless of mileage during the warranty period.",
+      "30-Day Start-Up Warranty (Performance Transmissions): Covers only internal defects discovered during initial startup and operation."
+    ],
+    "nonCoveredPartsTitle": "Non-covered parts include but are not limited to:",
+    "nonCoveredParts": [
+      "Clutches, flywheels, and torque converters, which are considered wear items and depend on installation quality.",
+      "Electrical components such as distributors, coil packs, alternators, and starters that have separate failure modes.",
+      "Accessory pumps including air conditioning and power steering pumps, as well as sensors and solenoids which are often vehicle-specific.",
+      "Manifolds, fuel injectors, valve covers, oil pans, and other external engine hardware that can be damaged during shipping or installation."
+    ],
+    "installationTitle": "Installation Requirements",
+    "installationDesc": "To maintain warranty eligibility, the engine or transmission must be installed by a certified professional mechanic or a reputable auto repair shop. This is vital because proper installation techniques significantly impact the product’s performance and longevity.",
+    "installationItems": [
+      "We do not offer technical support for installation. The responsibility for correct installation lies entirely with the installer.",
+      "If your engine or transmission is installed by an uncertified individual or if improper installation is suspected, the warranty will be considered void."
+    ],
+    "installationNote": "This policy is designed to protect both the customer and DiveCore Auto by ensuring that products are handled correctly, minimizing the risk of damage due to installation errors and ensuring a fair claims process.",
+    "warrantyExclusionsTitle": "Warranty Exclusions",
+    "warrantyExclusionsDesc": "The warranty will be null and void and DiveCore Auto will disclaim all responsibility for any issues or damages caused by the following:",
+    "warrantyExclusionsItems": [
+      "Improper or incorrect installation, including misalignment or use of incompatible parts.",
+      "Engines that have been subjected to racing, redlining, or other forms of aggressive or competitive use beyond manufacturer specifications.",
+      "Failures due to insufficient oil pressure, oil starvation, or the use of contaminated or substandard lubricants.",
+      "Damage caused by overheating resulting from poor cooling system maintenance, lack of coolant, or blocked radiator flow.",
+      "Modifications involving forced induction systems (turbochargers, superchargers, nitrous oxide) that were not part of the original engine design.",
+      "Aftermarket ECU tuning, performance chips, or any changes to the engine management system that affect factory settings.",
+      "Neglecting to replace timing belts, chains, or tensioners as recommended prior to installation, leading to mechanical failure.",
+      "Disassembly or tampering with internal components such as cylinder heads, pistons, or crankshafts, which compromises factory warranties.",
+      "Failures of peripheral systems, including fuel pumps, radiators, emission control equipment, or cooling system parts.",
+      "Damage or issues that are cosmetic in nature, such as scratches, dents, broken plastics, or rust.",
+      "Engines or transmissions that fail to meet emissions or smog testing requirements."
+    ],
+    "returnPolicyTitle": "Return & Refund Policy",
+    "returnPolicyDesc": "We urge all customers to verify compatibility and fitment prior to purchase to avoid inconvenience. Due to the specialized nature of used automotive parts, our return and refund policies are carefully structured:",
+    "returnPolicyItems": [
+      "No refunds or exchanges are granted for engines or transmissions unless a verified defect exists covered by this warranty.",
+      "Deposits become non-refundable after 7 business days from the date they are made.",
+      "Returned checks will incur a mandatory administrative fee of $35.00 to cover processing costs.",
+      "Any refused or returned orders are subject to a 25% restocking fee in addition to all inbound and outbound shipping charges.",
+      "DiveCore Auto assumes no responsibility for damages or losses that occur during transit once the shipment has left our warehouse."
+    ],
+    "contactTitle": "Contact",
+    "contactEmail": "Email:",
+    "contactPhone": "Phone:",
+    "contactWebsite": "Website:",
+    "contactInfo": {
+      "email": "support@divecoreauto.com",
+      "phone": "(123) 456-7890",
+      "website": "https://www.divecoreauto.com"
+    },
+    "contactNote": "DiveCore Auto reserves the right to modify or update this warranty policy at any time without prior notice. The most current version is always available on your invoice and on our official website."
+  }
+}

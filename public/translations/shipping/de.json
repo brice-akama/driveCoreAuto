@@ -1,0 +1,37 @@
+{
+  "pageTitle": "Versandinformationen",
+  "importantNoteTitle": "Wichtig – Kontaktinformationen",
+  "importantNoteDesc": "Bitte stellen Sie sicher, dass Sie bei der Bestellung eine gültige und funktionierende Telefonnummer angeben. Dies ist erforderlich, damit der Versanddienstleister die Lieferung planen oder Sie kontaktieren kann, falls Probleme mit Ihrer Sendung auftreten. Wird keine erreichbare Telefonnummer angegeben, kann dies zu Verzögerungen oder der Rücksendung Ihrer Lieferung auf Ihre Kosten führen.",
+  
+  "deliveryTitle": "Lieferzeiten & Auftragsbearbeitung",
+  "deliveryItems": [
+    "Wir bearbeiten und versenden in der Regel alle vorrätigen Bestellungen <strong>innerhalb von 1 Werktag</strong>. Bestellungen, die am Wochenende oder an Feiertagen eingehen, werden am nächsten Werktag bearbeitet.",
+    "Unser Hauptlager befindet sich in <strong>Belleville, New Jersey</strong>. Wenn Sie im Nordosten oder in den umliegenden Regionen wohnen, wird Ihre Bestellung in der Regel <strong>1–5 Werktage</strong> nach dem Versand eintreffen.",
+    "Für Kunden an der <strong>Westküste</strong> oder weiter entfernten Regionen kann die Lieferung länger dauern, typischerweise zwischen <strong>5 und 15 Werktagen</strong>, abhängig von Entfernung, Wetter und Fahrplänen des Versanddienstleisters."
+  ],
+  
+  "shippingCostTitle": "Versandkosten & Gebühren",
+  "shippingCostItems": [
+    "Bitte beachten Sie, dass <strong>kein kostenloser Versand</strong> angeboten wird. Alle Versandkosten werden basierend auf Zielort, Größe und Gewicht des Produkts berechnet. Sie sind für alle Versandgebühren verantwortlich.",
+    "Einige Lieferungen können zusätzliche Gebühren erfordern, wie z. B. <strong>Liefergebühren für Wohngebiete</strong> oder <strong>Hebebühnenservices</strong> (für schwere Artikel). Diese Gebühren werden vom Versanddienstleister festgelegt und sind nicht verhandelbar.",
+    "Um vor der Bestellung die genauen Versandkosten zu erfahren, kontaktieren Sie uns bitte <strong>telefonisch oder per E-Mail</strong> und geben Sie Ihre vollständige Postleitzahl und das gewünschte Produkt an."
+  ],
+  
+  "puertoRicoTitle": "Versand nach Puerto Rico",
+  "puertoRicoDesc": "Wir versenden nach Puerto Rico mit Frachttransporten. Bitte kontaktieren Sie uns, um ein individuelles Versandangebot basierend auf Ihrem genauen Standort und der Produktgröße zu erhalten. Kunden in Puerto Rico sind vollständig verantwortlich für alle anfallenden <strong>Zollgebühren, Einfuhrsteuern, Bearbeitungsgebühren</strong> oder Hafenbezogene Gebühren.",
+  
+  "beforeSigningTitle": "Was Sie VOR der Unterschrift bei Lieferung wissen MÜSSEN",
+  "beforeSigningItems": [
+    "<strong>Bevor Sie den Lieferschein unterschreiben</strong>, überprüfen Sie sorgfältig die <strong>Außenverpackung und Box</strong> auf Dellen, Löcher, Risse, beschädigte Ecken oder Wasserschäden. Tun Sie dies, während der Fahrer noch anwesend ist.",
+    "Bitte beachten Sie: <strong>Sie dürfen das Paket vor der Unterschrift nicht öffnen</strong>. Die Inspektion muss nur äußerlich erfolgen. Mit Ihrer Unterschrift bestätigen Sie, dass Sie den Artikel im aktuell sichtbaren Zustand akzeptieren.",
+    "Wenn Sie sichtbare Schäden sehen – auch wenn diese gering erscheinen – <strong>unterschreiben Sie nicht, ohne den Schaden deutlich auf dem Lieferschein zu vermerken</strong>. Zum Beispiel: “Ecke der Box eingedrückt, mögliche interne Schäden.”",
+    "<strong>Unterschreiben Sie niemals 'In gutem Zustand erhalten'</strong>, es sei denn, Sie sind sich 100% sicher, dass keine äußeren Schäden sichtbar sind. Das Unterzeichnen ohne Kommentare verwirkt Ihr Recht auf Entschädigung vom Versanddienstleister.",
+    "DriveCore Auto <strong>ist nicht für versandbedingte Schäden verantwortlich</strong>. Sobald das Produkt unser Lager verlässt, wird die Versicherung vom Versanddienstleister verwaltet. Wenn Sie Probleme bei der Lieferung nicht vermerken, verlieren Sie das Recht, einen Schadensanspruch einzureichen."
+  ],
+  
+  "internationalTitle": "Internationaler Versand (außerhalb der USA)",
+  "internationalDesc": [
+    "Für internationale Kunden senden Sie uns bitte Ihre vollständige Lieferadresse per E-Mail, damit wir ein individuelles Versandangebot erstellen können. Derzeit liefern wir nur zum <strong>nächsten internationalen Seehafen</strong> in Ihrem Land oder Ihrer Region.",
+    "Sobald die Sendung am Seehafen eintrifft, liegt es in der Verantwortung des Kunden, die <strong>Endzustellung</strong> an das Ziel zu organisieren. Sie sind auch vollständig verantwortlich für alle anfallenden <strong>Zollabfertigungen, Einfuhrsteuern, Zölle und Hafenentgelte</strong> in Ihrem Land."
+  ]
+}

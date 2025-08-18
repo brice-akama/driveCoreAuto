@@ -4,33 +4,75 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 interface LanguageContextType {
   language: string;
-  setLanguage: (lang: string) => void;
+  setLanguage: (lang: string, namespace?: string) => void; // <-- allow optional second arg
   translate: (text: string) => Promise<string>;
   fetchTranslatedProducts: () => Promise<any[]>;
   fetchTranslatedBlogPosts: () => Promise<any[]>;
-  fetchStaticTranslation: (text: string) => Promise<string>;
+  fetchStaticTranslation: (key: string, namespace?: string) => any;
+  translations?: Record<string, any>;
 }
+
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<string>("en");
+export function LanguageProvider({
+  children,
+  initialLanguage = "en",
+  initialTranslations = {},
+}: {
+  children: React.ReactNode;
+  initialLanguage?: string;
+  initialTranslations?: Record<string, any>;
+}) {
+  const [language, setLanguageState] = useState<string>(initialLanguage);
+  const [translations, setTranslations] = useState<Record<string, any>>(initialTranslations);
 
-  // Load language from localStorage on first mount
+  // Load from localStorage if no SSR lang provided
   useEffect(() => {
-    const savedLang = localStorage.getItem("preferredLang");
-    if (savedLang) {
-      setLanguageState(savedLang);
+    if (!initialLanguage) {
+      const savedLang = localStorage.getItem("preferredLang");
+      if (savedLang) setLanguageState(savedLang);
     }
-  }, []);
+  }, [initialLanguage]);
+
+  
 
   // Save selected language to localStorage
-  const setLanguage = (lang: string) => {
-    setLanguageState(lang);
-    localStorage.setItem("preferredLang", lang);
-  };
+ // Updated setLanguage with namespace support
+const setLanguage = async (lang: string, namespace: string = "") => {
+  setLanguageState(lang);
+  localStorage.setItem("preferredLang", lang);
 
-  // Translate function
+  try {
+    // Use namespace if provided, otherwise fallback to root translations
+    const path = namespace
+      ? `/translations/${namespace}/${lang}.json`
+      : `/translations/${lang}.json`;
+
+    const res = await fetch(path);
+    const data = await res.json();
+    setTranslations(data);
+  } catch (err) {
+    console.error("Failed to fetch translations for", lang, err);
+  }
+};
+
+
+  
+
+  // ✅ Uses SSR translations if available
+  const fetchStaticTranslation = (key: string, namespace?: string): any => {
+  if (!translations) return key;
+
+  if (namespace && translations[namespace]) {
+    return translations[namespace][key] || key;
+  }
+
+  return translations[key] || key;
+};
+
+
+  // Dynamic translation via API (still available for runtime)
   const translate = async (text: string): Promise<string> => {
     if (language === "en") return text;
 
@@ -71,24 +113,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const fetchStaticTranslation = async (text: string): Promise<string> => {
-    if (language === "en") return text;
-
-    try {
-      const res = await fetch("/api/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, source: "en", target: language }),
-      });
-
-      const data = await res.json();
-      return data.translatedText || text;
-    } catch (error) {
-      console.error("Static translation failed", error);
-      return text;
-    }
-  };
-
   return (
     <LanguageContext.Provider
       value={{
@@ -96,8 +120,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         setLanguage,
         translate,
         fetchTranslatedProducts,
-        fetchStaticTranslation,
         fetchTranslatedBlogPosts,
+        fetchStaticTranslation,
+        translations,
       }}
     >
       {children}

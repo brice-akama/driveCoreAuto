@@ -1,25 +1,33 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers'; // Import cookies from next/headers
-import jwt from 'jsonwebtoken';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
 
-// Middleware for admin routes
-export async function middleware(req: Request) {             
-  const cookieStore = await cookies(); // Await the Promise to get the cookies
-  const token = cookieStore.get('auth_token')?.value; // Access the value of the auth_token cookie
+export function middleware(req: NextRequest) {
+  const res = NextResponse.next();
 
-  if (!token) {
-    return NextResponse.redirect(new URL('/admin/secure-login', req.url)); // Redirect to login if no token
+  // 1. Handle Language Cookie
+  const lang = req.cookies.get("lang")?.value || "en";
+  res.cookies.set("lang", lang);
+
+  // 2. Handle Admin Authentication
+  if (req.nextUrl.pathname.startsWith("/admin")) {
+    const token = req.cookies.get("auth_token")?.value;
+
+    if (!token) {
+      return NextResponse.redirect(new URL("/admin/secure-login", req.url));
+    }
+
+    try {
+      jwt.verify(token, process.env.JWT_SECRET_KEY || "default_secret");
+    } catch {
+      return NextResponse.redirect(new URL("/admin/login", req.url));
+    }
   }
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET_KEY || 'default_secret');
-    return NextResponse.next(); // Continue to the next request if valid
-  } catch {
-    return NextResponse.redirect(new URL('/admin/login', req.url)); // Redirect if token is invalid
-  }
+  return res;
 }
 
-// Define which paths should trigger the middleware
 export const config = {
-  matcher: ['/admin/*'], // Apply the middleware to all routes under /admin
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"], 
+  // Run middleware for all pages (but exclude static files & images)
 };

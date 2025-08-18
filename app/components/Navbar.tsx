@@ -12,11 +12,23 @@ import { useLanguage } from "../context/LanguageContext";
 import { useWishlist } from "../context/WishlistContext";
 import SelectLanguageButton from "./SelectLanguageButton";
 
+
 type SubMenuItem = {
   name: string;
   link: string;
   subMenu?: SubMenuItem[];
 };
+
+interface ProductResult {
+  name: string;
+  slug: string;
+  category?: string;
+}
+
+interface BlogResult {
+  title: string;
+  slug: string;
+}
 
 type MenuItem = {
   name: string;
@@ -44,6 +56,13 @@ const Navbar = () => {
   const [expandedTransmissionIndex, setExpandedTransmissionIndex] = useState<number | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 const [popupSearchQuery, setPopupSearchQuery] = useState("");
+const { language } = useLanguage();
+const [dropdownResults, setDropdownResults] = useState<{
+  products: ProductResult[];
+  blogs: BlogResult[];
+}>({ products: [], blogs: [] });
+
+
 
 
 
@@ -65,6 +84,21 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     }
     return baseSlug;
   };
+
+  useEffect(() => {
+  if (!searchQuery.trim()) {
+    setDropdownResults({ products: [], blogs: [] });
+    return;
+  }
+
+  const timer = setTimeout(async () => {
+    const res = await fetch(`/api/search?search=${encodeURIComponent(searchQuery)}&lang=${language}`);
+    const data = await res.json();
+    setDropdownResults({ products: data.products, blogs: data.blogs });
+  }, 300); // wait 300ms before calling API
+
+  return () => clearTimeout(timer); // cleanup previous timer
+}, [searchQuery, language]);
 
   // Fetch translations and menu items on mount
   useEffect(() => {
@@ -397,36 +431,61 @@ const [popupSearchQuery, setPopupSearchQuery] = useState("");
     fetchTranslations().catch(console.error);
   }, [translate]);
 
+  const knownPaths = ["/privacy-policy", "/terms", "/support", "/about-us", "/refund-policy", "/shipping-info", "/faqs", "/contact-us"];
+
+  // LIVE SEARCH
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setDropdownResults({ products: [], blogs: [] });
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?search=${encodeURIComponent(searchQuery)}&lang=${language}`);
+        const data = await res.json();
+        setDropdownResults({ products: data.products, blogs: data.blogs });
+      } catch (error) {
+        console.error(error);
+        setDropdownResults({ products: [], blogs: [] });
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, language]);
+
+  // STATIC SEARCH (button click)
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
 
-    const knownPaths = ["/privacy-policy", "/terms", "/support", "/about-us", "/refund-policy", "/shipping-info", "/faqs", "/contact-us"];
+    const matchedPath = knownPaths.find(path => path.toLowerCase().includes(searchQuery.trim().toLowerCase()));
+    if (matchedPath) {
+      router.push(matchedPath);
+      setSearchQuery('');
+      return;
+    }
 
     try {
-      const matchedPath = knownPaths.find(path => path.toLowerCase().includes(searchQuery.trim().toLowerCase()));
+      const res = await fetch(`/api/search?search=${encodeURIComponent(searchQuery)}&lang=${language}`);
+      const { products, blogs } = await res.json();
 
-      if (matchedPath) {
-        router.push(matchedPath);
+      if (products.length || blogs.length) {
+        if (products.length) router.push(`/products/${products[0].slug}?lang=${language}`);
+        else if (blogs.length) router.push(`/blog/${blogs[0].slug}?lang=${language}`);
+
         setSearchQuery('');
-        return;
-      }
-
-      const res = await fetch(`/api/search?search=${encodeURIComponent(searchQuery.trim())}`);
-      const { redirectTo } = await res.json();
-
-      if (redirectTo) {
-        router.push(redirectTo);
-        setSearchQuery('');
+        setDropdownResults({ products: [], blogs: [] });
       } else {
         toast.error("No matching results found.");
-        setSearchQuery('');
       }
     } catch (error) {
-      console.error("Error during search:", error);
+      console.error(error);
       toast.error("Something went wrong. Please try again.");
-      setSearchQuery('');
     }
   };
+
+
+
 
   const handleDropdownEnter = (index: number) => {
     if (hoverTimeout) {
@@ -521,17 +580,18 @@ useEffect(() => {
   {/* Right side - Warranty & Track Order */}
   <div className="hidden md:flex items-center gap-6">
     <Link
-      href="/warranty"
+      href={`/${language}/warranty`}
       className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
     >
       Warranty
     </Link>
-    <Link
-      href="/shipping"
-      className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
-    >
-      Shipping
-    </Link>
+  <Link
+  href={`/${language}/shipping`}
+  className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
+>
+  Shipping
+</Link>
+
     <Link
       href="/track-order"
       className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
@@ -550,12 +610,12 @@ useEffect(() => {
             </button>
           )}
 
-          <Link href="/" className="hidden md:block mt-4 bg-transparent">
+          <Link href={`/?lang=${language}`}className="hidden md:block mt-4 bg-transparent">
             <Image src="/assets/logo.png" alt="logo" width={180} height={80} className="object-contain bg-transparent " />
           </Link>
 
           <div className="md:hidden w-full">
-            <Link href="/" className="block bg-transparent">
+            <Link href={`/?lang=${language}`} className="block bg-transparent">
               <Image src="/assets/logo.png" alt="logo" width={140} height={30} className="object-contain bg-transparent" />
             </Link>
           </div>
@@ -572,6 +632,39 @@ useEffect(() => {
           <button onClick={handleSearch} className="flex-shrink-0 ml-3">
             <FaSearch className="text-gray-500 text-xl" />
           </button>
+          {/* Dropdown */}
+        {(dropdownResults.products.length || dropdownResults.blogs.length) > 0 && (
+          <div className="search-dropdown absolute bg-white border mt-1 w-full z-50">
+            {dropdownResults.products.map((product) => (
+              <div
+                key={product.slug}
+                className="dropdown-item cursor-pointer p-2 hover:bg-gray-100"
+                onClick={() => {
+                  router.push(`/products/${product.slug}?lang=${language}`);
+                  setDropdownResults({ products: [], blogs: [] });
+                  setSearchQuery('');
+                }}
+              >
+                {product.name}
+              </div>
+            ))}
+
+            {dropdownResults.blogs.map((blog) => (
+              <div
+                key={blog.slug}
+                className="dropdown-item cursor-pointer p-2 hover:bg-gray-100"
+                onClick={() => {
+                  router.push(`/blog/${blog.slug}?lang=${language}`);
+                  setDropdownResults({ products: [], blogs: [] });
+                  setSearchQuery('');
+                }}
+              >
+                {blog.title}
+              </div>
+            ))}
+          </div>
+        )}
+
         </div>
 
         <div className="flex items-center space-x-2 ">
@@ -932,7 +1025,7 @@ useEffect(() => {
 
 {isSearchOpen && (
   <div
-    className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4"
+    className="fixed inset-0 bg-opacity-50 flex items-start mt-25 justify-center z-50 p-4"
     onClick={() => setIsSearchOpen(false)} // Clicking outside popup closes it
   >
     <div

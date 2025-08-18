@@ -1,0 +1,37 @@
+{
+  "pageTitle": "Informations sur la livraison",
+  "importantNoteTitle": "Important – Informations de contact",
+  "importantNoteDesc": "Veuillez vous assurer de fournir un numéro de téléphone valide et fonctionnel au moment de passer votre commande. Cela est essentiel pour que le transporteur puisse planifier la livraison ou vous contacter en cas de problème avec votre expédition. Le fait de ne pas fournir un numéro joignable peut entraîner des retards ou le retour de votre colis à vos frais.",
+  
+  "deliveryTitle": "Délais de livraison et traitement des commandes",
+  "deliveryItems": [
+    "Nous traitons et expédions généralement toutes les commandes en stock <strong>dans un délai d'un jour ouvrable</strong>. Les commandes passées le week-end ou les jours fériés seront traitées le jour ouvrable suivant.",
+    "Notre entrepôt principal est situé à <strong>Belleville, New Jersey</strong>. Si vous êtes situé dans le Nord-Est ou les régions environnantes, votre commande arrivera généralement dans un délai de <strong>1 à 5 jours ouvrables</strong> après l'expédition.",
+    "Pour les clients situés sur la <strong>Côte Ouest</strong> ou dans des régions plus éloignées, la livraison peut prendre plus de temps, généralement entre <strong>5 et 15 jours ouvrables</strong>, selon la distance, la météo et les horaires du transporteur."
+  ],
+  
+  "shippingCostTitle": "Frais et coûts d'expédition",
+  "shippingCostItems": [
+    "Veuillez noter que <strong>nous n'offrons pas la livraison gratuite</strong>. Tous les tarifs d'expédition sont calculés en fonction de la destination, de la taille et du poids du produit. Vous serez responsable de tous les frais d'expédition.",
+    "Certaines livraisons peuvent nécessiter des frais supplémentaires tels que <strong>frais de livraison résidentielle</strong> ou <strong>services de levage</strong> (pour les articles lourds). Ces frais sont fixés par le transporteur et sont non négociables.",
+    "Pour obtenir un coût d'expédition précis avant de passer votre commande, veuillez <strong>nous contacter</strong> par téléphone ou par e-mail et fournir votre code postal complet et le produit qui vous intéresse."
+  ],
+  
+  "puertoRicoTitle": "Livraison à Porto Rico",
+  "puertoRicoDesc": "Nous expédions à Porto Rico via des transporteurs. Veuillez nous contacter pour recevoir un devis personnalisé basé sur votre emplacement exact et la taille du produit. Les clients à Porto Rico sont entièrement responsables de tous les <strong>droits de douane, taxes à l'importation, frais de manutention</strong> ou frais portuaires applicables.",
+  
+  "beforeSigningTitle": "Ce que vous devez savoir avant de signer pour la livraison",
+  "beforeSigningItems": [
+    "<strong>Avant de signer le bordereau de livraison</strong>, inspectez soigneusement l'<strong>emballage et la boîte extérieurs</strong> pour détecter tout enfoncement, trou, déchirure, coin écrasé ou signe de dommage par l'eau. Faites-le pendant que le chauffeur est encore présent.",
+    "Veuillez comprendre : <strong>vous n'êtes pas autorisé à ouvrir le colis</strong> avant de signer. L'inspection doit être externe uniquement. Une fois que vous signez, cela indique que vous acceptez l'article dans son état visible actuel.",
+    "Si vous voyez des signes visibles de dommages — même si vous pensez qu'ils sont mineurs — <strong>ne signez pas sans noter clairement les dommages sur le reçu de livraison</strong>. Par exemple : “Boîte écrasée sur le coin, dommage interne possible.”",
+    "<strong>Ne signez jamais 'Reçu en bon état'</strong> sauf si vous êtes sûr à 100% qu'aucun dommage n'est visible à l'extérieur. Signer sans commentaires renonce à votre droit de réclamer une compensation auprès du transporteur.",
+    "DriveCore Auto <strong>n'est pas responsable des dommages liés à l'expédition</strong>. Une fois que le produit quitte nos locaux, la couverture d'assurance est gérée par le transporteur. Si vous ne notez pas les problèmes lors de la livraison, vous perdez votre droit de déposer une réclamation."
+  ],
+  
+  "internationalTitle": "Livraison internationale (hors États-Unis)",
+  "internationalDesc": [
+    "Pour les clients à l'étranger, veuillez nous envoyer votre adresse complète afin que nous puissions générer un devis personnalisé. À ce moment, nous ne livrons qu'au <strong>port maritime international le plus proche</strong> de votre pays ou région.",
+    "Une fois l'expédition arrivée au port maritime, il devient de la responsabilité du client de gérer la <strong>livraison finale</strong> à sa destination. Vous êtes également entièrement responsable de tous les <strong>dédouanements, taxes à l'importation, droits et frais portuaires</strong> imposés par votre pays."
+  ]
+}

@@ -1,156 +1,94 @@
-'use client';
+// app/track-order/page.tsx
+// app/track-order/page.tsx
+import { Metadata } from "next";
+import React from "react";
+import TrackOrderPage from "./TrackOrderPage";
 
-import { useState, FormEvent } from "react";
+const metaTranslations = {
+  title: {
+    en: "Track Order - DriveCore Auto",
+    fr: "Suivi de Commande - DriveCore Auto",
+    es: "Rastreo de Pedido - DriveCore Auto",
+    de: "Bestellung verfolgen - DriveCore Auto",
+  },
+  description: {
+    en: "Track your DriveCore Auto orders, including engines, swaps, transmissions, automotive accessories, and more. Enter your Order ID and Billing Email to view order status, shipping updates, and delivery details.",
+    fr: "Suivez vos commandes DriveCore Auto, y compris les moteurs, swaps, transmissions, accessoires automobiles et plus. Entrez votre ID de commande et votre email de facturation pour voir le statut de la commande, les mises à jour d'expédition et les détails de livraison.",
+    es: "Rastree sus pedidos de DriveCore Auto, incluidos motores, swaps, transmisiones, accesorios automotrices y más. Ingrese su ID de pedido y correo electrónico de facturación para ver el estado del pedido, actualizaciones de envío y detalles de entrega.",
+    de: "Verfolgen Sie Ihre DriveCore Auto-Bestellungen, einschließlich Motoren, Swaps, Getriebe, Autozubehör und mehr. Geben Sie Ihre Bestellnummer und Rechnungs-E-Mail ein, um den Bestellstatus, Versandupdates und Lieferdetails zu sehen.",
+  },
+  keywords: {
+    en: "DriveCore Auto track order, order tracking, engines, engine swaps, transmissions, automotive accessories, order status, shipping updates",
+    fr: "DriveCore Auto suivi de commande, suivi de commande, moteurs, swaps de moteurs, transmissions, accessoires automobiles, statut de commande, mises à jour d'expédition",
+    es: "DriveCore Auto rastreo de pedido, seguimiento de pedidos, motores, swaps de motores, transmisiones, accesorios automotrices, estado del pedido, actualizaciones de envío",
+    de: "DriveCore Auto Bestellung verfolgen, Bestellverfolgung, Motoren, Engine Swaps, Getriebe, Autozubehör, Bestellstatus, Versandupdates",
+  },
+};
 
-// Types for order items
-interface OrderItem {
-  id: string;
-  name: string;
-  image: string;
-  quantity: number;
-  price: number;
+type Lang = "en" | "fr" | "es" | "de";
+const allowedLangs: Lang[] = ["en", "fr", "es", "de"];
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams?: { lang?: string };
+}): Promise<Metadata> {
+  const langParam = searchParams?.lang;
+  const lang: Lang = allowedLangs.includes(langParam as Lang)
+    ? (langParam as Lang)
+    : "en";
+
+  return {
+    title: metaTranslations.title[lang],
+    description: metaTranslations.description[lang],
+    keywords: metaTranslations.keywords[lang],
+    robots: "index, follow",
+  };
 }
 
-// Type for full order data
-interface OrderData {
-  orderNumber: string;
-  date: string;
-  shippingAddress: string;
-  status: "placed" | "processing" | "shipped" | "out_for_delivery" | "delivered";
-  items: OrderItem[];
-  shippingCarrier: string;
-  trackingNumber: string;
-  estimatedDelivery: string;
-}
+export default function Page({
+  searchParams,
+}: {
+  searchParams?: { lang?: string };
+}) {
+  const langParam = searchParams?.lang;
+  const lang: Lang = allowedLangs.includes(langParam as Lang)
+    ? (langParam as Lang)
+    : "en";
 
-export default function TrackOrderPage() {
-  const [orderNumber, setOrderNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [orderData, setOrderData] = useState<OrderData | null>(null);
-  const [error, setError] = useState("");
+  const baseUrl = "https://www.drivecoreauto.com";
 
-  const handleTrackOrder = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-    setOrderData(null);
-
-    if (!orderNumber.trim() || !email.trim()) {
-      setError("Please enter both Order ID and Billing Email.");
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/orders/track?orderNumber=${orderNumber}&email=${email}`);
-      const data = await res.json();
-
-      if (res.ok) {
-        setOrderData(data);
-      } else {
-        setError(data.message || "Order not found.");
-      }
-    } catch {
-      setError("Something went wrong. Please try again later.");
-    }
+  // JSON-LD structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: metaTranslations.title[lang],
+    url: `${baseUrl}/track-order?lang=${lang}`,
+    description: metaTranslations.description[lang],
+    publisher: {
+      "@type": "Organization",
+      name: "DriveCore Auto",
+      url: baseUrl,
+    },
   };
 
-  const renderStatusStep = (label: string, active: boolean) => (
-    <div className="flex items-center space-x-2">
-      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${active ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'}`}>
-        {active ? "✓" : ""}
-      </div>
-      <span className={active ? "font-semibold" : "text-gray-500"}>{label}</span>
-    </div>
-  );
-
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-40">
-      <h1 className="text-3xl font-bold mb-4 text-center">Track Your Order</h1>
-      <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto">
-        To track your order, please enter your <strong>Order ID</strong> and <strong>Billing Email</strong> below, then press the <strong>"Track"</strong> button. 
-        This information was provided on your receipt and in your confirmation email.
-      </p>
+    <>
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
-      <form onSubmit={handleTrackOrder} className="flex flex-col gap-4 mb-8">
-        <div>
-          <label className="block font-medium text-sm mb-1">Order ID</label>
-          <input
-            type="text"
-            placeholder="Found in your order confirmation"
-            value={orderNumber}
-            onChange={(e) => setOrderNumber(e.target.value)}
-            className="border border-gray-300 rounded-full px-4 py-2 w-full"
-            required
-          />
-        </div>
+      {/* Hreflang links using query parameters */}
+      <link rel="alternate" hrefLang="en" href={`${baseUrl}/track-order?lang=en`} />
+      <link rel="alternate" hrefLang="fr" href={`${baseUrl}/track-order?lang=fr`} />
+      <link rel="alternate" hrefLang="es" href={`${baseUrl}/track-order?lang=es`} />
+      <link rel="alternate" hrefLang="de" href={`${baseUrl}/track-order?lang=de`} />
+      <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/track-order?lang=en`} />
 
-        <div>
-          <label className="block font-medium text-sm mb-1">Billing Email</label>
-          <input
-            type="email"
-            placeholder="Email you used during checkout"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded-full px-4 py-2 w-full"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition self-start md:self-center"
-        >
-          Track 
-        </button>
-      </form>
-
-      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-
-      {orderData && (
-        <div className="bg-white rounded shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-          <p><strong>Order Number:</strong> {orderData.orderNumber}</p>
-          <p><strong>Order Date:</strong> {new Date(orderData.date).toLocaleDateString()}</p>
-          <p><strong>Shipping To:</strong> {orderData.shippingAddress}</p>
-
-          <div className="mt-6">
-            <h3 className="font-semibold mb-2">Order Status</h3>
-            <div className="flex space-x-6 justify-between max-w-md mx-auto">
-              {renderStatusStep("Placed", ["placed", "processing", "shipped", "out_for_delivery", "delivered"].includes(orderData.status))}
-              {renderStatusStep("Processing", ["processing", "shipped", "out_for_delivery", "delivered"].includes(orderData.status))}
-              {renderStatusStep("Shipped", ["shipped", "out_for_delivery", "delivered"].includes(orderData.status))}
-              {renderStatusStep("Out for Delivery", ["out_for_delivery", "delivered"].includes(orderData.status))}
-              {renderStatusStep("Delivered", orderData.status === "delivered")}
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <h3 className="font-semibold mb-2">Items</h3>
-            <ul>
-              {orderData.items.map((item) => (
-                <li key={item.id} className="flex items-center space-x-4 mb-4">
-                  <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p>Qty: {item.quantity}</p>
-                    <p>${item.price.toFixed(2)}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="mt-6">
-            <h3 className="font-semibold mb-2">Shipping Details</h3>
-            <p><strong>Carrier:</strong> {orderData.shippingCarrier}</p>
-            <p><strong>Tracking Number:</strong> {orderData.trackingNumber}</p>
-            <p><strong>Estimated Delivery:</strong> {new Date(orderData.estimatedDelivery).toLocaleDateString()}</p>
-          </div>
-
-          <div className="mt-6 text-center">
-            <a href="/contact" className="text-blue-600 underline hover:text-blue-800">Need help? Contact Support</a>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Main component */}
+      <TrackOrderPage />
+    </>
   );
 }

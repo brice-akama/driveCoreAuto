@@ -1,7 +1,7 @@
 import ReactWorldFlag from "react-world-flags";
 import { useLanguage } from "../context/LanguageContext";
 import { useState, useRef } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation"; // Next.js 13+ client hooks
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 const languageOptions = [
   { code: "en", name: "English", flag: "GB" },
@@ -15,7 +15,6 @@ export default function SelectLanguageButton() {
   const [isHovered, setIsHovered] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
-  // Next.js router & helpers
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -24,27 +23,36 @@ export default function SelectLanguageButton() {
     languageOptions.find((l) => l.code === language) || languageOptions[0];
 
   const handleMouseEnter = () => {
-    if (timeoutRef.current !== null) {
-      clearTimeout(timeoutRef.current);
-    }
+    if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
     setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    timeoutRef.current = window.setTimeout(() => {
-      setIsHovered(false);
-    }, 400);
+    timeoutRef.current = window.setTimeout(() => setIsHovered(false), 400);
   };
 
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang);
 
-    // Build new URLSearchParams object to update lang param
-    const params = new URLSearchParams(searchParams?.toString() || "");
-    params.set("lang", newLang);
-
-    // Push new URL with updated lang param — this triggers page reload & re-render
-    router.push(`${pathname}?${params.toString()}`);
+    // Check if URL already has query lang
+    if (searchParams?.has("lang")) {
+      const params = new URLSearchParams(searchParams?.toString() || "");
+      params.set("lang", newLang);
+      router.replace(`${pathname}?${params.toString()}`);
+    } else {
+      // If the path has a default language prefix (e.g., /en/warranty)
+      const pathSegments = pathname.split("/");
+      const firstSegment = pathSegments[1];
+      if (["en", "fr", "de", "es"].includes(firstSegment)) {
+        pathSegments[1] = newLang; // replace the language in path
+        router.replace(pathSegments.join("/"));
+      } else {
+        // Fallback: add query param ?lang=newLang
+        const params = new URLSearchParams(searchParams?.toString() || "");
+        params.set("lang", newLang);
+        router.replace(`${pathname}?${params.toString()}`);
+      }
+    }
   };
 
   return (
