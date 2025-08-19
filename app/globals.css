@@ -58,3 +58,25 @@ ul, ol {
 li {
   margin-bottom: 0.5rem;
 }
+
+
+
+.product-details p {
+  margin-bottom: 1rem; /* space between paragraphs */
+  line-height: 1.6;
+}
+
+.product-details ul {
+  list-style-type: disc;
+  padding-left: 1.25rem; /* align bullets nicely */
+  margin-bottom: 1rem;
+}
+
+.product-details li {
+  margin-bottom: 0.5rem;
+}
+
+.product-details p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}

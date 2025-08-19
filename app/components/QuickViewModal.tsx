@@ -1,13 +1,10 @@
+'use client';
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { FiHeart, FiFacebook, FiTwitter } from "react-icons/fi";
-
-function stripHtml(html: string) {
-  if (!html) return "";
-  return html.replace(/<[^>]+>/g, "");
-}
 
 interface Product {
   _id: string;
@@ -20,7 +17,6 @@ interface Product {
   Specifications: Record<string, string>;
   Shipping: Record<string, string>;
   Warranty: Record<string, string>;
-  // add other fields as needed
 }
 
 interface QuickViewModalProps {
@@ -48,25 +44,20 @@ export default function QuickViewModal({
   const { symbol } = useCurrency();
   const currencySymbol = propSymbol || symbol || "$";
 
-  // Prepare share URLs (make sure window is defined)
-  
-
   const domain =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com");
+    process.env.NEXT_PUBLIC_API_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com");
 
-const productUrl = `${domain}/products/${product.slug.en}?lang=${currentLang}`;
-
-const shareText = encodeURIComponent(
-  `Check out this product: ${product.name[currentLang] || product.name.en}`
-);
-
-const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-  productUrl
-)}`;
-const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-  productUrl
-)}&text=${shareText}`;
+  const productUrl = `${domain}/products/${product.slug.en}?lang=${currentLang}`;
+  const shareText = encodeURIComponent(
+    `Check out this product: ${product.name[currentLang] || product.name.en}`
+  );
+  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+    productUrl
+  )}`;
+  const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+    productUrl
+  )}&text=${shareText}`;
 
   return (
     <div
@@ -113,7 +104,7 @@ const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
             </h2>
 
             <p className="text-lg font-semibold mb-3">
-{symbol}
+              {currencySymbol}
               {product.price}
             </p>
 
@@ -162,56 +153,37 @@ const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
               >
                 <FiTwitter size={24} />
               </a>
-              {/* Add more share icons as needed */}
             </div>
 
             {/* Description */}
-            <h3 className="font-semibold text-lg mb-1">Description</h3>
-            <div>
-              {(stripHtml(product.description[currentLang] || product.description.en) || "")
-                .split(/\n{2,}/)
-                .map((paragraph, idx) => (
-                  <p key={idx} className="mb-4">
-                    {paragraph}
-                  </p>
-                ))}
-            </div>
+            
 
             {/* Specifications */}
             <h3 className="font-semibold text-lg mb-1">Specifications</h3>
-            <div>
-              {(stripHtml(product.Specifications[currentLang] || product.Specifications.en) || "")
-                .split(/\n{2,}/)
-                .map((paragraph, idx) => (
-                  <p key={idx} className="mb-4">
-                    {paragraph}
-                  </p>
-                ))}
-            </div>
+            <div
+              className="product-details"
+              dangerouslySetInnerHTML={{
+                __html: product.Specifications[currentLang] || product.Specifications.en,
+              }}
+            />
 
             {/* Shipping & Delivery */}
             <h3 className="font-semibold text-lg mb-1">Shipping & Delivery</h3>
-            <div>
-              {(stripHtml(product.Shipping[currentLang] || product.Shipping.en) || "")
-                .split(/\n{2,}/)
-                .map((paragraph, idx) => (
-                  <p key={idx} className="mb-4">
-                    {paragraph}
-                  </p>
-                ))}
-            </div>
+            <div
+              className="product-details"
+              dangerouslySetInnerHTML={{
+                __html: product.Shipping[currentLang] || product.Shipping.en,
+              }}
+            />
 
             {/* Warranty */}
             <h3 className="font-semibold text-lg mb-1">Warranty</h3>
-            <div>
-              {(stripHtml(product.Warranty[currentLang] || product.Warranty.en) || "")
-                .split(/\n{2,}/)
-                .map((paragraph, idx) => (
-                  <p key={idx} className="mb-4">
-                    {paragraph}
-                  </p>
-                ))}
-            </div>
+            <div
+              className="product-details"
+              dangerouslySetInnerHTML={{
+                __html: product.Warranty[currentLang] || product.Warranty.en,
+              }}
+            />
           </div>
         </div>
       </div>

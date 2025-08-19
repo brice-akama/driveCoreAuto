@@ -11,6 +11,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { CurrencyProvider } from "./context/CurrencyContext";
 
 import ClientWrapper from "./components/ClientWrapper";
+import BottomNav from "./components/BottomNav";
 
 // Fonts
 const geistSans = Geist({
@@ -30,12 +31,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={lang}>
+       <link rel="icon" href="/favicon.png" type="image/png" />
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <CurrencyProvider>
           <WishlistProvider>
             <LanguageProvider initialLanguage={lang}>
               <CartProvider>
-                <ClientWrapper>{children}</ClientWrapper>
+                <ClientWrapper>
+                  {children}
+                  <BottomNav /> {/* <-- Insert here */}
+
+                </ClientWrapper>
               </CartProvider>
             </LanguageProvider>
           </WishlistProvider>

@@ -82,7 +82,7 @@ export default function BlogDetails({ post }: { post: BlogPost }) {
           <nav className="inline-block text-sm text-gray-600 mb-4" aria-label="Breadcrumb">
             <ol className="inline-flex items-center space-x-1 sm:space-x-2">
               <li>
-                <Link href="/" className="text-blue-600 hover:underline">
+                <Link href={`/?lang=${language}`} className="text-blue-600 hover:underline">
                   Home
                 </Link>
               </li>

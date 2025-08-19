@@ -1,7 +1,8 @@
 // app/track-order/page.tsx
 // app/track-order/page.tsx
+import fs from "fs";
+import path from "path";
 import { Metadata } from "next";
-import React from "react";
 import TrackOrderPage from "./TrackOrderPage";
 
 const metaTranslations = {
@@ -28,14 +29,16 @@ const metaTranslations = {
 type Lang = "en" | "fr" | "es" | "de";
 const allowedLangs: Lang[] = ["en", "fr", "es", "de"];
 
+// --------------------------------------
+// Metadata generation for SEO
+// --------------------------------------
 export async function generateMetadata({
-  searchParams,
+  params,
 }: {
-  searchParams?: { lang?: string };
+  params: { lang: string };
 }): Promise<Metadata> {
-  const langParam = searchParams?.lang;
-  const lang: Lang = allowedLangs.includes(langParam as Lang)
-    ? (langParam as Lang)
+  const lang: Lang = allowedLangs.includes(params.lang as Lang)
+    ? (params.lang as Lang)
     : "en";
 
   return {
@@ -46,24 +49,47 @@ export async function generateMetadata({
   };
 }
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams?: { lang?: string };
-}) {
-  const langParam = searchParams?.lang;
-  const lang: Lang = allowedLangs.includes(langParam as Lang)
-    ? (langParam as Lang)
+// --------------------------------------
+// SSR translations loader
+// --------------------------------------
+async function loadTranslations(lang: Lang) {
+  const translationsDir = path.join(
+    process.cwd(),
+    "public",
+    "translations",
+    "track-order"
+  );
+  const filePath = path.join(translationsDir, `${lang}.json`);
+
+  try {
+    const fileContents = await fs.promises.readFile(filePath, "utf-8");
+    return JSON.parse(fileContents);
+  } catch (err) {
+    console.error(`❌ Failed to load translations for ${lang}:`, err);
+    return {};
+  }
+}
+
+// --------------------------------------
+// Main page
+// --------------------------------------
+interface Props {
+  params: { lang: string };
+}
+
+export default async function TrackOrderPageSSR({ params }: Props) {
+  const lang: Lang = allowedLangs.includes(params.lang as Lang)
+    ? (params.lang as Lang)
     : "en";
 
-  const baseUrl = "https://www.drivecoreauto.com";
+  const initialTranslations = await loadTranslations(lang);
 
-  // JSON-LD structured data
+  const baseUrl = "https://www.drivecoreauto.com";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: metaTranslations.title[lang],
-    url: `${baseUrl}/track-order?lang=${lang}`,
+    url: `${baseUrl}/${lang}/track-order`,
     description: metaTranslations.description[lang],
     publisher: {
       "@type": "Organization",
@@ -80,15 +106,18 @@ export default function Page({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Hreflang links using query parameters */}
-      <link rel="alternate" hrefLang="en" href={`${baseUrl}/track-order?lang=en`} />
-      <link rel="alternate" hrefLang="fr" href={`${baseUrl}/track-order?lang=fr`} />
-      <link rel="alternate" hrefLang="es" href={`${baseUrl}/track-order?lang=es`} />
-      <link rel="alternate" hrefLang="de" href={`${baseUrl}/track-order?lang=de`} />
-      <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/track-order?lang=en`} />
+      {/* Hreflang links */}
+      <link rel="alternate" hrefLang="en" href={`${baseUrl}/en/track-order`} />
+      <link rel="alternate" hrefLang="fr" href={`${baseUrl}/fr/track-order`} />
+      <link rel="alternate" hrefLang="es" href={`${baseUrl}/es/track-order`} />
+      <link rel="alternate" hrefLang="de" href={`${baseUrl}/de/track-order`} />
+      <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/en/track-order`} />
 
-      {/* Main component */}
-      <TrackOrderPage />
+      {/* Track Order page with SSR translations */}
+      <TrackOrderPage
+        initialLanguage={lang}
+        initialTranslations={initialTranslations}
+      />
     </>
   );
 }

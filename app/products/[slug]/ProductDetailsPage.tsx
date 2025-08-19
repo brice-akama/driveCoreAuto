@@ -301,9 +301,9 @@ useEffect(() => {
   >
     <ol className="inline-flex items-center space-x-1 md:space-x-2">
       <li>
-        <Link href="/" className="text-blue-600 hover:underline">Home</Link>
+        <Link href={`/?lang=${language}`} className="text-blue-600 hover:underline">Home</Link>
       </li>
-      <li>/</li>
+      
       
       <li>/</li>
       <li className="text-gray-900 truncate max-w-[200px]">

@@ -7,9 +7,9 @@ function decodeHtmlEntities(input: string): string {
   return he.decode(input);
 }
 
-// Sanitize user input
+// Sanitize user input (but allow letters, numbers, spaces, hyphens, and accented chars)
 function sanitizeInput(input: string): string {
-  return input.replace(/[^\w\s-]/gi, "").trim();
+  return input.replace(/[^\p{L}\p{N}\s-]/gu, "").trim();
 }
 
 // Escape regex special characters
@@ -24,9 +24,9 @@ export async function GET(req: Request) {
     const language = url.searchParams.get("lang") || "en"; // Current language
 
     const decodedSearch = decodeHtmlEntities(rawSearch);
-    const search = sanitizeInput(decodedSearch);
+    const sanitizedSearch = sanitizeInput(decodedSearch);
 
-    if (!search) {
+    if (!sanitizedSearch) {
       return NextResponse.json({ products: [], blogs: [] });
     }
 
@@ -35,30 +35,27 @@ export async function GET(req: Request) {
     const productsCollection = db.collection("products");
     const blogsCollection = db.collection("news");
 
-    const escapedSearch = escapeRegExp(search);
+    // Escape for safe regex
+    const escapedSearch = escapeRegExp(sanitizedSearch);
 
-    // Search products
+    // Search products by name in current lang, slug, or category
     const products = await productsCollection
       .find({
-        lang: language,
         $or: [
-  { slug: { $regex: escapedSearch, $options: "i" } },
-  { name: { $regex: escapedSearch, $options: "i" } },
-  { category: { $regex: escapedSearch, $options: "i" } },
-]
-
+          { [`name.${language}`]: { $regex: escapedSearch, $options: "i" } },
+          { slug: { $regex: escapedSearch, $options: "i" } },
+          { category: { $regex: escapedSearch, $options: "i" } },
+        ],
       })
       .toArray();
 
-    // Search blogs by title
+    // Search blogs by title in current lang
     const blogs = await blogsCollection
       .find({
-        lang: language,
-        title: { $regex: escapedSearch, $options: "i" },
+        [`title.${language}`]: { $regex: escapedSearch, $options: "i" },
       })
       .toArray();
 
-    // Return combined results
     return NextResponse.json({ products, blogs });
   } catch (error) {
     console.error("Search error:", error);

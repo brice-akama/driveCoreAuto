@@ -104,6 +104,12 @@ export default function ToyotaPage({
  const productsPerPage = isMobile ? 6 : 12;
 
 
+ const handlePaginate = (pageNumber: number) => {
+  paginate(pageNumber); // your existing pagination function
+  window.scrollTo({ top: 0, behavior: "smooth" }); // scroll to very top
+};
+
+
 
 
   const [translatedTexts, setTranslatedTexts] = useState({
@@ -368,7 +374,7 @@ useEffect(() => {
 
         <ol className="inline-flex items-center space-x-2">
           <li>
-            <Link href="/" className="text-blue-600 hover:underline">
+            <Link href={`/?lang=${language}`} className="text-blue-600 hover:underline">
               {translatedTexts.home}
             </Link>
           </li>
@@ -562,7 +568,7 @@ useEffect(() => {
 >
   <ol className="inline-flex items-center space-x-2">
     <li>
-      <Link href="/" className="text-blue-600 hover:underline">
+      <Link href={`/?lang=${language}`} className="text-blue-600 hover:underline">
         {translatedTexts.home}
       </Link>
     </li>
@@ -894,12 +900,12 @@ useEffect(() => {
   <div className="flex justify-center mt-8 space-x-2">
     {/* Previous Button */}
     {currentPage > 1 && (
-      <button
-        onClick={() => paginate(currentPage - 1)}
-        className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
-      >
-        &lt;
-      </button>
+<button
+  onClick={() => handlePaginate(currentPage - 1)}
+  className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
+>
+  &lt;
+</button>
     )}
 
     {/* Page Numbers */}
@@ -926,11 +932,11 @@ useEffect(() => {
     {/* Next Button */}
     {currentPage < totalPages && (
       <button
-        onClick={() => paginate(currentPage + 1)}
-        className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
-      >
-        &gt;
-      </button>
+  onClick={() => handlePaginate(currentPage + 1)}
+  className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
+>
+  &gt;
+</button>
     )}
   </div>
 )}

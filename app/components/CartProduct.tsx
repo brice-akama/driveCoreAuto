@@ -269,56 +269,32 @@ if (quickViewProduct) {
 
           {/* Description */}
           {/* ...inside Quick View modal right side */}
-<h3 className="font-semibold text-lg mb-1">Description</h3>
-<div>
-  {(stripHtml(quickViewProduct.description[currentLang] || quickViewProduct.description.en) || "")
-    .split(/\n{2,}/)
-    .map(paragraph => paragraph.trim())
-    .filter(paragraph => paragraph.length > 0)
-    .map((paragraph, idx) => (
-      <p key={idx} className="mb-4">
-        {paragraph}
-      </p>
-    ))}
-</div>
 
 
 <h3 className="font-semibold text-lg mb-1">Specifications</h3>
-<div>
-  {(stripHtml(quickViewProduct.Specifications[currentLang] || quickViewProduct.Specifications.en) || "")
-    .split(/\n{2,}/) // split on 2 or more newlines
-    .map(paragraph => paragraph.trim())
-    .filter(paragraph => paragraph.length > 0)
-    .map((paragraph, idx) => (
-      <p key={idx} className="mb-4">
-        {paragraph}
-      </p>
-    ))}
-</div>
-<h3 className="font-semibold text-lg mb-1">Shipping & delivery</h3>
-<div>
-  {(stripHtml(quickViewProduct.Shipping[currentLang] || quickViewProduct.Shipping.en) || "")
-    .split(/\n{2,}/) // split on 2 or more newlines
-    .map(paragraph => paragraph.trim())
-    .filter(paragraph => paragraph.length > 0)
-    .map((paragraph, idx) => (
-      <p key={idx} className="mb-4">
-        {paragraph}
-      </p>
-    ))}
-</div>
+<div
+  className="product-details"
+  dangerouslySetInnerHTML={{
+    __html: quickViewProduct.Specifications[currentLang] || quickViewProduct.Specifications.en,
+  }}
+></div>
+
+<h3 className="font-semibold text-lg mb-1">Shipping & Delivery</h3>
+<div
+  className="product-details"
+  dangerouslySetInnerHTML={{
+    __html: quickViewProduct.Shipping[currentLang] || quickViewProduct.Shipping.en,
+  }}
+></div>
+
 <h3 className="font-semibold text-lg mb-1">Warranty</h3>
-<div>
-  {(stripHtml(quickViewProduct.Warranty[currentLang] || quickViewProduct.Warranty.en) || "")
-    .split(/\n{2,}/) // split on 2 or more newlines
-    .map(paragraph => paragraph.trim())
-    .filter(paragraph => paragraph.length > 0)
-    .map((paragraph, idx) => (
-      <p key={idx} className="mb-4">
-        {paragraph}
-      </p>
-    ))}
-</div>
+<div
+  className="product-details"
+  dangerouslySetInnerHTML={{
+    __html: quickViewProduct.Warranty[currentLang] || quickViewProduct.Warranty.en,
+  }}
+></div>
+
 
 
         </div>

@@ -20,15 +20,21 @@ type SubMenuItem = {
 };
 
 interface ProductResult {
-  name: string;
-  slug: string;
+  _id: string;        // or ObjectId if you want
+  name: Record<string, string>;  // multilingual object
+  slug: string | { en: string };
   category?: string;
+  mainImage?: string;
+  subText?: string;
+  price?: number | string;
 }
 
 interface BlogResult {
-  title: string;
-  slug: string;
+  _id: string;
+  title: Record<string, string>; // multilingual object
+ slug: string | { en: string };
 }
+
 
 type MenuItem = {
   name: string;
@@ -61,6 +67,15 @@ const [dropdownResults, setDropdownResults] = useState<{
   products: ProductResult[];
   blogs: BlogResult[];
 }>({ products: [], blogs: [] });
+
+const [popupDropdownResults, setPopupDropdownResults] = useState<{ 
+  products: ProductResult[]; 
+  blogs: BlogResult[] 
+}>({ products: [], blogs: [] });
+
+
+
+
 
 
 
@@ -403,15 +418,19 @@ const [dropdownResults, setDropdownResults] = useState<{
 },
 
 
-       { name: await translate("ABOUT US"), link: "/about-us" },
+      { name: await translate("ABOUT US"), link: `/${language}/about-us` },
         { name: await translate("BLOG"), link: "/blog" },
         
         {
           name: await translate("SUPPORT"), link: "/support",
           subLinks: [
-            { name: await translate("FAQS"), link: "/support/faqs" },
-            { name: await translate("Contact Us"), link: "/support/contact-us" },
-            { name: await translate("Buyer Services"), link: "/support/buyer-services" },
+          { name: await translate("FAQS"), link: `/${language}/support/faqs` },
+            
+            { 
+  name: await translate("Buyer Services"), 
+  link: `/${language}/support/buyer-services` 
+}
+
            
           ]
         },
@@ -466,22 +485,28 @@ const [dropdownResults, setDropdownResults] = useState<{
     }
 
     try {
-      const res = await fetch(`/api/search?search=${encodeURIComponent(searchQuery)}&lang=${language}`);
-      const { products, blogs } = await res.json();
+  const res = await fetch(`/api/search?search=${encodeURIComponent(searchQuery)}&lang=${language}`);
+  const { products, blogs } = await res.json();
 
-      if (products.length || blogs.length) {
-        if (products.length) router.push(`/products/${products[0].slug}?lang=${language}`);
-        else if (blogs.length) router.push(`/blog/${blogs[0].slug}?lang=${language}`);
-
-        setSearchQuery('');
-        setDropdownResults({ products: [], blogs: [] });
-      } else {
-        toast.error("No matching results found.");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong. Please try again.");
+  if (products.length || blogs.length) {
+    if (products.length) {
+      const slug = typeof products[0].slug === 'string' ? products[0].slug : products[0].slug.en;
+      router.push(`/products/${slug}?lang=${language}`);
+    } else if (blogs.length) {
+      const slug = typeof blogs[0].slug === 'string' ? blogs[0].slug : blogs[0].slug.en;
+      router.push(`/blog/${slug}?lang=${language}`);
     }
+
+    setSearchQuery('');
+    setDropdownResults({ products: [], blogs: [] });
+  } else {
+    toast.error("No matching results found.");
+  }
+} catch (error) {
+  console.error(error);
+  toast.error("Something went wrong. Please try again.");
+}
+
   };
 
 
@@ -502,33 +527,57 @@ const [dropdownResults, setDropdownResults] = useState<{
     setHoverTimeout(timeout);
   };
 
-  const doPopupSearch = () => {
+// Fetch & show results as user types
+const handlePopupLiveSearch = async (query: string) => {
+  if (!query.trim()) {
+    setPopupDropdownResults({ products: [], blogs: [] });
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/search?search=${encodeURIComponent(query)}&lang=${language}`);
+    const { products, blogs } = await res.json();
+    setPopupDropdownResults({ products, blogs });
+  } catch (error) {
+    console.error("Live search failed:", error);
+    setPopupDropdownResults({ products: [], blogs: [] });
+  }
+};
+
+// Run when pressing Enter / clicking search button
+const doPopupSearch = async () => {
   if (!popupSearchQuery.trim()) return;
 
-  (async () => {
-    try {
-      const knownPaths = ["/privacy-policy", "/terms", "/support", "/about-us", "/refund-policy", "/shipping-info", "/faqs", "/contact-us"];
-      const matchedPath = knownPaths.find(path => path.toLowerCase().includes(popupSearchQuery.trim().toLowerCase()));
-      if (matchedPath) {
-        router.push(matchedPath);
+  try {
+    const matchedPath = knownPaths.find(path =>
+      path.toLowerCase().includes(popupSearchQuery.trim().toLowerCase())
+    );
+
+    if (matchedPath) {
+      router.push(matchedPath);
+    } else {
+      const res = await fetch(`/api/search?search=${encodeURIComponent(popupSearchQuery.trim())}&lang=${language}`);
+      const { products, blogs } = await res.json();
+
+      if (products.length) {
+        const slug = typeof products[0].slug === "string" ? products[0].slug : products[0].slug.en;
+        router.push(`/products/${slug}?lang=${language}`);
+      } else if (blogs.length) {
+        const slug = typeof blogs[0].slug === "string" ? blogs[0].slug : blogs[0].slug.en;
+        router.push(`/blog/${slug}?lang=${language}`);
       } else {
-        const res = await fetch(`/api/search?search=${encodeURIComponent(popupSearchQuery.trim())}`);
-        const { redirectTo } = await res.json();
-        if (redirectTo) {
-          router.push(redirectTo);
-        } else {
-          toast.error("No matching results found.");
-        }
+        toast.error("No matching results found.");
       }
-    } catch (error) {
-      console.error("Error during search:", error);
-      toast.error("Something went wrong. Please try again.");
     }
-  })();
+  } catch (error) {
+    console.error("Error during search:", error);
+    toast.error("Something went wrong. Please try again.");
+  }
 
   setIsSearchOpen(false);
   setPopupSearchQuery("");
 };
+
 
   const goBack = () => {
     if (mode === "categoryList" || mode === "supportList" || mode === "transmissionsList") setMode("top");
@@ -586,14 +635,14 @@ useEffect(() => {
       Warranty
     </Link>
   <Link
-  href={`/${language}/shipping`}
+href={`/${language}/shipping`}
   className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
 >
   Shipping
 </Link>
 
     <Link
-      href="/track-order"
+          href={`/${language}/track-order`}
       className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
     >
       Track Order
@@ -621,51 +670,112 @@ useEffect(() => {
           </div>
         </div>
 
-        <div className="items-center w-1/2 bg-gray-50 rounded-full shadow-inner px-6 py-3 mx-auto mt-3 hidden md:flex">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={searchPlaceholder}
-            className="flex-grow bg-transparent outline-none text-gray-800 text-lg"
-          />
-          <button onClick={handleSearch} className="flex-shrink-0 ml-3">
-            <FaSearch className="text-gray-500 text-xl" />
-          </button>
-          {/* Dropdown */}
-        {(dropdownResults.products.length || dropdownResults.blogs.length) > 0 && (
-          <div className="search-dropdown absolute bg-white border mt-1 w-full z-50">
-            {dropdownResults.products.map((product) => (
-              <div
-                key={product.slug}
-                className="dropdown-item cursor-pointer p-2 hover:bg-gray-100"
-                onClick={() => {
-                  router.push(`/products/${product.slug}?lang=${language}`);
-                  setDropdownResults({ products: [], blogs: [] });
-                  setSearchQuery('');
-                }}
-              >
-                {product.name}
-              </div>
-            ))}
+        
 
-            {dropdownResults.blogs.map((blog) => (
-              <div
-                key={blog.slug}
-                className="dropdown-item cursor-pointer p-2 hover:bg-gray-100"
-                onClick={() => {
-                  router.push(`/blog/${blog.slug}?lang=${language}`);
-                  setDropdownResults({ products: [], blogs: [] });
-                  setSearchQuery('');
-                }}
-              >
-                {blog.title}
-              </div>
-            ))}
-          </div>
-        )}
 
+<div className="relative w-1/2 mx-auto mt-3 hidden md:flex">
+  <div className="flex items-center bg-gray-50 rounded-full shadow-inner px-6 py-3 w-full">
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder={searchPlaceholder}
+      className="flex-grow bg-transparent outline-none text-gray-800 text-lg"
+    />
+    <button onClick={handleSearch} className="flex-shrink-0 ml-3">
+      <FaSearch className="text-gray-500 text-xl" />
+    </button>
+  </div>
+  
+  {/* Dropdown */}
+  {(dropdownResults.products.length || dropdownResults.blogs.length) > 0 && (
+    <div className="absolute left-0 top-full mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-100 z-50">
+
+      {/* X icon to close */}
+      <button
+        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-10"
+        onClick={() => setDropdownResults({ products: [], blogs: [] })}
+        aria-label="Close"
+      >
+        <FaTimes className="w-5 h-5" />
+      </button>
+      
+      {/* PRODUCTS HEADER */}
+      {dropdownResults.products.length > 0 && (
+        <div className="border-b px-4 py-2 font-semibold text-xs text-gray-500 tracking-widest">
+          PRODUCTS
         </div>
+      )}
+      
+      {/* Grid of product results */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 py-4 max-h-[320px] overflow-y-auto">
+        {dropdownResults.products.map((product) => {
+          const slug = typeof product.slug === "string" ? product.slug : product.slug.en;
+          return (
+            <div
+              key={slug}
+              className="flex flex-col items-center bg-gray-50 rounded-md p-3 cursor-pointer hover:bg-gray-100 transition shadow"
+              onClick={() => {
+                router.push(`/products/${slug}?lang=${language}`);
+                setDropdownResults({ products: [], blogs: [] });
+                setSearchQuery('');
+              }}
+            >
+              <img
+                src={product.mainImage || '/placeholder.jpg'}
+                alt={product.name[language]}
+                className="w-20 h-20 object-cover rounded border mb-2"
+              />
+              <div className="font-semibold text-center text-gray-800 text-sm">
+                {product.name[language]}
+              </div>
+              <div className="text-xs text-gray-500 text-center mb-1">
+                {product.subText || ''}
+              </div>
+              <div className="text-rose-500 font-semibold">{product.price ? `$${product.price}` : ''}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* View all results */}
+      {dropdownResults.products.length > 0 && (
+        <div
+          className="text-center py-3 text-blue-600 hover:underline hover:bg-gray-50 cursor-pointer text-sm font-medium border-t"
+          onClick={() => router.push(`/search?query=${searchQuery}`)}
+        >
+          VIEW ALL RESULTS
+        </div>
+      )}
+
+      {/* BLOGS HEADER */}
+      {dropdownResults.blogs.length > 0 && (
+        <div className="border-b px-4 py-2 font-semibold text-xs text-gray-500 tracking-widest">BLOGS</div>
+      )}
+
+      {/* Blog results (shown below products) */}
+      <div className="px-4 py-2">
+        {dropdownResults.blogs.map((blog) => {
+          const slug = typeof blog.slug === "string" ? blog.slug : blog.slug.en;
+          return (
+            <div
+              key={slug}
+              className="py-2 px-2 rounded hover:bg-gray-100 transition cursor-pointer"
+              onClick={() => {
+                router.push(`/blog/${slug}?lang=${language}`);
+                setDropdownResults({ products: [], blogs: [] });
+                setSearchQuery('');
+              }}
+            >
+              <div className="font-semibold">{blog.title[language]}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  )}
+</div>
+
 
         <div className="flex items-center space-x-2 ">
           <button
@@ -787,8 +897,100 @@ useEffect(() => {
   >
     <FaSearch className="text-white text-lg" />
   </button>
-</div>
 
+  {/* Dropdown (same as large devices) */}
+  {(dropdownResults.products.length || dropdownResults.blogs.length) > 0 && (
+    <div className="absolute left-0 top-full mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-100 z-50">
+      
+      {/* Close dropdown */}
+      <button
+        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-10"
+        onClick={() => setDropdownResults({ products: [], blogs: [] })}
+        aria-label="Close"
+      >
+        <FaTimes className="w-5 h-5" />
+      </button>
+
+      {/* PRODUCTS */}
+      {dropdownResults.products.length > 0 && (
+        <>
+          <div className="border-b px-4 py-2 font-semibold text-xs text-gray-500 tracking-widest">
+            PRODUCTS
+          </div>
+          <div className="px-4 py-2 max-h-[250px] overflow-y-auto">
+            {dropdownResults.products.map((product) => {
+              const slug = typeof product.slug === "string" ? product.slug : product.slug.en;
+              return (
+                <div
+                  key={slug}
+                  className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-100 transition rounded"
+                  onClick={() => {
+                    router.push(`/products/${slug}?lang=${language}`);
+                    setIsSidebarOpen(false);
+                    setDropdownResults({ products: [], blogs: [] });
+                    setSearchQuery("");
+                  }}
+                >
+                  <img
+                    src={product.mainImage || "/placeholder.jpg"}
+                    alt={product.name[language]}
+                    className="w-12 h-12 object-cover rounded border"
+                  />
+                  <div>
+                    <div className="font-semibold text-gray-800 text-sm">
+                      {product.name[language]}
+                    </div>
+                    <div className="text-xs text-gray-500">{product.subText || ""}</div>
+                    <div className="text-rose-500 font-semibold text-xs">
+                      {product.price ? `$${product.price}` : ""}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div
+            className="text-center py-3 text-blue-600 hover:underline hover:bg-gray-50 cursor-pointer text-sm font-medium border-t"
+            onClick={() => {
+              router.push(`/search?query=${searchQuery}`);
+              setIsSidebarOpen(false);
+            }}
+          >
+            VIEW ALL RESULTS
+          </div>
+        </>
+      )}
+
+      {/* BLOGS */}
+      {dropdownResults.blogs.length > 0 && (
+        <>
+          <div className="border-b px-4 py-2 font-semibold text-xs text-gray-500 tracking-widest">
+            BLOGS
+          </div>
+          <div className="px-4 py-2">
+            {dropdownResults.blogs.map((blog) => {
+              const slug = typeof blog.slug === "string" ? blog.slug : blog.slug.en;
+              return (
+                <div
+                  key={slug}
+                  className="py-2 px-2 rounded hover:bg-gray-100 transition cursor-pointer"
+                  onClick={() => {
+                    router.push(`/blog/${slug}?lang=${language}`);
+                    setIsSidebarOpen(false);
+                    setDropdownResults({ products: [], blogs: [] });
+                    setSearchQuery("");
+                  }}
+                >
+                  <div className="font-semibold">{blog.title[language]}</div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  )}
+</div>
 
       
 
@@ -1026,13 +1228,13 @@ useEffect(() => {
 {isSearchOpen && (
   <div
     className="fixed inset-0 bg-opacity-50 flex items-start mt-25 justify-center z-50 p-4"
-    onClick={() => setIsSearchOpen(false)} // Clicking outside popup closes it
+    onClick={() => setIsSearchOpen(false)}
   >
     <div
       className="bg-white p-6 rounded-lg w-full max-w-md relative"
-      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside popup
+      onClick={(e) => e.stopPropagation()}
     >
-      {/* Close button at top-right */}
+      {/* Close button */}
       <button
         onClick={() => setIsSearchOpen(false)}
         aria-label="Close search"
@@ -1041,31 +1243,122 @@ useEffect(() => {
         <FaTimes />
       </button>
 
+      {/* Input */}
       <div className="flex space-x-2 items-center mt-6">
         <input
           type="text"
           value={popupSearchQuery}
-          onChange={(e) => setPopupSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setPopupSearchQuery(e.target.value);
+            handlePopupLiveSearch(e.target.value); // 🔥 fetch results instantly
+          }}
           placeholder={searchPlaceholder}
           autoFocus
           className="flex-grow border border-gray-300 rounded px-4 py-2 text-lg outline-none"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              doPopupSearch();
-            }
-          }}
         />
         <button
-          onClick={doPopupSearch}
-          className="bg-blue-600 text-white px-1 py-2 rounded hover:bg-blue-700 transition"
+          onClick={() => handlePopupLiveSearch(popupSearchQuery)}
+          className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition"
           aria-label="Search"
         >
           <FaSearch />
         </button>
       </div>
+
+      {/* Dropdown Results */}
+      {(popupDropdownResults.products.length > 0 ||
+        popupDropdownResults.blogs.length > 0) && (
+        <div className="mt-4 border rounded-lg shadow-md bg-white max-h-[320px] overflow-y-auto relative">
+          {/* PRODUCTS */}
+          {popupDropdownResults.products.length > 0 && (
+            <>
+              <div className="border-b px-4 py-2 font-semibold text-xs text-gray-500 tracking-widest">
+                PRODUCTS
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 py-4">
+                {popupDropdownResults.products.map((product) => {
+                  const slug =
+                    typeof product.slug === "string"
+                      ? product.slug
+                      : product.slug.en;
+                  return (
+                    <div
+                      key={slug}
+                      className="flex flex-col items-center bg-gray-50 rounded-md p-3 cursor-pointer hover:bg-gray-100 transition shadow"
+                      onClick={() => {
+                        router.push(`/products/${slug}?lang=${language}`);
+                        setIsSearchOpen(false);
+                        setPopupDropdownResults({ products: [], blogs: [] });
+                        setPopupSearchQuery("");
+                      }}
+                    >
+                      <img
+                        src={product.mainImage || "/placeholder.jpg"}
+                        alt={product.name[language]}
+                        className="w-20 h-20 object-cover rounded border mb-2"
+                      />
+                      <div className="font-semibold text-center text-gray-800 text-sm">
+                        {product.name[language]}
+                      </div>
+                      <div className="text-xs text-gray-500 text-center mb-1">
+                        {product.subText || ""}
+                      </div>
+                      <div className="text-rose-500 font-semibold">
+                        {product.price ? `$${product.price}` : ""}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* View all */}
+              <div
+                className="text-center py-3 text-blue-600 hover:underline hover:bg-gray-50 cursor-pointer text-sm font-medium border-t"
+                onClick={() =>
+                  router.push(`/search?query=${popupSearchQuery}`)
+                }
+              >
+                VIEW ALL RESULTS
+              </div>
+            </>
+          )}
+
+          {/* BLOGS */}
+          {popupDropdownResults.blogs.length > 0 && (
+            <>
+              <div className="border-b px-4 py-2 font-semibold text-xs text-gray-500 tracking-widest">
+                BLOGS
+              </div>
+              <div className="px-4 py-2">
+                {popupDropdownResults.blogs.map((blog) => {
+                  const slug =
+                    typeof blog.slug === "string" ? blog.slug : blog.slug.en;
+                  return (
+                    <div
+                      key={slug}
+                      className="py-2 px-2 rounded hover:bg-gray-100 transition cursor-pointer"
+                      onClick={() => {
+                        router.push(`/blog/${slug}?lang=${language}`);
+                        setIsSearchOpen(false);
+                        setPopupDropdownResults({ products: [], blogs: [] });
+                        setPopupSearchQuery("");
+                      }}
+                    >
+                      <div className="font-semibold">
+                        {blog.title[language]}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   </div>
 )}
+
 
     </div>
   );

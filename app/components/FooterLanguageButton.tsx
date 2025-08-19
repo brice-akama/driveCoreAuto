@@ -17,7 +17,7 @@ export default function FooterLanguageButton() {
   const langInfo = languageOptions.find((l) => l.code === language) || languageOptions[0];
 
   return (
-    <div className="block md:block lg:hidden fixed bottom-5 left-1/2 transform -translate-x-1/2 md:left-5 md:translate-x-0 z-50">
+    <div className="block md:block lg:hidden fixed bottom-16 left-1/2 transform -translate-x-1/2 md:left-5 md:translate-x-0 z-50">
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}

@@ -11,6 +11,7 @@ import {
   
 } from "react-icons/fa";
 import { SiCashapp } from "react-icons/si";
+
 import { useLanguage } from "@/app/context/LanguageContext";
 
 // Import your logo - adjust path to your actual logo file
@@ -26,9 +27,20 @@ const Footer: React.FC = () => {
     quickLinks: "Quick Links",
     home: "Home",
     login: "LOGIN",
-    weAccept: "We Accept",
+    transmissions: "Transmissions",
+    trackOrder: "Track Order",
+     engines: "Engines",
+    swaps: "Swaps",
+    accessories: "Accessories",
+    customerSupport: "CUSTOMER SUPPORT",
+    weAccept: "We Accept",   // Accessories
     buyerServices: "Buyer Services",
+    description: " DriveCore Auto is your trusted source for high-quality automotive parts and expert swaps.",
     privacyPolicy: "Privacy Policy",
+    warranty: "Warranty",
+    fAQs: "FAQs",
+    sHOP: "SHOP",
+    returPolicy: "Reture Policy",
     terms: "Terms & Conditions",
     refundPolicy: "Refund Policy",
     shippingInfo: "Shipping Info",
@@ -37,6 +49,8 @@ const Footer: React.FC = () => {
     copyright: `© ${new Date().getFullYear()} drivecoreauto.com. All rights reserved.`,
   });
 
+  const { language } = useLanguage();
+
   useEffect(() => {
     async function translateTexts() {
       setTranslatedTexts({
@@ -44,12 +58,23 @@ const Footer: React.FC = () => {
         newsletterDesc: await translate("Get updates on new products and special offers."),
         placeholder: await translate("Enter your email"),
         subscribe: await translate("Subscribe"),
-        quickLinks: await translate("Quick Links"),
+        quickLinks: await translate("Quick Links"),  // Accessories
         home: await translate("Home"),
+         accessories: await translate("Accessories"),
+        swaps: await translate("Swaps"),
+        transmissions: await translate("Transmissions"),
+        sHOP: await translate("SHOP"),
+        engines: await translate("Engines"),
+        returPolicy: await translate("Return Policy"),
+         fAQs: await translate("FAQs"),
+         warranty: await translate("Warranty"),
+         description: await translate("DriveCore Auto is your trusted source for high-quality automotive parts and expert swaps."),
         login: await translate("LOGIN"),
+         customerSupport: await translate("CUSTOMER SUPPORT"),
         buyerServices: await translate("Buyer Services"),
         privacyPolicy: await translate("Privacy Policy"),
         weAccept: await translate("We Accept"),
+        trackOrder: await translate("Track Order"),
         terms: await translate("Terms & Conditions"),
         refundPolicy: await translate("Refund Policy"),
         shippingInfo: await translate("Shipping Info"),
@@ -109,7 +134,7 @@ const Footer: React.FC = () => {
       </Link>
       <div className="text-gray-300 text-sm mb-4"> 
          <p className="text-gray-300 text-sm mb-10">
-    DriveCore Auto is your trusted source for high-quality automotive parts and expert swaps.
+   {translatedTexts.description}
   </p>
       </div>
      
@@ -118,27 +143,28 @@ const Footer: React.FC = () => {
 
     {/* Customer Support */}
     <div>
-      <h3 className="font-semibold text-lg mb-4  pb-2">Customer Support</h3>
+      <h3 className="font-semibold text-lg mb-4  pb-2">  {translatedTexts.customerSupport}</h3>
       <ul className="space-y-3 text-sm">
-        <li><Link href="/track-order" className="hover:underline">Track Order</Link></li>
-        <li><Link href="/warranty" className="hover:underline">Warranty</Link></li>
-        <li><Link href="/faq" className="hover:underline">FAQs</Link></li>
-        <li><Link href="/installation-guide" className="hover:underline">Installation Guide</Link></li>
-        <li><Link href="/shipping-info" className="hover:underline">{translatedTexts.shippingInfo}</Link></li>
-         <li><Link href="/refund-policy" className="hover:underline">Return Policy</Link></li>
+        <li><Link href={`/${language}/track-order`} className="hover:underline"> {translatedTexts.trackOrder }</Link></li>
+        <li><Link  href={`/${language}/warranty`}className="hover:underline">
+        {translatedTexts.warranty} </Link></li>
+        <li><Link href={`/${language}/support/faqs`}className="hover:underline"> {translatedTexts.fAQs}</Link></li>
+        
+        <li><Link href={`/${language}/shipping`} className="hover:underline">{translatedTexts.shippingInfo}</Link></li>
+         <li><Link href={`/${language}/refund-policy`} className="hover:underline"> {translatedTexts.returPolicy}</Link></li>
         <li><a href="mailto:support@drivecoreauto.com" className="hover:underline">support@drivecoreauto.com</a></li>
       </ul>
     </div>
 
     {/* Shop Links */}
     <div>
-      <h3 className="font-semibold text-lg mb-4 pb-2">SHOP</h3>
+      <h3 className="font-semibold text-lg mb-4 pb-2"> {translatedTexts.sHOP}</h3>
       <ul className="space-y-3 text-sm">
-        <li><Link href="/privacy-policy" className="hover:underline">Engines</Link></li>
-        <li><Link href="/terms" className="hover:underline">Transmissions</Link></li>
-        <li><Link href="/refund-policy" className="hover:underline">Swaps</Link></li>
+        <li><Link href="/toyota" className="hover:underline"> {translatedTexts.engines}</Link></li>
+        <li><Link href="/transmissions/nissan/automatic" className="hover:underline"> {translatedTexts.transmissions}</Link></li>
+        <li><Link href="/swaps/toyota" className="hover:underline"> {translatedTexts.swaps}</Link></li>
         
-        <li><Link href="/refund-policy" className="hover:underline">Accessories</Link></li>
+        <li><Link href="/accessories" className="hover:underline"> {translatedTexts.accessories}</Link></li>
        
         
       </ul>
@@ -182,7 +208,7 @@ const Footer: React.FC = () => {
     </div>
 {/* Payment Methods */}
 <div className="mt-10 text-center">
-  <h4 className="text-sm font-semibold mb-4 text-gray-100">We Accept</h4>
+  <h4 className="text-sm font-semibold mb-4 text-gray-100"> {translatedTexts.weAccept}</h4>
   <div className="flex justify-center items-center flex-wrap gap-3">
     {/* PayPal */}
     <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-blue-50 shadow">

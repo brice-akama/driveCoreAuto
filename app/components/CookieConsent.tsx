@@ -33,7 +33,7 @@ export default function CookieConsent() {
             <p className="text-sm sm:text-base mb-4 sm:mb-0">
               We use cookies to enhance your experience. Some are essential for the operation of our website, while others help analyze site usage. By clicking "Accept," you agree to the use of all cookies. See our{" "}
               <Link href="/cookie-policy" className="underline">Cookie Policy</Link> and{" "}
-              <Link href="/Privacy Policy" className="underline">Privacy Policy</Link>.
+              <Link href="/privacy-Policy" className="underline">Privacy Policy</Link>.
             </p>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
               <button
