@@ -7,11 +7,11 @@ import { useWishlist } from "@/app/context/WishlistContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { Menu, X } from "lucide-react";
-import BrandLinksNav from "../components/BrandLinksNav";
+import BrandLinksNav from "@/app/components/BrandLinksNav";
 import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
-import { useCart } from "../context/CartContext";
-import QuickViewModal from "../components/QuickViewModal"; 
+import { useCart } from "@/app/context/CartContext";
+import QuickViewModal from "@/app/components/QuickViewModal"; 
 
 export type Product = {
   _id: string;
@@ -31,7 +31,7 @@ export type Product = {
   imageUrl?: string;
 };
 
-export type ToyotaPageProps = {
+export type TransmissionsHondaAutomaticPageProps = {
   categorySlug?: string;
   initialProducts?: Product[];
   initialCategories?: string[];
@@ -40,12 +40,12 @@ export type ToyotaPageProps = {
 
 const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
 
-export default function ToyotaPage({
+export default function TransmissionsHondaAutomaticPage({
   categorySlug,
   initialProducts = [],
   initialCategories = [],
   initialVehicleModels = [],
-}: ToyotaPageProps) {
+}: TransmissionsHondaAutomaticPageProps) {
   const { language, translate } = useLanguage();
   const currentLang = language || "en";
   const router = useRouter();
@@ -75,7 +75,7 @@ export default function ToyotaPage({
 
   const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
     const params = new URLSearchParams();
-    params.set("toyota", "true");
+    params.set("transmissionsHondataAutomatic", "true");
 
     if (engineCode && engineCode.trim() !== "") {
       params.set("category", engineCode.trim().toUpperCase());
@@ -84,12 +84,12 @@ export default function ToyotaPage({
     }
 
     if (vehicleModel && vehicleModel.trim() !== "") {
-      params.set("vehicleModel", vehicleModel.trim());
+      params.set("vehicleModel", vehicleModel.trim());    //  swapsToyota
     } else {
       params.delete("vehicleModel");
     }
 
-    router.push(`toyota?${params.toString()}`);
+    router.push(`/transmissions/honda/automatic?${params.toString()}`);
   };
 
 
@@ -116,7 +116,7 @@ export default function ToyotaPage({
     addToCart: "Add to Cart",
     addToWishList: "Add to Wishlist",
       home: " Home",
-      toyota: "Toyota",
+      toyota: "Transmissions Honda Automatic",
       engineCodes: "Engine Codes",
        vehicleModel: "VEHICLE MODEL",
          sortedBy: "Sort By",
@@ -138,7 +138,7 @@ export default function ToyotaPage({
   async function fetchTranslations() {
     try {
       const addToCart = await translate("Add to Cart");
-      const toyota = await translate("Toyota");
+      const toyota = await translate("Transmissions Honda Automatic");
       const engineCodes = await translate("Engine Codes");
       const addToWishList = await translate("Add to Wishlist");
       const home = await translate("Home");
@@ -157,7 +157,7 @@ export default function ToyotaPage({
         addToCart: addToCart || "Add to Cart",
         addToWishList: addToWishList || "Add to Wishlist",
         home: home || "Home",
-        toyota: toyota || "Toyota",
+        toyota: toyota || "Transmissions Honda Automatic",
         engineCodes: engineCodes || "Engine Codes",
         vehicleModel: vehicleModel || "VEHICLE MODEL",
         sortedBy: sortedBy || "Sort By",
@@ -175,7 +175,7 @@ export default function ToyotaPage({
         addToCart: "Add to Cart",
         addToWishList: "Add to Wishlist",
         home: "Home",
-        toyota: "Toyota",
+        toyota: "Transmissions Honda Automatic",
         engineCodes: "Engine Codes",
         vehicleModel: "VEHICLE MODEL",
         sortedBy: "Sort By",
@@ -273,8 +273,8 @@ const currentProducts = sortedProducts.slice(
 
 
   const extractModel = (name: string): string => {
-    const match = name.match(/Toyota\s+\w+/i);
-    return match ? match[0].toUpperCase() : "TOYOTA ENGINE";
+    const match = name.match(/Honda\s+\w+/i);
+    return match ? match[0].toUpperCase() : "HONDA ENGINE";
   };
 
   // Suggestion filters based on input text
@@ -303,7 +303,7 @@ const slugifyEngineCodeForUrl = (code: string) =>
   else params.delete("vehicleModel");
 
   // keep existing category if present
-  router.push(`/toyota?${params.toString()}`);
+  router.push(`/transmissions/honda/automatic?${params.toString()}`);
 };
 
 
@@ -325,7 +325,7 @@ const slugifyEngineCodeForUrl = (code: string) =>
   const vm = params.get("vehicleModel");
   if (!vm) params.delete("vehicleModel");
 
-  router.push(`/toyota?${params.toString()}`);
+  router.push(`/transmissions/honda/automatic?${params.toString()}`);
 };
 
 
@@ -351,7 +351,7 @@ useEffect(() => {
   async function fetchFilteredProducts() {
     setLoading(true);
     const params = new URLSearchParams();
-    params.set("toyota", "true");
+    params.set("transmissionsHondataAutomatic", "true");
     if (category) params.set("engineCode", category.toUpperCase());
     if (vehicleModel) params.set("vehicleModel", vehicleModel);
 
@@ -372,7 +372,7 @@ useEffect(() => {
     <>
     <div className=" md:mt-0">
      
-  <BrandLinksNav currentBrand="toyota" />
+  <BrandLinksNav currentBrand="Transmissions Honda Automatic" />
 </div>
 
     <div className="max-w-7xl mx-auto px-4 py-10 ">

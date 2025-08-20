@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { FiHeart, FiFacebook, FiTwitter } from "react-icons/fi";
+import { useLanguage } from "../context/LanguageContext";
 
 interface Product {
   _id: string;
@@ -43,6 +44,9 @@ export default function QuickViewModal({
 }: QuickViewModalProps) {
   const { symbol } = useCurrency();
   const currencySymbol = propSymbol || symbol || "$";
+   const { translate} = useLanguage();
+
+   
 
   const domain =
     process.env.NEXT_PUBLIC_API_URL ||
@@ -104,7 +108,7 @@ export default function QuickViewModal({
             </h2>
 
             <p className="text-lg font-semibold mb-3">
-              {currencySymbol}
+              {symbol}
               {product.price}
             </p>
 

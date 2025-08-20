@@ -31,7 +31,7 @@ export type Product = {
   imageUrl?: string;
 };
 
-export type ToyotaPageProps = {
+export type NissanPageProps = {
   categorySlug?: string;
   initialProducts?: Product[];
   initialCategories?: string[];
@@ -40,12 +40,12 @@ export type ToyotaPageProps = {
 
 const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
 
-export default function ToyotaPage({
+export default function NissanPage({
   categorySlug,
   initialProducts = [],
   initialCategories = [],
   initialVehicleModels = [],
-}: ToyotaPageProps) {
+}: NissanPageProps) {
   const { language, translate } = useLanguage();
   const currentLang = language || "en";
   const router = useRouter();
@@ -75,7 +75,7 @@ export default function ToyotaPage({
 
   const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
     const params = new URLSearchParams();
-    params.set("toyota", "true");
+    params.set("nissan", "true");
 
     if (engineCode && engineCode.trim() !== "") {
       params.set("category", engineCode.trim().toUpperCase());
@@ -89,7 +89,7 @@ export default function ToyotaPage({
       params.delete("vehicleModel");
     }
 
-    router.push(`toyota?${params.toString()}`);
+    router.push(`nissan?${params.toString()}`);
   };
 
 
@@ -116,7 +116,7 @@ export default function ToyotaPage({
     addToCart: "Add to Cart",
     addToWishList: "Add to Wishlist",
       home: " Home",
-      toyota: "Toyota",
+      toyota: "Nissan",
       engineCodes: "Engine Codes",
        vehicleModel: "VEHICLE MODEL",
          sortedBy: "Sort By",
@@ -138,7 +138,7 @@ export default function ToyotaPage({
   async function fetchTranslations() {
     try {
       const addToCart = await translate("Add to Cart");
-      const toyota = await translate("Toyota");
+      const toyota = await translate("Nissan");
       const engineCodes = await translate("Engine Codes");
       const addToWishList = await translate("Add to Wishlist");
       const home = await translate("Home");
@@ -157,7 +157,7 @@ export default function ToyotaPage({
         addToCart: addToCart || "Add to Cart",
         addToWishList: addToWishList || "Add to Wishlist",
         home: home || "Home",
-        toyota: toyota || "Toyota",
+        toyota: toyota || "Nissan",
         engineCodes: engineCodes || "Engine Codes",
         vehicleModel: vehicleModel || "VEHICLE MODEL",
         sortedBy: sortedBy || "Sort By",
@@ -175,7 +175,7 @@ export default function ToyotaPage({
         addToCart: "Add to Cart",
         addToWishList: "Add to Wishlist",
         home: "Home",
-        toyota: "Toyota",
+        toyota: "Nissan",
         engineCodes: "Engine Codes",
         vehicleModel: "VEHICLE MODEL",
         sortedBy: "Sort By",
@@ -273,8 +273,8 @@ const currentProducts = sortedProducts.slice(
 
 
   const extractModel = (name: string): string => {
-    const match = name.match(/Toyota\s+\w+/i);
-    return match ? match[0].toUpperCase() : "TOYOTA ENGINE";
+    const match = name.match(/Nissan\s+\w+/i);
+    return match ? match[0].toUpperCase() : "NISSAN ENGINE";
   };
 
   // Suggestion filters based on input text
@@ -303,7 +303,7 @@ const slugifyEngineCodeForUrl = (code: string) =>
   else params.delete("vehicleModel");
 
   // keep existing category if present
-  router.push(`/toyota?${params.toString()}`);
+  router.push(`/nissan?${params.toString()}`);
 };
 
 
@@ -325,7 +325,7 @@ const slugifyEngineCodeForUrl = (code: string) =>
   const vm = params.get("vehicleModel");
   if (!vm) params.delete("vehicleModel");
 
-  router.push(`/toyota?${params.toString()}`);
+  router.push(`/nissan?${params.toString()}`);
 };
 
 
@@ -351,7 +351,7 @@ useEffect(() => {
   async function fetchFilteredProducts() {
     setLoading(true);
     const params = new URLSearchParams();
-    params.set("toyota", "true");
+    params.set("nissan", "true");
     if (category) params.set("engineCode", category.toUpperCase());
     if (vehicleModel) params.set("vehicleModel", vehicleModel);
 
@@ -372,7 +372,7 @@ useEffect(() => {
     <>
     <div className=" md:mt-0">
      
-  <BrandLinksNav currentBrand="toyota" />
+  <BrandLinksNav currentBrand="nissan" />
 </div>
 
     <div className="max-w-7xl mx-auto px-4 py-10 ">

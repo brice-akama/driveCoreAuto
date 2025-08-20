@@ -21,10 +21,12 @@ export async function generateMetadata({
   const posts: BlogPostType[] = Array.isArray(data.data) ? data.data : [];
 
   const seoPost = posts[0]; // Use first post for metadata
-  const title = seoPost?.title?.[currentLang] || 'Blog - 16Zips';
+  const title = seoPost?.title?.[currentLang] || 'Blog - DriveCore Auto';
   const description =
-    seoPost?.content?.[currentLang]?.slice(0, 150) || 'Explore cannabis insights, product highlights, usage tips, and industry news on the 16Zips blog.';
-  const image = seoPost?.imageUrl || '/default-blog-image.jpg';
+  seoPost?.content?.[currentLang]?.slice(0, 150) ||
+  'Discover automotive insights, product highlights, maintenance tips, and industry news on the DriveCore Auto blog.';
+
+  const image = seoPost?.imageUrl || '/assets/hero.png';
   const pageUrl = `${process.env.NEXT_PUBLIC_API_URL}/blog`;
 
   // Structured data (JSON-LD)

@@ -69,6 +69,7 @@ interface Product {
 
 interface Props {
   product: Product;
+  lang: string; // ✅ add this
 }
 
 const stripHtmlToParagraphs = (html: string): string[] => {
@@ -100,7 +101,7 @@ const stripHtmlToParagraphs = (html: string): string[] => {
 
 
 
-const ProductDetailsPage: React.FC<Props> = ({ product }) => {
+const ProductDetailsPage: React.FC<Props> = ({ product, lang }) => {
   const [selectedThumbnail, setSelectedThumbnail] = useState<number>(0);
 
   const [quantity, setQuantity] = useState(1);
@@ -225,28 +226,30 @@ useEffect(() => {
 
   return (
     <>
-      <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org/",
-              "@type": "Product",
-              name: product.name,
-              image: [product.mainImage, ...product.thumbnails],
-              description: product.description,
-              sku: product.slug,
-              offers: {
-                "@type": "Offer",
-                url: `https://yourdomain.com/product/${product.slug}`,
-                priceCurrency: "USD",
-                price: product.price,
-                availability: "https://schema.org/InStock",
-              },
-            }),
-          }}
-        ></script>
-      </Head>
+<Head>
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        name: product.name[lang] || product.name["en"],
+        image: [product.mainImage, ...product.thumbnails],
+        description: product.description[lang] || product.description["en"],
+        sku: product._id,
+        offers: {
+          "@type": "Offer",
+          url: `https://www.drivecoreauto.com/product/${product.slug[lang] || product.slug["en"]}`,
+          priceCurrency: "USD",
+          price: product.price,
+          availability: "https://schema.org/InStock",
+        },
+      }),
+    }}
+  />
+</Head>
+
+
 
       <section className="max-w-6xl mx-auto px-4 py-10 mt-20 lg:mt-40">
 
@@ -266,6 +269,7 @@ useEffect(() => {
     width={500}
     height={500}
     className="rounded-lg"
+    unoptimized
   />
 </div>
 
@@ -286,6 +290,7 @@ useEffect(() => {
           width={100}
           height={100}
           className="rounded-lg"
+          unoptimized
         />
       </div>
     ))}
@@ -521,6 +526,7 @@ useEffect(() => {
             width={800}
             height={800}
             className="rounded"
+            unoptimized
           />
         </div>
       </div>

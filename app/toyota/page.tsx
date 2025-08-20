@@ -40,7 +40,7 @@ const langCookie = cookieStore.get('language');
 
   const title = seoProduct?.metaTitle?.[currentLang] || seoProduct?.name?.[currentLang] || 'Toyota Products';
   const description = seoProduct?.metaDescription?.[currentLang] || seoProduct?.description?.[currentLang] || 'Explore Toyota engines, transmissions, swaps and more.';
-  const image = seoProduct?.imageUrl || '/default-image.jpg';
+  const image = seoProduct?.imageUrl || '/assets/hero.png';
   const pageUrl = `${process.env.NEXT_PUBLIC_API_URL}/toyota${categorySlug ? `?category=${categorySlug}` : ''}`;
 
   // Structured data (JSON-LD)

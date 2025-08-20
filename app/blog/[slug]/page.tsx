@@ -12,54 +12,65 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const lang = searchParams?.lang || 'en';
 
-  // Fetch by English slug + lang (already your slug param)
-  const post = await getBlogPost(params.slug, lang);
-
+  // Always fetch by English slug for canonical
+  const post = await getBlogPost(params.slug, 'en');
   if (!post) return {};
 
-  const metaTitle =
+  const localizedTitle =
     (post.metaTitle && (post.metaTitle[lang] || post.metaTitle['en'])) ||
     post.title?.[lang] ||
     post.title?.['en'] ||
     '';
 
-  const metaDescription =
+  const localizedDescription =
     (post.metaDescription && (post.metaDescription[lang] || post.metaDescription['en'])) ||
     (post.content && (post.content[lang]?.slice(0, 150) || post.content['en']?.slice(0, 150))) ||
     '';
 
   const imageUrl = post.imageUrl;
 
-  // Always build canonical URL with English slug (params.slug is English slug)
-  const canonicalUrl = `https://www.16zip.com/blog/${params.slug}`;
+  // Canonical always points to English slug
+  const canonicalUrl = `https://www.drivecoreauto.com/blog/${params.slug}`;
+
+  // Supported languages
+  const languages = ['en', 'fr', 'de', 'es'];
+
+  // Build hreflang URLs safely for TypeScript
+  const alternates: Metadata['alternates'] = {
+    canonical: canonicalUrl,
+    languages: {} as Record<string, string>,
+  };
+  languages.forEach((l) => {
+    (alternates.languages as Record<string, string>)[l] = `${canonicalUrl}?lang=${l}`;
+  });
+
+  // Optional: x-default fallback
+  (alternates.languages as Record<string, string>)['x-default'] = canonicalUrl;
 
   return {
-    title: metaTitle,
-    description: metaDescription,
+    title: localizedTitle,
+    description: localizedDescription,
     openGraph: {
-      title: metaTitle,
-      description: metaDescription,
+      title: localizedTitle,
+      description: localizedDescription,
       url: canonicalUrl,
       images: imageUrl ? [{ url: imageUrl }] : undefined,
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
-      title: metaTitle,
-      description: metaDescription,
+      title: localizedTitle,
+      description: localizedDescription,
       images: imageUrl ? [imageUrl] : undefined,
     },
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL!),
+    alternates,
   };
 }
 
 export default async function Page({ params, searchParams }: Props) {
   const lang = searchParams?.lang || 'en';
 
-  // Fetch post with English slug + lang param
+  // Fetch post using the selected language
   const post = await getBlogPost(params.slug, lang);
 
   if (!post) return <div>Post not found</div>;

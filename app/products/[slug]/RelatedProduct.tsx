@@ -322,6 +322,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
           alt={quickViewProduct.name[language] || quickViewProduct.name.en}
           fill
           className="object-cover"
+          unoptimized
         />
 
         <Link

@@ -1,0 +1,9 @@
+# Allow all crawlers to index the site
+User-agent: *
+Disallow: /admin/        # Block the admin section
+Disallow: /profile/        # Block the login page
+Disallow: /checkout/     # Block the checkout page
+
+
+# Sitemap location
+Sitemap: https://www.drivecoreauto.com/api/sitemap
