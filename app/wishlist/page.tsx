@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
 import React from 'react';
 import Link from 'next/link';
+import Breadcrumb from '../components/Breadcrumbs';
 
 interface WishlistItem {
   _id: string;
@@ -40,24 +41,37 @@ export default function WishlistPage() {
     openCart();
   };
 
+  // **If wishlist is empty**
   if (wishlist.length === 0) {
-  return (
-    <div className="p-6 text-center mt-40">
-      <p className="mb-4 text-lg font-semibold">Your wishlist is empty.</p>
-       <Link
-        href="/toyota"
-        className="inline-block mt-2 px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900 transition"
-      >
-        Continue Shopping
-      </Link>
-    </div>
-  );
-}
+    return (
+      <div className="mt-20 lg:mt-40">
+        <div className="bg-black text-white py-8 text-center w-full">
+          <h1 className="text-4xl font-black uppercase ">Wishlist</h1>
+          <Breadcrumb />
+        </div>
+        <div className="p-6 text-center">
+          <p className="mb-4 text-lg font-semibold">Your wishlist is empty.</p>
+          <Link
+            href="/toyota"
+            className="inline-block mt-2 px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900 transition"
+          >
+            Continue Shopping
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-
+  // **If wishlist has items**
   return (
-    <div className="wishlist-page p-6 max-w-5xl mx-auto mt-40">
-      <h1 className="text-3xl font-bold mb-6">Your Wishlist</h1>
+          <div className="mt-20 lg:mt-40">
+        <div className="bg-black text-white py-8 text-center w-full">
+          <h1 className="text-4xl font-black uppercase ">Wishlist</h1>
+          <Breadcrumb />
+        </div>
+    <div className="wishlist-page p-6 max-w-5xl mx-auto">
+
+      <h1 className="text-3xl font-bold">Your Wishlist</h1>
 
       {/* For desktop/tablet */}
       <div className="hidden md:block">
@@ -145,6 +159,7 @@ export default function WishlistPage() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

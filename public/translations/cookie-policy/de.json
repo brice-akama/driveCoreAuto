@@ -1,0 +1,29 @@
+{
+  "title": "Cookie-Richtlinie",
+  "intro": "Bei DriveCore Auto verwenden wir Cookies und ähnliche Technologien, um Ihre Browser-Erfahrung zu verbessern, den Websiteverkehr zu analysieren und Inhalte sowie Angebote zu personalisieren.",
+  "lastUpdated": "Zuletzt aktualisiert: August 2025",
+  "toc": {
+    "infoWeCollect": "Gesammelte Informationen",
+    "howWeUse": "Wie wir Ihre Informationen verwenden",
+    "sharing": "Weitergabe Ihrer Informationen",
+    "security": "Datensicherheit",
+    "yourRights": "Ihre Rechte",
+    "retention": "Datenaufbewahrung",
+    "thirdParties": "Links zu Drittanbietern",
+    "children": "Datenschutz für Kinder",
+    "changes": "Änderungen dieser Richtlinie",
+    "contact": "Kontakt"
+  },
+  "sections": {
+    "infoWeCollect": "Cookies können technische Daten, Nutzungsinformationen und Präferenzen sammeln, um die Funktionalität der Website und Ihre Erfahrung zu verbessern.",
+    "howWeUse": "Wir verwenden Cookies, um die Leistung der Website zu optimieren, Ihre Präferenzen zu speichern, personalisierte Inhalte anzuzeigen und den Verkehr zu analysieren.",
+    "sharing": "Wir verkaufen Ihre Cookie-Daten nicht. Anonyme Daten können mit Analyse- und Dienstleistern geteilt werden.",
+    "security": "Cookies sind an sich nicht gefährlich, aber wir implementieren Schutzmaßnahmen für gesammelte Daten.",
+    "yourRights": "Sie können Cookies in Ihrem Browser deaktivieren, aber einige Funktionen funktionieren dann möglicherweise nicht korrekt.",
+    "retention": "Cookie-Daten werden gemäß gesetzlichen Anforderungen oder bis zur Löschung durch Sie aufbewahrt.",
+    "thirdParties": "Unsere Website kann Cookies von Drittanbietern für Analysen, Werbung oder eingebettete Dienste enthalten.",
+    "children": "Unsere Website richtet sich nicht an Kinder unter 13 Jahren, und wir sammeln deren Daten nicht wissentlich.",
+    "changes": "Wir können diese Cookie-Richtlinie von Zeit zu Zeit aktualisieren. Änderungen werden hier mit aktualisiertem Datum veröffentlicht.",
+    "contact": "Bei Fragen zu unserer Cookie-Richtlinie kontaktieren Sie uns unter support@drivecoreauto.com."
+  }
+}

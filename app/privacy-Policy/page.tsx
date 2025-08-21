@@ -8,7 +8,7 @@ export default function PrivacyPolicy() {
       </h1>
 
       <p className="mb-6">
-        At <strong>Your Company Name</strong>, we respect and protect your privacy. 
+        At <strong>DriveCore Auto</strong>, we respect and protect your privacy. 
         This Privacy Policy explains how we collect, use, and safeguard your personal 
         information when you visit our website or purchase our products such as engines, 
         transmission swaps, subframes, and automotive accessories.
@@ -76,9 +76,8 @@ export default function PrivacyPolicy() {
       <p>
         If you have any questions or concerns about this Privacy Policy, please contact us at:  
         <br />
-        <strong>Email:</strong> support@yourcompany.com  
-        <br />
-        <strong>Phone:</strong> +1 (123) 456-7890
+        <strong>Email:</strong> support@drivecoreauto.com  
+        
       </p>
     </div>
   );

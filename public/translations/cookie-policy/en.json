@@ -1,0 +1,29 @@
+{
+  "title": "Cookie Policy",
+  "intro": "At DriveCore Auto, we use cookies and similar technologies to enhance your browsing experience, analyze site traffic, and personalize content and offers.",
+  "lastUpdated": "Last updated: August 2025",
+  "toc": {
+    "infoWeCollect": "Information We Collect",
+    "howWeUse": "How We Use Your Information",
+    "sharing": "Sharing Your Information",
+    "security": "Data Security",
+    "yourRights": "Your Rights",
+    "retention": "Data Retention",
+    "thirdParties": "Third-Party Links",
+    "children": "Children’s Privacy",
+    "changes": "Changes to This Policy",
+    "contact": "Contact Us"
+  },
+  "sections": {
+    "infoWeCollect": "Cookies may collect technical data, usage information, and preferences to improve site functionality and your experience.",
+    "howWeUse": "We use cookies to optimize site performance, remember your preferences, show personalized content, and analyze traffic.",
+    "sharing": "We do not sell your cookie data. We may share limited anonymous data with analytics and service providers.",
+    "security": "Cookies are not inherently dangerous, but we implement safeguards to protect any information collected.",
+    "yourRights": "You may choose to disable cookies in your browser, but some features may not function properly.",
+    "retention": "Cookie data is retained as per legal requirements or until you delete them from your browser.",
+    "thirdParties": "Our site may contain third-party cookies from analytics, advertising, or embedded services.",
+    "children": "Our website is not intended for children under 13, and we do not knowingly collect their data.",
+    "changes": "We may update this Cookie Policy from time to time. Changes will be posted here with a revised date.",
+    "contact": "For questions about our Cookie Policy, contact us at support@drivecoreauto.com."
+  }
+}

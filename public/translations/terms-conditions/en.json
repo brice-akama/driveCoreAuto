@@ -1,0 +1,66 @@
+{
+  "title": "Terms and Conditions",
+  "intro": "Welcome to DriveCore Auto. By accessing or using our website, products, or services, you agree to comply with and be bound by the following Terms and Conditions. Please read them carefully.",
+  "sections": {
+    "introduction": {
+      "heading": "1. Introduction",
+      "content": "DriveCore Auto (\"we,\" \"our,\" or \"us\") sells automotive parts including engines, transmissions, swaps, surfacing parts, and other related components (\"Products\"). These Terms and Conditions govern your use of our website, purchase of products, and other related services. By purchasing from or using our website, you agree to these Terms."
+    },
+    "eligibility": {
+      "heading": "2. Eligibility",
+      "content": "You must be at least 18 years old or the legal age in your jurisdiction to enter into binding contracts. By using our services, you confirm that you have legal capacity to accept these Terms."
+    },
+    "productInfo": {
+      "heading": "3. Product Information",
+      "content": "We strive to provide accurate descriptions, images, and specifications of our products. However, we do not guarantee that all information is complete, current, or free of errors. Product colors, sizes, and specifications may slightly vary due to manufacturing processes or display settings."
+    },
+    "ordersPayment": {
+      "heading": "4. Orders and Payment",
+      "content": "Order Acceptance: Placing an order does not guarantee acceptance. We reserve the right to refuse or cancel any order for any reason, including product unavailability, errors in pricing or description, or suspicion of fraudulent activity. Pricing: All prices are listed in the applicable currency and include any taxes unless stated otherwise. We reserve the right to change prices at any time without prior notice. Payment Methods: We accept payments via approved payment gateways listed on our website. Payment must be received in full before shipment of any product."
+    },
+    "shippingDelivery": {
+      "heading": "5. Shipping and Delivery",
+      "content": "We deliver products to the addresses provided during checkout. Delivery times are estimates and not guaranteed. Delays may occur due to shipping carrier issues, customs clearance, or other unforeseen circumstances. Risk of loss or damage passes to you upon delivery by the carrier."
+    },
+    "returnsWarranty": {
+      "heading": "6. Returns, Refunds, and Warranty",
+      "content": "Returns and Refunds: Products can be returned only in accordance with our Return Policy. Return requests must be submitted within the specified period after delivery. Warranty: Most products are covered by the manufacturer’s warranty or our specific product warranty, as described on the product page. Warranties do not cover misuse, accidents, or unauthorized modifications."
+    },
+    "productUseSafety": {
+      "heading": "7. Product Use and Safety",
+      "content": "Products sold by DriveCore Auto are intended for professional use, automotive repair, or vehicle modification. Users must ensure that all products are installed and used according to manufacturer specifications. We are not liable for any damage, injury, or loss resulting from improper installation, misuse, or modification."
+    },
+    "intellectualProperty": {
+      "heading": "8. Intellectual Property",
+      "content": "All content on this website, including text, images, logos, product descriptions, and videos, is owned by DriveCore Auto or its licensors. You may not copy, reproduce, or distribute any content without prior written permission."
+    },
+    "limitationLiability": {
+      "heading": "9. Limitation of Liability",
+      "content": "To the maximum extent permitted by law, DriveCore Auto shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of our products or website. This includes, but is not limited to, vehicle damage, personal injury, or financial loss."
+    },
+    "indemnification": {
+      "heading": "10. Indemnification",
+      "content": "You agree to indemnify, defend, and hold harmless DriveCore Auto, its officers, employees, and affiliates from any claims, damages, or expenses arising from your violation of these Terms or misuse of our products."
+    },
+    "thirdPartyLinks": {
+      "heading": "11. Third-Party Links",
+      "content": "Our website may contain links to third-party websites or services. We do not endorse or assume responsibility for any third-party content, products, or services."
+    },
+    "privacy": {
+      "heading": "12. Privacy",
+      "content": "Your use of our services is also governed by our Privacy Policy, which explains how we collect, use, and protect your personal information."
+    },
+    "governingLaw": {
+      "heading": "13. Governing Law",
+      "content": "These Terms are governed by the laws of [Your Country/State]. Any disputes arising from these Terms shall be resolved in the courts located within [Your Jurisdiction]."
+    },
+    "modifications": {
+      "heading": "14. Modifications",
+      "content": "We reserve the right to update or modify these Terms at any time. Updated Terms will be posted on this page, and your continued use of our services constitutes acceptance of the updated Terms."
+    },
+    "contactInfo": {
+      "heading": "15. Contact Information",
+      "content": "If you have any questions or concerns about these Terms, please contact us at DriveCore Auto. Email: support@drivecoreauto.com, Address: USA."
+    }
+  }
+}

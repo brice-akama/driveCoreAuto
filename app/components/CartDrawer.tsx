@@ -144,10 +144,15 @@ const CartDrawer: React.FC = () => {
   </h3>
   <button
     onClick={handleViewCartClick}
-    className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition"
+    className="mt-4 w-full bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition"
   >
     View Cart
   </button>
+  <div className="mt-1">
+     <Link href="/checkout" className="block  bg-blue-600 text-white text-center py-2 rounded" onClick={handleLinkClick}>
+              Checkout
+            </Link>
+             </div>
 </div>
         </div>
       )}

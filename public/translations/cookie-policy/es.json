@@ -1,0 +1,29 @@
+{
+  "title": "Política de cookies",
+  "intro": "En DriveCore Auto usamos cookies y tecnologías similares para mejorar su experiencia de navegación, analizar el tráfico del sitio y personalizar contenido y ofertas.",
+  "lastUpdated": "Última actualización: agosto 2025",
+  "toc": {
+    "infoWeCollect": "Información que recopilamos",
+    "howWeUse": "Cómo usamos su información",
+    "sharing": "Compartir información",
+    "security": "Seguridad de los datos",
+    "yourRights": "Sus derechos",
+    "retention": "Retención de datos",
+    "thirdParties": "Enlaces de terceros",
+    "children": "Privacidad de los niños",
+    "changes": "Cambios en esta política",
+    "contact": "Contáctenos"
+  },
+  "sections": {
+    "infoWeCollect": "Las cookies pueden recopilar datos técnicos, información de uso y preferencias para mejorar la funcionalidad del sitio y su experiencia.",
+    "howWeUse": "Usamos cookies para optimizar el rendimiento del sitio, recordar sus preferencias, mostrar contenido personalizado y analizar el tráfico.",
+    "sharing": "No vendemos sus datos de cookies. Podemos compartir datos anónimos limitados con proveedores de análisis y servicios.",
+    "security": "Las cookies no son inherentemente peligrosas, pero implementamos medidas para proteger la información recopilada.",
+    "yourRights": "Puede desactivar las cookies en su navegador, pero algunas funciones pueden no funcionar correctamente.",
+    "retention": "Los datos de cookies se conservan según los requisitos legales o hasta que los elimine del navegador.",
+    "thirdParties": "Nuestro sitio puede contener cookies de terceros de análisis, publicidad o servicios integrados.",
+    "children": "Nuestro sitio no está dirigido a menores de 13 años y no recopilamos intencionalmente sus datos.",
+    "changes": "Podemos actualizar esta Política de cookies periódicamente. Los cambios se publicarán aquí con la fecha revisada.",
+    "contact": "Para preguntas sobre nuestra Política de cookies, contáctenos en support@drivecoreauto.com."
+  }
+}

@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/app/context/LanguageContext';
+import Breadcrumb from '../components/Breadcrumbs';
 
 export interface BlogPost {
   slug: Record<string, string>;
@@ -48,13 +49,20 @@ export default function BlogPage({ initialPosts }: BlogPageProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 mt-20">
+    <div className="mt-20 lg:mt-40">
+      {/* Full-width black section */}
+      <div className="bg-black text-white py-8 text-center w-full">
+        <h1 className="text-4xl font-black">Blog</h1>
+
+        <Breadcrumb />
+      </div>
+    <div className="container mx-auto px-4 py-10">
 
 
       <div
   role="heading"
   aria-level={1}
-   className="text-4xl font-bold text-center mt-10 md:mt-20"
+   className="text-4xl font-bold text-center"
 >
    Latest Blog Posts
 </div>
@@ -110,6 +118,7 @@ export default function BlogPage({ initialPosts }: BlogPageProps) {
           </button>
         </div>
       )}
+    </div>
     </div>
   );
 }

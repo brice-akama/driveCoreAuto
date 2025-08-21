@@ -7,6 +7,8 @@ import QRCodeWrapper from '../components/QRCodeWrapper';
 import { FaPaypal, FaBitcoin, FaApple, FaCcVisa } from "react-icons/fa";
 import { SiCashapp, SiVenmo, SiZelle } from "react-icons/si";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import Breadcrumb from "../components/Breadcrumbs";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 
 
@@ -171,6 +173,7 @@ const CheckOutPage = () => {
   const [cryptoWarning, setCryptoWarning] = useState(false);
   const [copied, setCopied] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const {  language } = useLanguage();
  const [billingDetails, setBillingDetails] = useState<BillingDetails>({ 
     firstName: '',
     lastName: '',
@@ -309,8 +312,16 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
    
   return (
-    <div className="max-w-7xl mx-auto p-6 mt-20">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-20">
+    <div className="mt-20 lg:mt-40">
+          {/* Full-width black section */}
+          <div className="bg-black text-white py-8 text-center w-full">
+            <h1 className="text-4xl font-black">Checkout
+    </h1>
+    
+            <Breadcrumb />
+          </div>
+    <div className="max-w-7xl mx-auto p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Order Page Header Section */}
           <div className="w-full space-y-3 lg:col-span-3">
 <div className="mt-4 relative" >
@@ -721,7 +732,7 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           )}
           <p className="mt-2 text-sm">
             Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our{' '}
-            <Link href="/privacy-policy" className="text-blue-600 underline">privacy policy</Link>.
+            <Link  href={`/${language}/privacy-policy`} className="text-blue-600 underline">privacy policy</Link>.
           </p>
           {cryptoWarning && (
             <p className="text-sm text-orange-700 bg-orange-100 p-2 rounded-md">
@@ -739,7 +750,7 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     className="w-4 h-4"
   />
   <label htmlFor="terms" className="text-sm">
-    I have read and agree to the website <Link href="/terms" className="text-blue-600 underline">terms and conditions</Link>
+    I have read and agree to the website <Link href={`/${language}/terms-conditions`} className="text-blue-600 underline">terms and conditions</Link>
   </label>
 </div>
           
@@ -757,6 +768,7 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };

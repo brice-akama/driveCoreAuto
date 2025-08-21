@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link"; // Import the Link component
+import { useLanguage } from "../context/LanguageContext";
 
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
+  const {  language } = useLanguage();
 
   useEffect(() => {
     // Check if the user has already accepted cookies
@@ -32,8 +34,8 @@ export default function CookieConsent() {
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left">
             <p className="text-sm sm:text-base mb-4 sm:mb-0">
               We use cookies to enhance your experience. Some are essential for the operation of our website, while others help analyze site usage. By clicking "Accept," you agree to the use of all cookies. See our{" "}
-              <Link href="/cookie-policy" className="underline">Cookie Policy</Link> and{" "}
-              <Link href="/privacy-Policy" className="underline">Privacy Policy</Link>.
+              <Link href={`/${language}/cookie-policy`}  className="underline">Cookie Policy</Link> and{" "}
+              <Link  href={`/${language}/privacy-policy`} className="underline">Privacy Policy</Link>.
             </p>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
               <button

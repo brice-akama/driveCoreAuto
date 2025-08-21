@@ -1,0 +1,29 @@
+{
+  "title": "Politique de cookies",
+  "intro": "Chez DriveCore Auto, nous utilisons des cookies et technologies similaires pour améliorer votre expérience de navigation, analyser le trafic du site et personnaliser le contenu et les offres.",
+  "lastUpdated": "Dernière mise à jour : août 2025",
+  "toc": {
+    "infoWeCollect": "Informations que nous collectons",
+    "howWeUse": "Comment nous utilisons vos informations",
+    "sharing": "Partage des informations",
+    "security": "Sécurité des données",
+    "yourRights": "Vos droits",
+    "retention": "Conservation des données",
+    "thirdParties": "Liens vers des tiers",
+    "children": "Confidentialité des enfants",
+    "changes": "Modifications de cette politique",
+    "contact": "Contactez-nous"
+  },
+  "sections": {
+    "infoWeCollect": "Les cookies peuvent collecter des données techniques, des informations d'utilisation et des préférences pour améliorer le fonctionnement du site et votre expérience.",
+    "howWeUse": "Nous utilisons les cookies pour optimiser les performances du site, mémoriser vos préférences, afficher un contenu personnalisé et analyser le trafic.",
+    "sharing": "Nous ne vendons pas vos données de cookies. Nous pouvons partager des données anonymes limitées avec des fournisseurs d'analyses et de services.",
+    "security": "Les cookies ne sont pas intrinsèquement dangereux, mais nous mettons en place des mesures pour protéger les informations collectées.",
+    "yourRights": "Vous pouvez choisir de désactiver les cookies dans votre navigateur, mais certaines fonctionnalités peuvent ne pas fonctionner correctement.",
+    "retention": "Les données de cookies sont conservées conformément aux obligations légales ou jusqu'à leur suppression de votre navigateur.",
+    "thirdParties": "Notre site peut contenir des cookies tiers provenant d'analyses, de publicités ou de services intégrés.",
+    "children": "Notre site n'est pas destiné aux enfants de moins de 13 ans, et nous ne collectons pas sciemment leurs données.",
+    "changes": "Nous pouvons mettre à jour cette politique de cookies de temps à autre. Les modifications seront publiées ici avec une date révisée.",
+    "contact": "Pour toute question sur notre politique de cookies, contactez-nous à support@drivecoreauto.com."
+  }
+}

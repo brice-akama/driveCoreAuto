@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useLanguage } from "@/app/context/LanguageContext";
+import Breadcrumb from "@/app/components/Breadcrumbs";
 
 interface Props {
   initialLanguage?: string;
@@ -20,7 +21,15 @@ const ShippingInformation = ({ initialLanguage, initialTranslations }: Props) =>
   const t = translations || {};
 
   return (
-    <div className="py-8 text-gray-800 mt-20 lg:mt-40 px-12 lg:px-20">
+    <div className="mt-20 lg:mt-40">
+          {/* Full-width black section */}
+          <div className="bg-black text-white py-8 text-center w-full">
+            <h1 className="text-4xl font-black">{t.pageTitle1}</h1>
+    
+            <Breadcrumb />
+          </div>
+    <div className="py-8 text-gray-800  px-12 lg:px-20">
+       
       <h2 className="text-4xl font-semibold mb-6 pb-2 whitespace-nowrap">{t.pageTitle}</h2>
 
       <div className="mb-6">
@@ -66,6 +75,7 @@ const ShippingInformation = ({ initialLanguage, initialTranslations }: Props) =>
           <p key={idx} className={idx === 1 ? "mt-2" : ""} dangerouslySetInnerHTML={{ __html: item }} />
         ))}
       </div>
+    </div>
     </div>
   );
 };

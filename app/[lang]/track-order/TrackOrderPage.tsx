@@ -3,6 +3,7 @@
 import { useState, FormEvent, useEffect } from "react";
 import { useLanguage } from "@/app/context/LanguageContext";
 import Link from "next/link";
+import Breadcrumb from "@/app/components/Breadcrumbs";
 
 interface Props {
   initialLanguage?: string;
@@ -69,7 +70,14 @@ const TrackOrderPage = ({ initialLanguage, initialTranslations }: Props) => {
   if (!t.title) return null; // wait for translations
 
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-40">
+    <div className="mt-20 lg:mt-40">
+          {/* Full-width black section */}
+          <div className="bg-black text-white py-8 text-center w-full">
+            <h1 className="text-4xl font-black">{t.title}</h1>
+    
+            <Breadcrumb />
+          </div>
+    <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4 text-center">{t.title}</h1>
       <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto">{t.description}</p>
 
@@ -154,6 +162,7 @@ const TrackOrderPage = ({ initialLanguage, initialTranslations }: Props) => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

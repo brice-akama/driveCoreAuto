@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 import { useLanguage } from "@/app/context/LanguageContext";
+import Script from 'next/script';
 
 const BRANDS = [
   
@@ -115,6 +116,26 @@ export default function BrandLinksNav({ currentBrand, currentPath }: BrandLinksN
   const isTransmissionActive = (href: string) => {
     if (!currentPath) return false;
     return currentPath.startsWith(href);
+  };
+
+  // Build breadcrumb JSON-LD
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "/", // or add lang query if needed
+      },
+      currentBrand && {
+        "@type": "ListItem",
+        position: 2,
+        name: currentBrand.charAt(0).toUpperCase() + currentBrand.slice(1),
+        item: `/${currentBrand}`, // the brand URL
+      },
+    ].filter(Boolean),
   };
 
   return (
@@ -373,6 +394,13 @@ export default function BrandLinksNav({ currentBrand, currentPath }: BrandLinksN
           </ul>
         )}
       </div>
+
+      {/* Inject JSON-LD */}
+      <Script
+        id="brand-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
     </section>
   );
 }

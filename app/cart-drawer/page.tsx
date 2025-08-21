@@ -6,6 +6,7 @@ import { useCart } from "@/app/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 import CartProduct from "../components/CartProduct";
+import Breadcrumb from "../components/Breadcrumbs";
 
 
 
@@ -63,8 +64,16 @@ const CartPage: React.FC = () => {
   // ...imports and hooks stay the same
 
 return (
-  <div className="container mx-auto p-4 mt-40">
-    <h2 className="text-2xl font-bold text-center mt-10">Your Cart</h2>
+<div className="mt-20 lg:mt-40">
+      {/* Full-width black section */}
+      <div className="bg-black text-white py-8 text-center w-full">
+        <h1 className="text-4xl font-black">Shopping cart
+</h1>
+
+        <Breadcrumb />
+      </div>
+  <div className="container mx-auto p-4 ">
+    <h2 className="text-2xl font-bold text-center">Your Cart</h2>
 
     {cartItems.length === 0 ? (
       <div className="text-center mt-6">
@@ -210,6 +219,7 @@ return (
     )}
     
     <CartProduct />
+  </div>
   </div>
 );
 }

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast"; // Import toast
 import { useRouter } from "next/navigation";
 import { useLanguage } from "../context/LanguageContext";
+import Breadcrumb from "../components/Breadcrumbs";
 
 const LoginPage: React.FC = () => {
   const [showRegistration, setShowRegistration] = useState(false);
@@ -78,7 +79,14 @@ const LoginPage: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto px-6 py-16 mt-20">
+    <div className="mt-20 lg:mt-40">
+          {/* Full-width black section */}
+          <div className="bg-black text-white py-8 text-center w-full">
+            <h1 className="text-4xl font-black">MY ACCOUNT</h1>
+    
+            <Breadcrumb />
+          </div>
+    <div className="container mx-auto px-6 py-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-16">
         {/* New Customer Section */}
         <div className="bg-gray-100 p-6 rounded-lg shadow-md">
@@ -176,6 +184,7 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
       {/* Toast Notifications */}
+    </div>
     </div>
   );
 };

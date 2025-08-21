@@ -1,0 +1,34 @@
+{
+  "pageTitle": "Häufig gestellte Fragen",
+  "pageTitle1": "FAQs",
+  "items": [
+    {
+      "question": "Was ist ein Motorkenncode und warum ist er wichtig?",
+      "answer": "Ein Motorkenncode identifiziert eindeutig die Spezifikationen eines Motormodells. Er hilft dabei, kompatible Teile zu finden und die Leistung zu verstehen."
+    },
+    {
+      "question": "Wie finde ich meinen Motorkenncode?",
+      "answer": "Der Motorkenncode befindet sich in der Regel auf dem Motorblock eingeprägt oder in den Fahrzeugpapieren."
+    },
+    {
+      "question": "Kann ich Teile eines anderen Motorkenncodes verwenden?",
+      "answer": "Das kommt darauf an. Einige Teile sind austauschbar, viele sind jedoch spezifisch für den Motorkenncode. Überprüfen Sie immer die Kompatibilität, bevor Sie etwas kaufen."
+    },
+    {
+      "question": "Wie oft sollte ich meinen Motor warten lassen?",
+      "answer": "Die regelmäßige Wartung hängt vom Motortyp und der Nutzung ab, erfolgt aber typischerweise alle 8.000 bis 16.000 Kilometer."
+    },
+    {
+      "question": "Liefern Sie weltweit?",
+      "answer": "Ja, wir liefern in die meisten Länder mit zuverlässigen Kurierdiensten."
+    },
+    {
+      "question": "Wie lautet Ihre Rückgabebestimmung?",
+      "answer": "Wir akzeptieren Rücksendungen innerhalb von 30 Tagen nach dem Kauf, vorausgesetzt, der Artikel befindet sich im Originalzustand und in der Originalverpackung."
+    },
+    {
+      "question": "Wie kann ich den Kundensupport kontaktieren?",
+      "answer": "Sie erreichen unseren Kundensupport per E-Mail unter support@drivecoreauto.com oder telefonisch unter +1-800-555-0199 während der Geschäftszeiten. Wir helfen Ihnen gerne bei allen Fragen oder Problemen. Sie erhalten in der Regel innerhalb von 24–48 Stunden eine Antwort."
+    }
+  ]
+}

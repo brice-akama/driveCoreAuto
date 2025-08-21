@@ -1,0 +1,34 @@
+{
+  "pageTitle": "Preguntas frecuentes",
+  "pageTitle1": "FAQs",
+  "items": [
+    {
+      "question": "¿Qué es un código de motor y por qué es importante?",
+      "answer": "Un código de motor identifica de manera única las especificaciones de un modelo de motor. Ayuda a encontrar piezas compatibles y a comprender su rendimiento."
+    },
+    {
+      "question": "¿Cómo puedo encontrar mi código de motor?",
+      "answer": "El código de motor generalmente se encuentra grabado en el bloque del motor o indicado en los documentos del vehículo."
+    },
+    {
+      "question": "¿Puedo usar piezas de otro código de motor?",
+      "answer": "Depende. Algunas piezas son intercambiables, pero muchas son específicas del código de motor. Siempre verifique la compatibilidad antes de comprar."
+    },
+    {
+      "question": "¿Con qué frecuencia debo dar mantenimiento a mi motor?",
+      "answer": "El mantenimiento regular depende del tipo de motor y de su uso, pero generalmente se recomienda cada 8.000 a 16.000 kilómetros."
+    },
+    {
+      "question": "¿Realizan envíos internacionales?",
+      "answer": "Sí, realizamos envíos a la mayoría de los países mediante servicios de mensajería confiables."
+    },
+    {
+      "question": "¿Cuál es su política de devoluciones?",
+      "answer": "Aceptamos devoluciones dentro de los 30 días posteriores a la compra, siempre que el artículo esté en su estado y embalaje original."
+    },
+    {
+      "question": "¿Cómo puedo contactar al servicio de atención al cliente?",
+      "answer": "Puede contactar a nuestro servicio de atención al cliente por correo electrónico a support@drivecoreauto.com o por teléfono al +1-800-555-0199 durante el horario laboral. Estaremos encantados de ayudarle con cualquier consulta o problema. Normalmente recibirá una respuesta en un plazo de 24 a 48 horas."
+    }
+  ]
+}
