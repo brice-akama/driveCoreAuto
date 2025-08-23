@@ -86,7 +86,7 @@ export default function RelatedPosts({
                   href={`/blog/${englishSlug}?lang=${lang}`}
                   className="inline-block mt-4"
                 >
-                  <span className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
+                  <span className="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
                     {translatedTexts.readMore}
                   </span>
                 </Link>

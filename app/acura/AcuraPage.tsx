@@ -1,3 +1,9 @@
+
+
+
+
+
+
 'use client';
 
 import { useState, useEffect, useRef } from "react";
@@ -12,6 +18,7 @@ import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { useCart } from "../context/CartContext";
 import QuickViewModal from "../components/QuickViewModal"; 
+import { motion, AnimatePresence } from 'framer-motion';
 
 export type Product = {
   _id: string;
@@ -109,6 +116,21 @@ export default function AcuraPage({
   window.scrollTo({ top: 0, behavior: "smooth" }); // scroll to very top
 };
 
+// Add variants for animation
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+  hover: { scale: 1.03, boxShadow: '0px 20px 30px rgba(0,0,0,0.15)' },
+};
+
+const iconVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const buttonVariants = {
+  hover: { scale: 1.05 },
+};
 
 
 
@@ -274,7 +296,7 @@ const currentProducts = sortedProducts.slice(
 
   const extractModel = (name: string): string => {
     const match = name.match(/Acura\s+\w+/i);
-    return match ? match[0].toUpperCase() : "Acura ENGINE";
+    return match ? match[0].toUpperCase() : "ACURA ENGINE";
   };
 
   // Suggestion filters based on input text
@@ -377,12 +399,16 @@ useEffect(() => {
 
     <div className="max-w-7xl mx-auto px-4 py-10 ">
 
-      
-      
-      
-      {/* Your Toyota-specific content */}
-    
-      {/* Breadcrumb */}
+      <motion.ol
+  className="inline-flex  space-x-2"
+  initial="hidden"
+  animate="visible"
+  variants={{
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } }
+  }}
+>
+ {/* Breadcrumb */}
       <nav
   className="mt-0 md:mt-10 block md:hidden text-sm text-gray-600"
   aria-label="Breadcrumb"
@@ -410,6 +436,13 @@ useEffect(() => {
         </ol>
       </nav>
 
+</motion.ol>
+
+      
+      
+      {/* Your Toyota-specific content */}
+    
+      
       {/* Mobile menu button */}
       <div className="sm:hidden mb-4 flex justify-between items-center">
        
@@ -724,103 +757,139 @@ useEffect(() => {
 
         
    
-        {/* Products List */}
         <section className="flex-grow" ref={productsRef}>
-          
-          {/* Sort by */}
-          <div className="flex justify-end mb-4">
-            <select
-              value={sortOption}
-              onChange={handleSortChange}
-              className="border border-gray-300 rounded px-3 py-1"
-              aria-label="Sort products"
-            >
-              <option value="default">     {translatedTexts.sortedBy}</option>
-              <option value="priceLowToHigh">{translatedTexts.sortPriceLowToHigh}</option>
-  <option value="priceHighToLow">{translatedTexts.sortPriceHighToLow}</option>
-            </select>
-          </div>
-
-          {loading ? (
-            <p>Loading products...</p>
-          ) : products.length === 0 ? (
-            <p>No products found for the selected filters.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-              {currentProducts.map((product) => (
-                <div
-                  key={product._id}
-                  className="border rounded-lg overflow-hidden shadow group relative"
-                >
-                 <Link href={`/products/${product.slug.en}?lang=${currentLang}`}>
-
-                    <div
-  className="relative w-full h-48 bg-white"
-  onMouseEnter={() => setHoveredProductId(product._id)}
-  onMouseLeave={() => setHoveredProductId(null)}
->
-  <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
-    {extractModel(product.name[currentLang] || product.name.en)}
+  {/* Sort by */}
+  <div className="flex justify-end mb-4">
+    <select
+      value={sortOption}
+      onChange={handleSortChange}
+      className="border border-gray-300 rounded px-3 py-1"
+      aria-label="Sort products"
+    >
+      <option value="default">{translatedTexts.sortedBy}</option>
+      <option value="priceLowToHigh">{translatedTexts.sortPriceLowToHigh}</option>
+      <option value="priceHighToLow">{translatedTexts.sortPriceHighToLow}</option>
+    </select>
   </div>
 
-  {hoveredProductId === product._id && product.thumbnails?.[0] ? (
-    <Image
-      src={product.thumbnails[0]} // first thumbnail image
-      alt={`${product.name[currentLang] || product.name.en} thumbnail`}
-      fill
-      className="object-cover transition-transform duration-300"
-      unoptimized
-    />
+  {loading ? (
+    <p>Loading products...</p>
+  ) : products.length === 0 ? (
+    <p>No products found for the selected filters.</p>
   ) : (
-    <Image
-      src={product.mainImage}
-      alt={product.name[currentLang] || product.name.en}
-      fill
-      className="object-cover group-hover:scale-105 transition-transform duration-300"
-      unoptimized
-    />
-  )}
-
-  
-
-{/* Icon buttons on hover */}
-{/* Icons Container */}
-<div className="absolute top-3 right-1 z-10">
-  {/* Large Devices (Hover to show icons) */}
-  <div className="hidden lg:flex flex-col space-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-    {/** Search Icon with Tooltip */}
-    <div
-      className="relative cursor-pointer"
-      onMouseEnter={() => setHoveredIcon(product._id + "-search")}
-      onMouseLeave={() => setHoveredIcon(null)}
-    >
-      <button
-  aria-label="Quick view"
-  className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-  onClick={(e) => {
-    e.preventDefault();
-    setQuickViewProduct(product);
-  }}
->
-  <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-</button>
-
-      {hoveredIcon === product._id + "-search" && (
-        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100" style={{ minWidth: "80px" }}>
-            {translatedTexts.quickview}
-        </span>
-      )}
+    <AnimatePresence>
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"
+        initial="hidden"
+        animate="visible"
+        exit="hidden"
+        layout
+      >
+        {currentProducts.map((product) => (
+          <motion.div
+            key={product._id}
+            className="border rounded-lg overflow-hidden shadow group relative bg-white cursor-pointer"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            layout
+          >
+           <Link href={`/products/${product.slug.en}?lang=${currentLang}`}>
+  <div
+    className="relative w-full h-48 overflow-hidden"
+    onMouseEnter={() => setHoveredProductId(product._id)}
+    onMouseLeave={() => setHoveredProductId(null)}
+  >
+    {/* Model label */}
+    <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-1 rounded shadow z-10">
+      {extractModel(product.name[currentLang] || product.name.en)}
     </div>
 
-    {/** Heart Icon with Tooltip */}
-    <div
-      className="relative cursor-pointer"
-      onMouseEnter={() => setHoveredIcon(product._id + "-wishlist")}
-      onMouseLeave={() => setHoveredIcon(null)}
+    {/* Product images */}
+    {hoveredProductId === product._id && product.thumbnails?.[0] ? (
+      <Image
+        src={product.thumbnails[0]}
+        alt={`${product.name[currentLang] || product.name.en} thumbnail`}
+        fill
+        className="object-cover transition-transform duration-300"
+        unoptimized
+      />
+    ) : (
+      <Image
+        src={product.mainImage}
+        alt={product.name[currentLang] || product.name.en}
+        fill
+        className="object-cover group-hover:scale-105 transition-transform duration-300"
+        unoptimized
+      />
+    )}
+
+    {/* lg: hover-only icons */}
+    <motion.div
+      className="absolute top-3 right-1 z-10 hidden lg:flex flex-col space-y-3"
+      initial="hidden"
+      animate={hoveredProductId === product._id ? "visible" : "hidden"}
+      variants={iconVariants}
+      transition={{ duration: 0.2 }}
     >
+      {/* Quick View */}
+      <button
+        aria-label="Quick view"
+        className="group relative bg-white rounded-full shadow-md flex items-center justify-center p-3 w-12 h-12"
+        onClick={(e) => {
+          e.preventDefault();
+          setQuickViewProduct(product);
+        }}
+        onMouseEnter={() => setHoveredIcon(product._id + "-search")}
+        onMouseLeave={() => setHoveredIcon(null)}
+      >
+        <FiSearch className="text-gray-900 w-6 h-6" />
+        {hoveredIcon === product._id + "-search" && (
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100">
+            {translatedTexts.quickview}
+          </span>
+        )}
+      </button>
+
+      {/* Wishlist */}
       <button
         aria-label={translatedTexts.addToWishList}
-        className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+        className="group relative bg-white rounded-full shadow-md flex items-center justify-center p-3 w-12 h-12"
+        onClick={(e) => {
+          e.preventDefault();
+          handleAddToWishlist(product);
+        }}
+        onMouseEnter={() => setHoveredIcon(product._id + "-wishlist")}
+        onMouseLeave={() => setHoveredIcon(null)}
+      >
+        <FiHeart className="text-gray-900 w-6 h-6" />
+        {hoveredIcon === product._id + "-wishlist" && (
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100">
+            {translatedTexts.addToWishList}
+          </span>
+        )}
+      </button>
+    </motion.div>
+
+    {/* md: always show both icons */}
+    <div className="absolute top-3 right-1 z-10 hidden md:flex lg:hidden flex-col space-y-3">
+      {/* Quick View */}
+      <button
+        aria-label="Quick view"
+        className="bg-white rounded-full shadow-md flex items-center justify-center p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
+        onClick={(e) => {
+          e.preventDefault();
+          setQuickViewProduct(product);
+        }}
+      >
+        <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
+      </button>
+
+      {/* Wishlist */}
+      <button
+        aria-label={translatedTexts.addToWishList}
+        className="bg-white rounded-full shadow-md flex items-center justify-center p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
         onClick={(e) => {
           e.preventDefault();
           handleAddToWishlist(product);
@@ -828,136 +897,124 @@ useEffect(() => {
       >
         <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
       </button>
-      {hoveredIcon === product._id + "-wishlist" && (
-        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100" style={{ minWidth: "110px" }}>
-          {translatedTexts.addToWishList}
-        </span>
-      )}
+    </div>
+
+    {/* sm: only wishlist */}
+    <div className="absolute top-3 right-1 z-10 flex md:hidden">
+      <button
+        aria-label={translatedTexts.addToWishList}
+        className="bg-white rounded-full shadow-md flex items-center justify-center p-2 w-10 h-10"
+        onClick={(e) => {
+          e.preventDefault();
+          handleAddToWishlist(product);
+        }}
+      >
+        <FiHeart className="text-gray-900 w-5 h-5" />
+      </button>
     </div>
   </div>
-
-  {/* Medium Devices - Always Show Both Icons */}
-  <div className="hidden md:flex lg:hidden flex-col space-y-3">
-    <button
-  aria-label="Quick view"
-  className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-  onClick={(e) => {
-    e.preventDefault();
-    setQuickViewProduct(product);
-  }}
->
-  <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-</button>
+</Link>
 
 
-    <button
-      aria-label={translatedTexts.addToWishList}
-      className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-      onClick={(e) => {
-        e.preventDefault();
-        handleAddToWishlist(product);
-      }}
-    >
-      <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-    </button>
-  </div>
+            
 
-  {/* Small Devices - Only Show Heart Icon */}
-  <div className="flex md:hidden">
-    <button
-      aria-label={translatedTexts.addToWishList}
-      className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 w-10 h-10"
-      onClick={(e) => {
-        e.preventDefault();
-        handleAddToWishlist(product);
-      }}
-    >
-      <FiHeart className="text-gray-900 w-5 h-5" />
-    </button>
-  </div>
-</div>
+<div className="p-4 text-center">
+      <Link href={`/products/${product.slug.en}?lang=${currentLang}`}>
+        <h3 className="font-semibold text-lg line-clamp-2">
+          {product.name[currentLang] || product.name.en}
+        </h3>
+      </Link>
+      <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
 
+      {/* Add to Cart Button with hover icon swap */}
+      <motion.div
+        className="mt-3 w-full"
+        onMouseEnter={() => setHoveredIcon(product._id + "-cart")}
+        onMouseLeave={() => setHoveredIcon(null)}
+      >
+        <motion.button
+          onClick={() => handleAddToCart(product)}
+          className="w-full border border-gray-700 rounded py-2 bg-blue-800 text-white flex items-center justify-center relative overflow-hidden"
+          whileHover={{ scale: 1.03 }}
+        >
+          <AnimatePresence mode="wait">
+            {hoveredIcon === product._id + "-cart" ? (
+              <motion.div
+                key="icon"
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                className="flex items-center justify-center w-full"
+              >
+                <FiShoppingCart className="w-5 h-5" />
+              </motion.div>
+            ) : (
+              <motion.span
+                key="text"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="text-white font-medium"
+              >
+                {translatedTexts.addToCart}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      </motion.div>
+    </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )}
 
-                    </div>
-                  </Link>
+  {/* Pagination */}
+  {totalPages > 1 && (
+    <div className="flex justify-center mt-8 space-x-2">
+      {currentPage > 1 && (
+        <motion.button
+          onClick={() => handlePaginate(currentPage - 1)}
+          className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
+          whileHover={{ scale: 1.1 }}
+        >
+          &lt;
+        </motion.button>
+      )}
 
-                  <div className="p-4 text-center">
-                    <Link href={`/products/${product.slug.en}?lang=${currentLang}`}>
+      {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+        const pageNumber = i + 1 + (Math.floor((currentPage - 1) / 3) * 3);
+        if (pageNumber <= totalPages) {
+          return (
+            <motion.button
+              key={pageNumber}
+              onClick={() => paginate(pageNumber)}
+              className={`px-4 py-2 border rounded-lg ${
+                currentPage === pageNumber
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-blue-600 hover:bg-blue-100"
+              }`}
+              whileHover={{ scale: 1.1 }}
+            >
+              {pageNumber}
+            </motion.button>
+          );
+        }
+        return null;
+      })}
 
-                      <h3 className="font-semibold text-lg line-clamp-2">
-                        {product.name[currentLang] || product.name.en}
-                      </h3>
-                    </Link>
-                    <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
-
-                    <div
-  onMouseEnter={() => setHoveredIcon(product._id + "-cart")}
-  onMouseLeave={() => setHoveredIcon(null)}
->
-  <button
-    onClick={() => handleAddToCart(product)}
-    className="mt-3 w-full border border-gray-700 rounded py-2 hover:bg-black hover:text-white transition bg-blue-800 text-white flex items-center justify-center"
-  >
-    {hoveredIcon === product._id + "-cart" ? (
-      <FiShoppingCart className="w-5 h-5" />
-    ) : (
-      translatedTexts.addToCart    
-    )}
-  </button>
-</div>
-
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-         {totalPages > 1 && (
-  <div className="flex justify-center mt-8 space-x-2">
-    {/* Previous Button */}
-    {currentPage > 1 && (
-<button
-  onClick={() => handlePaginate(currentPage - 1)}
-  className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
->
-  &lt;
-</button>
-    )}
-
-    {/* Page Numbers */}
-    {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
-      const pageNumber = i + 1 + (Math.floor((currentPage - 1) / 3) * 3);
-      if (pageNumber <= totalPages) {
-        return (
-          <button
-            key={pageNumber}
-            onClick={() => paginate(pageNumber)}
-            className={`px-4 py-2 border rounded-lg ${
-              currentPage === pageNumber
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-600 hover:bg-blue-100"
-            }`}
-          >
-            {pageNumber}
-          </button>
-        );
-      }
-      return null;
-    })}
-
-    {/* Next Button */}
-    {currentPage < totalPages && (
-      <button
-  onClick={() => handlePaginate(currentPage + 1)}
-  className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
->
-  &gt;
-</button>
-    )}
-  </div>
-)}
-
-        </section>
+      {currentPage < totalPages && (
+        <motion.button
+          onClick={() => handlePaginate(currentPage + 1)}
+          className="px-3 py-2 border rounded-lg bg-white text-blue-600 hover:bg-blue-100"
+          whileHover={{ scale: 1.1 }}
+        >
+          &gt;
+        </motion.button>
+      )}
+    </div>
+  )}
+</section>
       </div>
     </div>
 {quickViewProduct && (

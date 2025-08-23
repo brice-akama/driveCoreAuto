@@ -1,11 +1,12 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import { useWishlist } from '@/app/context/WishlistContext';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
+import Image from 'next/image';
 import Link from 'next/link';
-import Breadcrumb from '../components/Breadcrumbs';
+import Breadcrumb from '@/app/components/Breadcrumbs';
+import { useLanguage } from '@/app/context/LanguageContext';
 
 interface WishlistItem {
   _id: string;
@@ -15,72 +16,73 @@ interface WishlistItem {
   mainImage: string;
 }
 
-export default function WishlistPage() {
+interface Props {
+  initialLanguage?: string;
+  initialTranslations?: Record<string, any>;
+}
+
+const WishlistInformation = ({ initialLanguage, initialTranslations }: Props) => {
   const { wishlist, removeFromWishlist } = useWishlist() as {
     wishlist: WishlistItem[];
     removeFromWishlist: (slug: string) => void;
   };
-
   const { addToCart, openCart } = useCart();
-  const pathname = usePathname();
 
-  const possibleLang = pathname.split('/')[1] || '';
-  const supportedLangs = ['en', 'fr', 'es', 'de'];
-  const lang = supportedLangs.includes(possibleLang) ? possibleLang : 'en';
+  const { language, translations, setLanguage } = useLanguage();
 
-  const handleAddToCart = (
-    _id: string,
-    slug: string,
-    name: string,
-    price: number,
-    mainImage: string,
-    currentLang: string
-  ) => {
-    addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);
+  // Set initial SSR language and translations
+  useEffect(() => {
+  if (initialLanguage) setLanguage(initialLanguage, 'wishlist');
+}, [initialLanguage, setLanguage]);
+
+  const t = translations || {};
+
+  const handleAddToCart = (item: WishlistItem) => {
+    addToCart({ ...item, quantity: 1 }, language);
     openCart();
   };
 
-  // **Empty wishlist view**
+  // Empty wishlist
   if (wishlist.length === 0) {
     return (
       <div className="mt-20 lg:mt-40">
         <div className="bg-black text-white py-8 text-center w-full">
-          <h1 className="text-4xl font-black uppercase">Wishlist</h1>
+          <h1 className="text-4xl font-black uppercase">{t.heroTitle || 'Wishlist'}</h1>
           <Breadcrumb />
         </div>
         <div className="p-6 text-center">
-          <p className="mb-4 text-lg font-semibold">Your wishlist is empty.</p>
+          <p className="mb-4 text-lg font-semibold">{t.emptyText || 'Your wishlist is empty.'}</p>
           <Link
             href="/toyota"
             className="inline-block mt-2 px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900 transition"
           >
-            Continue Shopping
+            {t.continueShopping || 'Continue Shopping'}
           </Link>
         </div>
       </div>
     );
   }
 
-  // **Wishlist with items**
+  // Wishlist with items
   return (
     <div className="mt-20 lg:mt-40">
       <div className="bg-black text-white py-8 text-center w-full">
-        <h1 className="text-4xl font-black uppercase">Wishlist</h1>
+        <h1 className="text-4xl font-black uppercase">{t.heroTitle || 'Wishlist'}</h1>
         <Breadcrumb />
       </div>
 
       <div className="wishlist-page p-6 max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Your Wishlist</h1>
+        <h1 className="text-3xl font-bold mb-6">{t.mainHeading || 'Your Wishlist'}</h1>
 
         {/* Desktop / Tablet */}
         <div className="hidden md:block">
           <table className="w-full table-auto border-collapse">
             <thead>
               <tr className="border-b border-gray-300">
-                <th className="text-left py-3 px-4">Product</th>
-                <th className="text-left py-3 px-4">Price</th>
-                <th className="text-left py-3 px-4">Actions</th>
-                <th className="text-left py-3 px-4">Add to Cart</th>
+                <th className="text-left py-3 px-4">{t.product || 'Product'}</th>
+                <th className="text-left py-3 px-4">{t.price || 'Price'}</th>
+                <th className="text-left py-3 px-4">{t.actions || 'Actions'}</th>
+                <th className="text-left py-3 px-4">{t.addToCart || 'Add to Cart'}</th>
               </tr>
             </thead>
             <tbody>
@@ -102,17 +104,15 @@ export default function WishlistPage() {
                       onClick={() => removeFromWishlist(item.slug)}
                       className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     >
-                      Remove
+                      {t.remove || 'Remove'}
                     </button>
                   </td>
                   <td className="py-4 px-4">
                     <button
-                      onClick={() =>
-                        handleAddToCart(item._id, item.slug, item.name, item.price, item.mainImage, lang)
-                      }
+                      onClick={() => handleAddToCart(item)}
                       className="bg-green-600 whitespace-nowrap text-white px-3 py-1 rounded hover:bg-green-700"
                     >
-                      Add to Cart
+                      {t.addToCart || 'Add to Cart'}
                     </button>
                   </td>
                 </tr>
@@ -144,15 +144,13 @@ export default function WishlistPage() {
                   onClick={() => removeFromWishlist(item.slug)}
                   className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                 >
-                  Remove
+                  {t.remove || 'Remove'}
                 </button>
                 <button
-                  onClick={() =>
-                    handleAddToCart(item._id, item.slug, item.name, item.price, item.mainImage, lang)
-                  }
+                  onClick={() => handleAddToCart(item)}
                   className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                 >
-                  Add to Cart
+                  {t.addToCart || 'Add to Cart'}
                 </button>
               </div>
             </div>
@@ -161,4 +159,6 @@ export default function WishlistPage() {
       </div>
     </div>
   );
-}
+};
+
+export default WishlistInformation;

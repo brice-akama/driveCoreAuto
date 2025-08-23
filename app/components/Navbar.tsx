@@ -740,12 +740,17 @@ href={`/${language}/shipping`}
 
       {/* View all results */}
       {dropdownResults.products.length > 0 && (
-        <div
-          className="text-center py-3 text-blue-600 hover:underline hover:bg-gray-50 cursor-pointer text-sm font-medium border-t"
-          onClick={() => router.push(`/search?query=${searchQuery}`)}
-        >
-          VIEW ALL RESULTS
-        </div>
+       <div
+  className="text-center py-3 text-blue-600 hover:underline hover:bg-gray-50 cursor-pointer text-sm font-medium border-t"
+  onClick={() => {
+    router.push(`/search?query=${searchQuery}`);
+    setDropdownResults({ products: [], blogs: [] }); // close dropdown
+    setSearchQuery(''); // optional: clear input
+  }}
+>
+  VIEW ALL RESULTS
+</div>
+
       )}
 
       {/* BLOGS HEADER */}
@@ -789,17 +794,23 @@ href={`/${language}/shipping`}
   <FaSearch />
 </button>
 
-          <Link href="/wishlist" className="relative">
+          <Link  href={`/${language}/wishlist`} className="relative">
             <FaHeart className="text-2xl cursor-pointer text-black hover:text-red-700 mt-3" />
             <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full mt-3">{wishlist.length}</span>
           </Link>
-          <Link href="/profile">
+<Link href="/profile">
             <FaUser className="text-2xl cursor-pointer hidden md:block mt-3" />
           </Link>
-          <div className="relative">
-            <FaShoppingCart className="cursor-pointer hover:text-gray-400 text-2xl mt-3" onClick={openCart} />
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full mt-3">{cartCount}</span>
-          </div>
+          <div id="cart-icon" className="relative">
+  <FaShoppingCart
+    className="cursor-pointer hover:text-gray-400 text-2xl mt-3"
+    onClick={openCart}
+  />
+  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full mt-3">
+    {cartCount}
+  </span>
+</div>
+
         </div>
       </div>
 

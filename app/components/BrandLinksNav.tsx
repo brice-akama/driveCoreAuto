@@ -139,7 +139,7 @@ export default function BrandLinksNav({ currentBrand, currentPath }: BrandLinksN
   };
 
   return (
-    <section className="w-full bg-black pt-20 lg:pt-40 rounded">
+    <section className="w-full bg-black pt-10 lg:pt-40 rounded">
 
       {/* Brands section - always visible on md+ */}
       

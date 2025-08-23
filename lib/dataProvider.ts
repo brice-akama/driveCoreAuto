@@ -40,28 +40,34 @@ const customDataProvider = {
   
 
   getOne: async <RecordType extends { id: any }>(
-    resource: string, 
-    params: GetOneParams<RecordType>
-  ): Promise<GetOneResult<RecordType>> => {
-    const { id } = params;
-    const response = await fetch(`/api/${resource}?id=${id}`); // Fetch data
-    const json = await response.json();
-  
-    if (!json.data) {
-      throw new Error(`Invalid response: ${JSON.stringify(json)}`);
-    }
-  
-    // ✅ Ensure compatibility with both object and array responses
-    const data = Array.isArray(json.data) ? json.data[0] : json.data;
-  
-    if (!data?.id) {
-      throw new Error(`Invalid response: ${JSON.stringify(json)}`);
-    }
-  
-    return { data };
-  },
-  
-  
+  resource: string,
+  params: GetOneParams<RecordType>
+): Promise<GetOneResult<RecordType>> => {
+  const { id } = params;
+  const response = await fetch(`/api/${resource}?id=${id}`);
+  const json = await response.json();
+
+  if (!json.data) {
+    throw new Error(`Invalid response: ${JSON.stringify(json)}`);
+  }
+
+  // ✅ Handle nested `post` and `relatedPosts`
+  let rawData = Array.isArray(json.data) ? json.data[0] : json.data;
+  let data = rawData.post ? { ...rawData.post, relatedPosts: rawData.relatedPosts } : rawData;
+
+  // ✅ Normalize _id → id
+  if (data?._id && !data.id) {
+    data.id = data._id;
+    delete data._id;
+  }
+
+  if (!data?.id) {
+    throw new Error(`Invalid response: ${JSON.stringify(json)}`);
+  }
+
+  return { data };
+},
+
 
   getMany: async <RecordType extends RaRecord>(
     resource: string, 

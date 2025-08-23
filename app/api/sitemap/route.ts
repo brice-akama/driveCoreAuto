@@ -48,16 +48,39 @@ export async function GET() {
 
     // Plain static pages (no language prefix)
     const plainStaticUrls = [
-      { url: "", changefreq: "daily", priority: 1.0 }, // home
-      { url: "about-us", changefreq: "weekly", priority: 0.8 },
-      { url: "contact-us", changefreq: "monthly", priority: 0.6 },
-      { url: "privacy-policy", changefreq: "monthly", priority: 0.6 },
-      { url: "refund-policy", changefreq: "monthly", priority: 0.6 },
-      { url: "shop", changefreq: "monthly", priority: 0.6 },
+      { url: "scion", changefreq: "daily", priority: 1.0 }, // home
+      { url: "toyota", changefreq: "weekly", priority: 0.8 },
+      { url: "honda", changefreq: "monthly", priority: 0.6 },
+      { url: "subaru", changefreq: "monthly", priority: 0.6 },
+      { url: "subframe", changefreq: "monthly", priority: 0.6 },
+      { url: "nissan", changefreq: "monthly", priority: 0.6 },
       { url: "blog", changefreq: "monthly", priority: 0.6 },
-      { url: "cookie-policy", changefreq: "monthly", priority: 0.6 },
-      { url: "faqs", changefreq: "monthly", priority: 0.6 },
-      { url: "toyota", changefreq: "monthly", priority: 0.6 }, // example plain path
+      { url: "top-sellers", changefreq: "monthly", priority: 0.6 },  // / transmissions/nissan/automatic
+      { url: "lexus", changefreq: "monthly", priority: 0.6 },
+      { url: "free-shipping", changefreq: "monthly", priority: 0.6 },
+      { url: "acura", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/toyota/automatic", changefreq: "monthly", priority: 0.6 },
+       { url: "transmissions/scion/automatic", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/honda/automatic", changefreq: "monthly", priority: 0.6 },
+       { url: "transmissions/subaru/automatic", changefreq: "monthly", priority: 0.6 },
+        { url: "transmissions/lexus/automatic", changefreq: "monthly", priority: 0.6 },
+         { url: "transmissions/infiniti/automatic", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/nissan/automatic", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/acura/automatic", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/toyota/manual", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/nissan/manual", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/infiniti/manual", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/scion/manual", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/honda/manual", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/acura/manual", changefreq: "monthly", priority: 0.6 },
+      { url: "transmissions/subaru/manual", changefreq: "monthly", priority: 0.6 },
+      { url: "swaps/infiniti", changefreq: "monthly", priority: 0.6 },
+      { url: "swaps/nissan", changefreq: "monthly", priority: 0.6 },
+      { url: "swaps/subaru", changefreq: "monthly", priority: 0.6 },
+      { url: "swaps/toyota", changefreq: "monthly", priority: 0.6 },
+      { url: "swaps/honda", changefreq: "monthly", priority: 0.6 },
+      { url: "accessories", changefreq: "monthly", priority: 0.6 },
+      { url: "infiniti", changefreq: "monthly", priority: 0.6 }, // example plain path
     ];
 
     plainStaticUrls.forEach((page) => {

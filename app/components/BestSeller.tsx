@@ -8,6 +8,7 @@ import { useWishlist } from "@/app/context/WishlistContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { useCart } from "../context/CartContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Product = {
   id: string;
@@ -19,11 +20,9 @@ type Product = {
   mainImage: string;
   thumbnails?: string[];
   slug: Record<string, string>;
-  
   Specifications: Record<string, string>;
   Shipping: Record<string, string>;
   Warranty: Record<string, string>; 
-
 };
 
 function stripHtml(html: string) {
@@ -31,22 +30,17 @@ function stripHtml(html: string) {
   return html.replace(/<[^>]+>/g, "").trim();
 }
 
-
 const BRANDS = ["Toyota", "Nissan", "Subaru", "Honda", "Mazda"];
-
 const extractModel = (name: string): string => {
   if (!name) return "UNKNOWN ENGINE";
   const brandPattern = BRANDS.join("|");
   const regex = new RegExp(`(${brandPattern})\\s+(\\w+)`, "i");
   const match = name.match(regex);
-  if (match && match[1] && match[2]) {
-    return `${match[1].toUpperCase()} ${match[2].toUpperCase()}`;
-  }
+  if (match && match[1] && match[2]) return `${match[1].toUpperCase()} ${match[2].toUpperCase()}`;
   const fallback = name.split(" ").slice(0, 2).join(" ");
   return fallback.toUpperCase() || "UNKNOWN ENGINE";
 };
 
-// Responsive breakpoint hook
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState<"sm" | "md" | "lg">("lg");
   useEffect(() => {
@@ -69,13 +63,18 @@ export default function BestSeller() {
   const currentLang = language || "en";
   const { addToCart, openCart } = useCart();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-const { symbol } = useCurrency();
+  const { symbol } = useCurrency();
+  
 
-let slugForLang = "";
-if (quickViewProduct) {
-  slugForLang = quickViewProduct.slug[currentLang] || quickViewProduct.slug.en || "";
-}
 
+  // Fly-to-cart animation state
+  const [flyCart, setFlyCart] = useState<{
+    image: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+  } | null>(null);
 
   const [translatedTexts, setTranslatedTexts] = useState({
     title: "Best-Selling Engine Components",
@@ -116,20 +115,48 @@ if (quickViewProduct) {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (
-    _id: string,
-    slugObj: Record<string, string>,
-    nameObj: Record<string, string>,
-    price: number,
-    mainImage: string,
-    currentLang: string
-  ) => {
-    const slug = slugObj[currentLang] || slugObj["en"] || "";
-    const name = nameObj[currentLang] || nameObj["en"] || "";
+  const handleAddToCart = (product: Product, e: React.MouseEvent<HTMLButtonElement>) => {
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  const cartIcon = document.getElementById("cart-icon");
 
-    addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);
+  if (!cartIcon) {
+    console.warn("Cart icon not found! Make sure it has id='cart-icon'");
+    addToCart(
+      {
+        slug: product.slug[currentLang] || product.slug.en,
+        name: product.name[currentLang] || product.name.en,
+        price: product.price,
+        mainImage: product.mainImage,
+        quantity: 1,
+      },
+      currentLang
+    );
     openCart();
-  };
+    return;
+  }
+
+  const cartRect = cartIcon.getBoundingClientRect();
+
+  setFlyCart({
+    image: product.mainImage,
+    startX: rect.left,
+    startY: rect.top,
+    endX: cartRect.left + cartRect.width / 2 - 32,
+    endY: cartRect.top + cartRect.height / 2 - 32,
+  });
+
+  addToCart(
+    {
+      slug: product.slug[currentLang] || product.slug.en,
+      name: product.name[currentLang] || product.name.en,
+      price: product.price,
+      mainImage: product.mainImage,
+      quantity: 1,
+    },
+    currentLang
+  );
+  openCart();
+};
 
   const handleAddToWishlist = (slugObj: Record<string, string>, currentLang: string) => {
     const slug = slugObj[currentLang] || slugObj["en"] || "";
@@ -154,9 +181,7 @@ if (quickViewProduct) {
             product={product}
             currentLang={currentLang}
             addToWishlist={() => handleAddToWishlist(product.slug, currentLang)}
-            addToCart={(id, slug, name, price, mainImage) =>
-              handleAddToCart(id, product.slug, product.name, price, mainImage, currentLang)
-            }
+            addToCart={(e) => handleAddToCart(product, e)}
             setQuickViewProduct={setQuickViewProduct}
             translatedTexts={translatedTexts}
           />
@@ -164,148 +189,146 @@ if (quickViewProduct) {
       </div>
 
       {/* Quick View Modal */}
-{quickViewProduct && (
-  <div
-    className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 bg-black/50"
-    onClick={() => setQuickViewProduct(null)} // click outside closes
-  >
-    <div
-      className="bg-white w-full max-w-4xl min-h-[500px] rounded-lg shadow-lg flex overflow-hidden relative"
-      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
-    >
-      {/* Close Button */}
-      <button
-        className="absolute top-3 right-6 text-gray-500 hover:text-black z-20"
-        onClick={() => setQuickViewProduct(null)}
-        aria-label="Close modal"
-      >
-        ✕
-      </button>
+      <AnimatePresence>
+        {quickViewProduct && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setQuickViewProduct(null)}
+          >
+            <motion.div
+              className="bg-white w-full max-w-4xl min-h-[500px] rounded-lg shadow-lg flex overflow-hidden relative"
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 300, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                className="absolute top-3 right-6 text-gray-500 hover:text-black z-20"
+                onClick={() => setQuickViewProduct(null)}
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
 
-      {/* Left: Image with hover button */}
-      <div className="w-1/2 relative group">
-        <Image
-          src={quickViewProduct.mainImage}
-          alt={quickViewProduct.name[currentLang] || quickViewProduct.name.en}
-          fill
-          className="object-cover"
-        />
+              {/* Left: Image with hover button */}
+              <div className="w-1/2 relative group">
+                <Image
+                  src={quickViewProduct.mainImage}
+                  alt={quickViewProduct.name[currentLang] || quickViewProduct.name.en}
+                  fill
+                  className="object-cover"
+                />
+                <Link
+                  href={`/products/${quickViewProduct.slug.en}?lang=${currentLang}`}
+                  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
+                >
+                  View Details
+                </Link>
+              </div>
 
-        {/* View Details button on hover */}
-        <Link
-  href={`/products/${quickViewProduct?.slug.en}?lang=${currentLang}`}
-  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
->
-  View Details
-</Link>
+              {/* Right: Details */}
+              <div className="w-1/2 p-6 flex flex-col justify-between max-h-[500px] overflow-y-auto">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">
+                    {quickViewProduct.name[currentLang] || quickViewProduct.name.en}
+                  </h2>
+                  <p className="text-lg font-semibold mb-4">
+                    {symbol}{quickViewProduct.price}
+                  </p>
 
+                  <div className="flex items-center gap-4 mb-6">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      className="bg-blue-800 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-black"
+                      onClick={() => {
+                        handleAddToCart(
+                          quickViewProduct,
+                          { currentTarget: document.createElement("button") } as any
+                        );
+                        setQuickViewProduct(null);
+                      }}
+                    >
+                      {translatedTexts.addtoCart}
+                    </motion.button>
 
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      className="bg-red-500 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-red-700 flex items-center gap-2"
+                      onClick={() => {
+                        handleAddToWishlist(quickViewProduct.slug, currentLang);
+                        setQuickViewProduct(null);
+                      }}
+                    >
+                      <FiHeart />
+                      {translatedTexts.addtoWishlist}
+                    </motion.button>
 
-      </div>
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <FiFacebook size={24} />
+                    </a>
 
-      {/* Right: Details with scrollbar */}
-      <div className="w-1/2 p-6 flex flex-col justify-between max-h-[500px] overflow-y-auto">
-        <div>
-          <h2 className="text-2xl font-bold mb-2">
-            {quickViewProduct.name[currentLang] || quickViewProduct.name.en}
-          </h2>
-          <p className="text-lg font-semibold mb-4">
-            {symbol}{quickViewProduct.price}
-          </p>
-           {/* Buttons: Add to Cart + Wishlist + Share icons */}
-    <div className="flex items-center gap-4 mb-6">
-      <button
-        className="bg-blue-800 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-black"
-        onClick={() => {
-          handleAddToCart(
-            quickViewProduct.id,
-            quickViewProduct.slug,
-            quickViewProduct.name,
-            quickViewProduct.price,
-            quickViewProduct.mainImage,
-            currentLang
-          );
-          setQuickViewProduct(null);
-        }}
-      >
-        {translatedTexts.addtoCart}
-      </button>
+                    <a
+                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}&text=${encodeURIComponent(`Check out this product: ${quickViewProduct.name[currentLang] || quickViewProduct.name.en}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-600"
+                    >
+                      <FiTwitter size={24} />
+                    </a>
+                  </div>
 
-      <button
-        className="bg-red-500 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-red-700 flex items-center gap-2"
-        onClick={() => {
-  handleAddToWishlist(quickViewProduct.slug, currentLang);
-  setQuickViewProduct(null);
-}}
+                  <h3 className="font-semibold text-lg mb-1">Specifications</h3>
+                  <div className="product-details" dangerouslySetInnerHTML={{
+                    __html: quickViewProduct.Specifications[currentLang] || quickViewProduct.Specifications.en
+                  }}></div>
 
-        aria-label="Add to Wishlist"
-      >
-        <FiHeart />
-        {translatedTexts.addtoWishlist}
+                  <h3 className="font-semibold text-lg mb-1">Shipping & Delivery</h3>
+                  <div className="product-details" dangerouslySetInnerHTML={{
+                    __html: quickViewProduct.Shipping[currentLang] || quickViewProduct.Shipping.en
+                  }}></div>
 
-      </button>
+                  <h3 className="font-semibold text-lg mb-1">Warranty</h3>
+                  <div className="product-details" dangerouslySetInnerHTML={{
+                    __html: quickViewProduct.Warranty[currentLang] || quickViewProduct.Warranty.en
+                  }}></div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Share icons */}
-      <a
-      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-600 hover:text-blue-800"
-      aria-label="Share on Facebook"
-    >
-      <FiFacebook size={24} />
-    </a>
-
-    <a
-      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}&text=${encodeURIComponent(`Check out this product: ${quickViewProduct.name[currentLang] || quickViewProduct.name.en}`)}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-400 hover:text-blue-600"
-      aria-label="Share on Twitter"
-    >
-      <FiTwitter size={24} />
-    </a>
-
-      {/* Add more share icons as needed */}
-    </div>
-
-          {/* Description */}
-          {/* ...inside Quick View modal right side */}
-      
-
-<h3 className="font-semibold text-lg mb-1">Specifications</h3>
-<div
-  className="product-details"
-  dangerouslySetInnerHTML={{
-    __html: quickViewProduct.Specifications[currentLang] || quickViewProduct.Specifications.en,
-  }}
-></div>
-
-<h3 className="font-semibold text-lg mb-1">Shipping & Delivery</h3>
-<div
-  className="product-details"
-  dangerouslySetInnerHTML={{
-    __html: quickViewProduct.Shipping[currentLang] || quickViewProduct.Shipping.en,
-  }}
-></div>
-
-<h3 className="font-semibold text-lg mb-1">Warranty</h3>
-<div
-  className="product-details"
-  dangerouslySetInnerHTML={{
-    __html: quickViewProduct.Warranty[currentLang] || quickViewProduct.Warranty.en,
-  }}
-></div>
-
-
-        </div>
-
-        
-      </div>
-    </div>
-  </div>
-)}
-
+      {/* Fly to cart animation */}
+      <AnimatePresence>
+        {flyCart && (
+          <motion.div
+            className="fixed w-16 h-16 z-50 pointer-events-none"
+            style={{ top: flyCart.startY, left: flyCart.startX }}
+            initial={{ opacity: 1, scale: 1 }}
+            animate={{ top: flyCart.endY, left: flyCart.endX, opacity: 0, scale: 0.3 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            onAnimationComplete={() => setFlyCart(null)}
+          >
+            <Image
+              src={flyCart.image}
+              alt="Flying Product"
+              width={64}
+              height={64}
+              className="rounded"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -321,13 +344,7 @@ function ProductCard({
   product: Product & { thumbnails?: string[] };
   currentLang: string;
   addToWishlist: () => void;
-  addToCart: (
-    id: string,
-    slug: string,
-    name: string,
-    price: number,
-    mainImage: string
-  ) => void;
+  addToCart: (e: React.MouseEvent<HTMLButtonElement>) => void;
   setQuickViewProduct: React.Dispatch<React.SetStateAction<Product | null>>;
   translatedTexts: {
     title: string;
@@ -338,166 +355,90 @@ function ProductCard({
 }) {
   const { symbol } = useCurrency();
   const [hovered, setHovered] = useState(false);
-  const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
   const breakpoint = useBreakpoint();
-
   const slugForLang = product.slug.en || "";
   const nameForLang = product.name?.[currentLang] || product.name?.en || "";
   const thumbnail = product.thumbnails?.[0];
   const hasThumbnail = Boolean(thumbnail);
+  const [hoverCart, setHoverCart] = useState(false);
+
 
   return (
-    <div
+    <motion.div
       className="relative group flex flex-col h-full"
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => {
-        setHovered(false);
-        setHoveredIcon(null);
-      }}
+      onMouseLeave={() => setHovered(false)}
+      whileHover={{ scale: 1.03 }}
+      transition={{ duration: 0.3 }}
     >
       <Link href={`/products/${slugForLang}?lang=${currentLang}`}>
         <div className="w-full aspect-square relative overflow-hidden mt-3">
-          <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
-            {extractModel(product.name[currentLang] || product.name.en)}
-          </div>
+<div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10 hidden md:block">
+  {extractModel(product.name[currentLang] || product.name.en)}
+</div>
 
-          {/* Main Image - hidden on hover if thumbnail exists */}
+
           <Image
-            src={product.mainImage}
+            src={hovered && hasThumbnail ? thumbnail || product.mainImage : product.mainImage}
             alt={nameForLang}
             fill
-            unoptimized
-            className={`object-cover transition-transform duration-300 group-hover:scale-105 ${
-              hovered && hasThumbnail ? "hidden" : "block"
-            }`}
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             priority
           />
 
-          {/* Show single thumbnail on hover if available */}
-          {hovered && hasThumbnail && (
-            <Image
-              src={thumbnail!}
-              alt={`${nameForLang} thumbnail`}
-              fill
-              unoptimized
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            />
-          )}
+          {/* Icons with tooltip */}
+          <motion.div className={`absolute top-3 right-1 flex flex-col space-y-3 z-10`}>
+  {/* Desktop hover icons */}
+  {breakpoint !== "sm" && hovered && (
+    <>
+      {/* Quick View */}
+      <div className="relative flex items-center">
+        <span className="absolute -left-24 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+          Quick View
+        </span>
+        <motion.button
+          whileHover={{ scale: 1.2 }}
+          onClick={(e) => { e.preventDefault(); setQuickViewProduct(product); }}
+          className="bg-white rounded-full shadow-md p-2 w-10 h-10 flex items-center justify-center"
+        >
+          <FiSearch className="text-gray-900 w-5 h-5" />
+        </motion.button>
+      </div>
 
-          {/* If hovered but no thumbnail, show mainImage again */}
-          {hovered && !hasThumbnail && (
-            <Image
-              src={product.mainImage}
-              alt={nameForLang}
-              fill
-              unoptimized
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            />
-          )}
+      {/* Wishlist */}
+      <div className="relative flex items-center">
+        <span className="absolute -left-28 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+          Add to Wishlist
+        </span>
+        <motion.button
+          whileHover={{ scale: 1.2 }}
+          onClick={(e) => { e.preventDefault(); addToWishlist(); }}
+          className="bg-white rounded-full shadow-md p-2 w-10 h-10 flex items-center justify-center"
+        >
+          <FiHeart className="text-gray-900 w-5 h-5" />
+        </motion.button>
+      </div>
+    </>
+  )}
 
-          {/* Large screens: show icons on hover */}
-          {(breakpoint === "md" || breakpoint === "lg") && hovered && (
-            <div className="absolute top-3 right-1 flex flex-col space-y-3 z-10">
-              {/* Search Icon */}
-              <div
-                className="relative cursor-pointer"
-                onMouseEnter={() => setHoveredIcon("search")}
-                onMouseLeave={() => setHoveredIcon(null)}
-              >
-                <button
-                  aria-label="Quick view"
-                  className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setQuickViewProduct(product);
-                  }}
-                >
-                  <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-                </button>
-                {hoveredIcon === "search" && (
-                  <span
-                    className="absolute right-full mr-2 md:mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100"
-                    style={{ minWidth: "80px" }}
-                  >
-                    Quick view
-                  </span>
-                )}
-              </div>
-              {/* Heart Icon */}
-              <div
-                className="relative cursor-pointer"
-                onMouseEnter={() => setHoveredIcon("wishlist")}
-                onMouseLeave={() => setHoveredIcon(null)}
-              >
-                <button
-                  aria-label={translatedTexts.addtoWishlist}
-                  className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addToWishlist();
-                  }}
-                >
-                  <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-                </button>
-                {hoveredIcon === "wishlist" && (
-                  <span
-                    className="absolute top-0 -translate-y-full mb-2 left-1/4 -translate-x-1/2 md:top-1/2 md:right-full md:mr-3 md:left-auto md:translate-y-[-50%] md:translate-x-0 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs md:text-sm font-medium transition-all duration-200 opacity-100 scale-100 z-20"
-                    style={{ minWidth: "110px" }}
-                  >
-                    {translatedTexts.addtoWishlist}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Medium screens: always show both icons */}
-          {breakpoint === "md" && (
-            <div className="absolute top-3 right-1 flex flex-col space-y-3 z-10">
-               <button
-      aria-label="Quick view"
-      className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12 mb-2"
-      onClick={(e) => {
-        e.preventDefault();
-        setQuickViewProduct(product);
-      }}
+  {/* Mobile always-visible wishlist icon */}
+  {breakpoint === "sm" && (
+    <motion.button
+      id="wishlist-icon"
+      whileTap={{ scale: 1.2 }}
+      onClick={(e) => { e.preventDefault(); addToWishlist(); }}
+      className="bg-white rounded-full shadow-md p-2 w-10 h-10 flex items-center justify-center"
     >
-      <FiSearch className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-    </button>
-              <button
-                aria-label={translatedTexts.addtoWishlist}
-                className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 md:p-3 w-10 h-10 md:w-12 md:h-12"
-                onClick={(e) => {
-                  e.preventDefault();
-                  addToWishlist();
-                }}
-              >
-                <FiHeart className="text-gray-900 w-5 h-5 md:w-6 md:h-6" />
-              </button>
-            </div>
-          )}
+      <FiHeart className="text-black w-5 h-5" />
+    </motion.button>
+  )}
+</motion.div>
 
-          {/* Small screens: always show only heart icon */}
-          {breakpoint === "sm" && (
-            <div className="absolute top-3 right-1 flex flex-col space-y-3 z-10">
-              <button
-                aria-label={translatedTexts.addtoWishlist}
-                className="bg-white rounded-full shadow-md flex items-center justify-center transition p-2 w-10 h-10 mt-5"
-                onClick={(e) => {
-                  e.preventDefault();
-                  addToWishlist();
-                }}
-              >
-                <FiHeart className="text-gray-900 w-5 h-5" />
-              </button>
-            </div>
-          )}
         </div>
       </Link>
 
+      {/* Product Info */}
       <div className="mt-6 text-center flex flex-col flex-grow">
         <Link href={`/products/${slugForLang}?lang=${currentLang}`}>
           <h3 className="text-lg font-semibold hover:underline min-h-[3.5rem] leading-tight">
@@ -505,43 +446,41 @@ function ProductCard({
           </h3>
         </Link>
         <p className="text-gray-600 mt-1">
-          {symbol}
-          {product.price}
+          {symbol}{product.price}
         </p>
 
-        <div
-          className="mt-2 relative group"
-          onMouseEnter={() => setHoveredIcon("cart")}
-          onMouseLeave={() => setHoveredIcon(null)}
-        >
-          <button
-            className="w-full bg-blue-800 border border-black text-white px-4 py-1 rounded shadow-sm flex items-center justify-center transition-colors duration-200 hover:bg-black"
-            onClick={() =>
-              addToCart(
-                product.id,
-                slugForLang,
-                nameForLang,
-                product.price,
-                product.mainImage
-              )
-            }
-          >
-            {hoveredIcon === "cart" ? (
-              <FiShoppingCart className="w-5 h-5" />
-            ) : (
-              <span className="text-sm">{translatedTexts.addtoCart}</span>
-            )}
-          </button>
-          {hoveredIcon === "cart" && (
-            <span
-              className="absolute top-0 -translate-y-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black text-white shadow-lg rounded px-2 py-1 text-xs font-medium transition-all duration-200 opacity-100 scale-100"
-              style={{ minWidth: "80px" }}
-            >
-              {translatedTexts.addtoCart}
-            </span>
-          )}
-        </div>
+<motion.div
+  className="mt-2 relative flex justify-center"
+  onMouseEnter={() => setHoverCart(true)}
+  onMouseLeave={() => setHoverCart(false)}
+>
+  {/* Main button */}
+  <motion.button
+    className="w-full bg-blue-800 border border-black text-white px-4 py-1 rounded shadow-sm flex items-center justify-center transition-colors duration-200 hover:bg-black"
+    whileHover={{ scale: 1.03 }}
+    onClick={(e) => addToCart(e)}
+  >
+    <span className="text-sm">{translatedTexts.addtoCart}</span>
+  </motion.button>
+
+  {/* Floating hover cart icon */}
+  {hoverCart && (
+    <motion.button
+      className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white p-2 rounded-full shadow-md flex items-center justify-center"
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={(e) => addToCart(e)} // same action as button
+    >
+      <FiShoppingCart className="text-gray-900 w-6 h-6" />
+    </motion.button>
+  )}
+</motion.div>
+
+
+
       </div>
-    </div>
+    </motion.div>
   );
 }
