@@ -391,7 +391,7 @@ useEffect(() => {
   <BrandLinksNav currentBrand="toyota" />
 </div>
 
-    <div className="max-w-7xl mx-auto px-4 py-10 ">
+    <div className="max-w-7xl mx-auto px-4 py-0 ">
 
       <motion.ol
   className="inline-flex  space-x-2"

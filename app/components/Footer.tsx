@@ -120,25 +120,27 @@ const Footer: React.FC = () => {
   <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-center sm:text-left">
 
     {/* Company Logo */}
-    <div className="flex flex-col items-center sm:items-start">
-      <Link href="/">
-        <Image
-          src="/assets/logos.png"
-          alt="DriveCore Auto Logo"
-          width={150}
-          height={50}
-          className="object-contain mb-4"
-          priority
-        />
-      </Link>
-      <div className="text-gray-300 text-sm mb-4"> 
-         <p className="text-gray-300 text-sm mb-10">
-   {translatedTexts.description}
-  </p>
-      </div>
-     
-      
+    {/* Company Logo */}
+<div className="flex flex-col items-center sm:items-start">
+  <Link href="/">
+    <div className="relative w-[250px] h-[120px] mb-4">
+      <Image
+        src="/assets/logos.png"
+        alt="DriveCore Auto Logo"
+        fill
+        style={{ objectFit: "contain" }}
+        priority
+      />
     </div>
+  </Link>
+
+  <div className="text-gray-300 text-sm mb-4"> 
+    <p className="text-gray-300 text-sm mb-10">
+      {translatedTexts.description}
+    </p>
+  </div>
+</div>
+
 
     {/* Customer Support */}
     <div>
@@ -209,7 +211,7 @@ const Footer: React.FC = () => {
     <FaTwitter size={22} />
   </Link>
   <Link
-    href="https://www.linkedin.com/in/YourLinkedInProfile"
+    href="https://www.linkedin.com/in/drivecore-auto-613a2a380/"
     target="_blank"
     rel="noopener noreferrer"
     aria-label="LinkedIn"

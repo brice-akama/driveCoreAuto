@@ -32,6 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang}>
        <link rel="icon" href="/favicon.png" type="image/png" />
+       
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <CurrencyProvider>
           <WishlistProvider>

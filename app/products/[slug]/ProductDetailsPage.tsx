@@ -1,7 +1,7 @@
 "use client";
 
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FiEye, FiHeart, FiX } from "react-icons/fi";
 import Image from "next/image";
 import parse, { domToReact, HTMLReactParserOptions, Element as DomElement, DOMNode } from "html-react-parser";
@@ -58,27 +58,23 @@ interface ProductDetailsPageProps {
   lang: string;
 }
 
+// ...existing code...
 const stripHtmlToParagraphs = (html: string): string[] => {
   if (!html) return [];
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  const elements = doc.querySelectorAll("p, li");
-  const seen = new Set<string>();
-  const result: string[] = [];
-
-  elements.forEach((el) => {
-    const text = el.textContent?.trim();
-    if (text && !seen.has(text)) {
-      seen.add(text);
-      result.push(text);
-    }
-  });
-
-  const fallback = doc.body.textContent?.trim() || "";
-  if (result.length === 0 && fallback && !seen.has(fallback)) result.push(fallback);
-
-  return result;
+  // Match <p> and <li> blocks, fallback to plain text if none found
+  const matches = html.match(/<(p|li)[^>]*>(.*?)<\/(p|li)>/gi);
+  if (matches && matches.length > 0) {
+    return matches
+      .map((tag) => tag.replace(/<[^>]+>/g, "").trim())
+      .filter((text, idx, arr) => text && arr.indexOf(text) === idx);
+  }
+  // Fallback: strip all tags and return as a single paragraph
+  const fallback = html.replace(/<[^>]+>/g, "").trim();
+  return fallback ? [fallback] : [];
 };
+// ...existing code...
+
+  
 
 const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }) => {
   const [selectedThumbnail, setSelectedThumbnail] = useState(0);
@@ -92,6 +88,8 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
   const [viewers, setViewers] = useState(80);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalPrice, setTotalPrice] = useState(product.price);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const mainSectionRef = useRef<HTMLDivElement>(null);
 
   const { addToCart, openCart } = useCart();
   const { addToWishlist } = useWishlist();
@@ -115,6 +113,18 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
       });
     }, 4000);
     return () => clearInterval(interval);
+  }, []);
+
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!mainSectionRef.current) return;
+      const rect = mainSectionRef.current.getBoundingClientRect();
+      // Show sticky bar if main section is scrolled out of view (top < -100)
+      setShowStickyBar(rect.top < -100);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleAddToCart = () => {
@@ -189,7 +199,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
         />
       </Head>
 
-      <section className="max-w-6xl mx-auto px-4 py-10 mt-20 lg:mt-40">
+      <section ref={mainSectionRef} className="max-w-6xl mx-auto px-4 py-10 mt-20 lg:mt-40">
         <div className="flex flex-col md:flex-row gap-10">
           {/* Left: Images */}
           <div className="w-full md:w-1/2">
@@ -345,6 +355,55 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
 
         </div>
       </section>
+
+       {/* Sticky Bottom Bar (only on md+ screens) */}
+      {showStickyBar && (
+        <div className="hidden md:flex fixed bottom-0 left-0 w-full bg-white shadow-lg border-t z-50 py-3 px-6 items-center justify-between animate-fadeIn">
+          <div className="flex items-center gap-4">
+            <img
+              src={product.mainImage}
+              alt={product.name[language] || product.name.en}
+              className="w-16 h-16 object-cover rounded"
+            />
+            <div>
+              <div className="font-semibold text-lg ">{product.name[language] || product.name.en}</div>
+              <div className="text-gray-700 font-bold">{symbol}{product.price.toFixed(2)}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+  <button
+    onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
+    className="bg-transparent border border-gray-300 text-xl px-3 py-1 rounded-full"
+    aria-label="Decrease quantity"
+  >
+    -
+  </button>
+  <span className="min-w-[24px] text-center">{quantity}</span>
+  <button
+    onClick={() => setQuantity(quantity + 1)}
+    className="bg-transparent border border-gray-300 text-xl px-3 py-1 rounded-full"
+    aria-label="Increase quantity"
+  >
+    +
+  </button>
+</div>
+          <div className="flex items-center gap-2">
+            <button
+              className="bg-black text-white px-5 py-2 rounded-md font-semibold"
+              onClick={handleAddToCart}
+            >
+              {t.addToCart}
+            </button>
+            <button
+              className="flex items-center gap-1 text-blue-600 border border-blue-600 rounded px-4 py-2 hover:bg-blue-600 hover:text-white transition"
+              onClick={handleAddToWishlist}
+            >
+              <FiHeart className="w-5 h-5" />
+              <span>{t.addToWishlist}</span>
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

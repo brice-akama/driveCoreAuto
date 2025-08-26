@@ -13,6 +13,7 @@ import { useWishlist } from "../context/WishlistContext";
 import SelectLanguageButton from "./SelectLanguageButton";
 
 
+
 type SubMenuItem = {
   name: string;
   link: string;
@@ -54,8 +55,13 @@ const Navbar = () => {
   const [translatedMenuItems, setTranslatedMenuItems] = useState<MenuItem[]>([]);
   const { openCart } = useCart();
   const { cartCount } = useCart();
+  const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const { wishlist } = useWishlist();
   const router = useRouter();
+  
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+const [selectedCategory, setSelectedCategory] = useState<string>("");
+
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search...");
   const [mode, setMode] = useState<Mode>("top");
@@ -99,7 +105,51 @@ useEffect(() => {
 
 
 
-
+// Example categories array
+const categories = [
+  {
+    brand: "Toyota",
+    subcategories: [
+      "Toyota Swaps",
+      "Toyota Engines",
+      "Toyota Transmissions"
+    ]
+  },
+  {
+    brand: "Honda",
+    subcategories: [
+      "Honda Swaps",
+      "Honda Engines",
+      "Honda Transmissions"
+    ]
+  },
+  {
+    brand: "Infiniti",
+    subcategories: [
+      "Infiniti Swaps",
+      "Infiniti Engines",
+      "Infiniti Transmissions"
+    ]
+  },
+  {
+    brand: "Scion",
+    subcategories: [
+      "Scion Swaps",
+      "Scion Engines",
+      "Scion Transmissions"
+    ]
+  },
+  // ...add more brands and subcategories as needed
+  {
+    brand: "Accessories",
+    subcategories: []
+  },
+  {
+    brand: "ECUs",
+    subcategories: []
+  },
+  // ...other single categories
+];
 
 
   const [translatedTexts, setTranslatedTexts] = useState({
@@ -679,7 +729,7 @@ href={`/${language}/shipping`}
 </div>
 
       {/* Secondary Navbar */}
-      <div className="bg-white shadow-md py-4 px-6 flex justify-between items-center h-20 mt-8">
+      <div className="bg-white shadow-md  py-4 px-12 flex justify-between items-center h-20 mt-8">
         <div className="flex items-center space-x-4 bg-transparent">
           {isMobile && (
             <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-lg">
@@ -687,15 +737,37 @@ href={`/${language}/shipping`}
             </button>
           )}
 
-          <Link href={`/?lang=${language}`}className="hidden md:block mt-4 bg-transparent">
-            <Image src="/assets/logo.png" alt="logo" width={180} height={80} className="object-contain bg-transparent " />
-          </Link>
+          <Link
+  href={`/?lang=${language}`}
+  className="hidden md:block mt-4 bg-transparent"
+>
+  <div className="relative w-[250px] h-[150px]">
+    <Image
+      src="/assets/logo.png"
+      alt="logo"
+      fill
+      style={{ objectFit: "contain" }}
+      priority
+    />
+  </div>
+</Link>
 
-          <div className="md:hidden w-full">
-            <Link href={`/?lang=${language}`} className="block bg-transparent">
-              <Image src="/assets/logo.png" alt="logo" width={140} height={30} className="object-contain bg-transparent" />
-            </Link>
-          </div>
+<div className="md:hidden w-full flex justify-start">
+  <Link href={`/?lang=${language}`} className="block bg-transparent">
+    <div className="relative w-[200px] h-[150px]">
+      <Image
+        src="/assets/logo.png"
+        alt="logo"
+        fill
+        style={{ objectFit: "contain" }}
+        priority
+      />
+    </div>
+  </Link>
+</div>
+
+
+
         </div>
 
         
@@ -703,8 +775,15 @@ href={`/${language}/shipping`}
 
 <div
 ref={dropdownRef}
-className="relative w-1/2 mx-auto mt-3 hidden md:flex">
+className="relative w-1/2 mx-auto mt-3 hidden lg:flex">
   <div className="flex items-center bg-gray-50 rounded-full shadow-inner px-6 py-3 w-full">
+
+    {/* Search Icon */}
+  <button onClick={handleSearch} className="flex-shrink-0 mr-3">
+    <FaSearch className="text-gray-500 text-xl" />
+  </button>
+
+      {/* Search Input */}
     <input
       type="text"
       value={searchQuery}
@@ -712,11 +791,61 @@ className="relative w-1/2 mx-auto mt-3 hidden md:flex">
       placeholder={searchPlaceholder}
       className="flex-grow bg-transparent outline-none text-gray-800 text-lg"
     />
-    <button onClick={handleSearch} className="flex-shrink-0 ml-3">
-      <FaSearch className="text-gray-500 text-xl" />
-    </button>
-  </div>
+    
+    
+    <div className="w-px bg-gray-300 self-stretch"></div>
   
+
+    {/* Select Category */}
+    <div className="relative flex items-center px-4 cursor-pointer" onClick={() => setIsCategoryOpen((open) => !open)}>
+    
+
+      <span className="text-gray-700 font-normal text-base flex items-center gap-2">
+        {selectedCategory || "All Categories"}
+        <ChevronDown className={`w-4 h-4 ml-1 transition-transform duration-300 ${isCategoryOpen ? "rotate-180" : ""}`} />
+      </span>
+
+      {isCategoryOpen && (
+  <div className="absolute right-0 top-full mt-2 w-56 max-h-64 overflow-y-auto bg-white rounded-lg shadow-lg border border-gray-200 z-50 animate-fadeIn">
+    {categories.map((cat) => (
+      <div key={cat.brand}>
+        {/* Main brand name */}
+        <div
+          className="px-4 py-2 font-semibold text-gray-800 cursor-pointer hover:bg-blue-50"
+          onClick={() => {
+            setSelectedCategory(cat.brand);
+            setIsCategoryOpen(false);
+            setSearchQuery(cat.brand);
+          }}
+        >
+          {cat.brand}
+        </div>
+        {/* Subcategories, indented */}
+        {cat.subcategories.map((sub) => (
+          <div
+            key={sub}
+            className="pl-8 pr-4 py-2 text-gray-700 cursor-pointer hover:bg-blue-100"
+            onClick={() => {
+              setSelectedCategory(sub);
+              setIsCategoryOpen(false);
+              setSearchQuery(sub);
+            }}
+          >
+            {sub}
+          </div>
+          
+        ))}
+      </div>
+      
+    ))}
+  </div>
+)}
+    </div>
+    
+
+
+    
+  </div>
   {/* Dropdown */}
   {(dropdownResults.products.length || dropdownResults.blogs.length) > 0 && (
     <div className="absolute left-0 top-full mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-100 z-50">
@@ -819,7 +948,7 @@ className="relative w-1/2 mx-auto mt-3 hidden md:flex">
     setPopupSearchQuery("");
   }}
   aria-label="Open search"
-  className="text-2xl cursor-pointer text-black hover:text-blue-700 mt-3 md:hidden "
+  className="text-2xl cursor-pointer text-black hover:text-blue-700 mt-3 lg:hidden "
 >
   <FaSearch />
 </button>

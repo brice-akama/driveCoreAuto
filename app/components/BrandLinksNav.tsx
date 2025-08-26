@@ -144,15 +144,10 @@ export default function BrandLinksNav({ currentBrand, currentPath }: BrandLinksN
       {/* Brands section - always visible on md+ */}
       
     {currentBrand && (
-        <h1
-  className="text-4xl font-bold text-center text-blue-400 "
-  style={{ marginTop: "2.5rem", marginBottom: "1.5rem" }}
->
-  {currentBrand.charAt(0).toUpperCase() + currentBrand.slice(1)}
-</h1>
-
-      )}
-
+  <h1 className="block text-2xl md:text-3xl lg:text-4xl font-bold text-center text-blue-400 mb-6">
+    {currentBrand.charAt(0).toUpperCase() + currentBrand.slice(1)}
+  </h1>
+)}
       <div className="hidden md:flex flex-wrap justify-center items-center gap-6 px-4 py-12">
   {BRANDS.map((brand) => {
   const label = translatedBrands[brand] || getDefaultLabel(brand);
