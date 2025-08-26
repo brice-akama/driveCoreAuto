@@ -5,8 +5,7 @@ import Link from "next/link";
 import Image from "next/image";  // import next/image for optimized image handling
 import {
   FaBitcoin,
-  FaFacebookF,
-  FaInstagram,
+  FaTwitter, FaLinkedinIn, 
   FaPaypal,
   
 } from "react-icons/fa";
@@ -198,14 +197,28 @@ const Footer: React.FC = () => {
   {/* Social Media & Payment Methods */}
   <div className="mt-12 flex flex-col md:flex-row items-center justify-between  pt-6">
     {/* Social Icons */}
-    <div className="flex space-x-6 mb-6 md:mb-0">
-      <Link href="" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-white hover:text-blue-300 transition">
-        <FaFacebookF size={22} />
-      </Link>
-      <Link href="" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-[#c32aa3] hover:text-[#7232bd] transition">
-        <FaInstagram size={22} />
-      </Link>
-    </div>
+    {/* Social Icons */}
+<div className="flex space-x-6 mb-6 md:mb-0">
+  <Link
+    href="https://x.com/Drivecoreauto"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Twitter"
+    className="text-white hover:text-blue-400 transition"
+  >
+    <FaTwitter size={22} />
+  </Link>
+  <Link
+    href="https://www.linkedin.com/in/YourLinkedInProfile"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="LinkedIn"
+    className="text-white hover:text-blue-700 transition"
+  >
+    <FaLinkedinIn size={22} />
+  </Link>
+</div>
+
 {/* Payment Methods */}
 <div className="mt-10 text-center">
   <h4 className="text-sm font-semibold mb-4 text-gray-100"> {translatedTexts.weAccept}</h4>

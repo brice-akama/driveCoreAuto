@@ -170,13 +170,7 @@ export default function PrivacyPolicyPage() {
         </p>
       </section>
 
-      <section id="contact" className="space-y-1">
-        <div role="heading" aria-level={2} className="text-2xl font-semibold text-gray-900">
-          Contact Us
-        </div>
-        <p>Email: <a className="underline" href="mailto:support@drivecoreauto.com">support@drivecoreauto.com</a></p>
-        <p>Address: [Insert Company Address, USA]</p>
-      </section>
+      
     </main>
   );
 }

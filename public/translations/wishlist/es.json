@@ -2,5 +2,10 @@
   "heroTitle": "Lista de deseos",
   "mainHeading": "Tu lista de deseos",
   "emptyText": "Tu lista de deseos está vacía.",
-  "continueShopping": "Seguir comprando"
+  "continueShopping": "Seguir comprando",
+  "product": "Producto",
+  "price": "Precio",
+  "actions": "Acciones",
+  "addToCart": "Añadir al carrito",
+  "remove": "Eliminar"
 }

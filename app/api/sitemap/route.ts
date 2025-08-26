@@ -31,9 +31,13 @@ export async function GET() {
     // Localized static pages (with /en/, /fr/, etc.)
     const localizedStaticUrls = [
       { url: "warranty", changefreq: "monthly", priority: 0.6 },
-      { url: "shipping-info", changefreq: "monthly", priority: 0.6 },
+      { url: "shipping", changefreq: "monthly", priority: 0.6 },
       { url: "support", changefreq: "monthly", priority: 0.6 },
-      { url: "terms", changefreq: "monthly", priority: 0.6 },
+      { url: "track-order", changefreq: "monthly", priority: 0.6 },
+      { url: "faqs", changefreq: "monthly", priority: 0.6 },
+      { url: "refund-policy", changefreq: "monthly", priority: 0.6 },
+      { url: "privacy-policy", changefreq: "monthly", priority: 0.6 },
+      { url: "terms-condictions", changefreq: "monthly", priority: 0.6 },
     ];
 
     localizedStaticUrls.forEach((page) => {

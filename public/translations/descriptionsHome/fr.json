@@ -1,0 +1,39 @@
+{
+  "descriptionsHome": {
+    "whyChooseHeading": "Pourquoi choisir DriveCore Auto ?",
+    "intro": "Nous ne sommes pas un fournisseur de pièces automobiles ordinaire. Voici ce qui nous distingue :",
+    "expertiseTitle": "Une expertise sur laquelle vous pouvez compter",
+    "expertiseText": "Notre équipe possède des années d'expérience dans l'approvisionnement et la fourniture de moteurs, transmissions et pièces de performance de haute qualité. Nous connaissons nos produits de A à Z : moteurs Honda et Toyota, Nissan, Subaru, Mazda, et plus encore.",
+    "qualityTitle": "Qualité avant tout",
+    "qualityText": "Chaque moteur et chaque pièce que nous vendons est soigneusement inspecté et testé pour répondre à des normes strictes de performance et de durabilité. Nous ne faisons aucun compromis sur la qualité, car votre véhicule mérite le meilleur.",
+    "commitmentHeading": "Notre engagement envers la qualité",
+    "transparencyTitle": "Transparence",
+    "transparencyText": "Nous sommes transparents sur nos processus d'approvisionnement et de test. Vous saurez toujours exactement ce que vous recevez en commandant chez DriveCore Auto.",
+    "customerFocusTitle": "Orientation client",
+    "customerFocusText": "Nous sommes là pour vous accompagner à chaque étape — que vous soyez mécanicien, propriétaire d'atelier ou passionné de bricolage. Notre objectif est de vous aider à trouver la solution adaptée à votre véhicule.",
+    "qualityAssuranceTitle": "Comment nous garantissons la qualité et la fiabilité",
+    "qualityAssuranceItems": [
+      "Inspection & Tests : Chaque moteur et transmission est inspecté pour la performance, la compression et la durabilité.",
+      "Approvisionnement fiable : Nous travaillons uniquement avec des fournisseurs et fabricants réputés.",
+      "Étiquetage clair : Chaque produit inclut des spécifications détaillées et des informations de compatibilité.",
+      "Couverture de garantie : Nous garantissons nos moteurs et transmissions pour votre tranquillité d'esprit."
+    ],
+    "valuesHeading": "Nos valeurs : Confiance, Qualité et Performance",
+    "valuesItems": [
+      {"title": "Confiance", "text": "Nous gagnons votre confiance en étant honnêtes, transparents et fiables. Notre objectif est de construire des relations durables avec chaque client."},
+      {"title": "Qualité", "text": "Chaque produit respecte des normes strictes avant de quitter notre entrepôt. Nous inspectons chaque pièce pour garantir des performances parfaites."},
+      {"title": "Performance", "text": "Nous fournissons des pièces qui améliorent la puissance et la fiabilité de votre véhicule."},
+      {"title": "Service client", "text": "Notre équipe est toujours prête à répondre à vos questions et fournir de l'aide."},
+      {"title": "Responsabilité", "text": "Nous garantissons que chaque moteur et transmission est sûr, testé et prêt à fonctionner."},
+      {"title": "Intégrité", "text": "Nous agissons avec honnêteté et de solides principes moraux dans chaque transaction."}
+      
+    ],
+    "faqHeading": "FAQ sur l'achat chez DriveCore Auto",
+    "faqItems": [
+      {"question": "Quels produits vendez-vous chez DriveCore Auto ?", "answer": "Nous spécialisons dans les moteurs, transmissions, suspensions et accessoires de haute qualité pour des marques leaders comme Toyota, Honda, Nissan, Subaru, Mazda et Mitsubishi."},
+      {"question": "Vos moteurs sont-ils garantis ?", "answer": "Oui, tous nos moteurs et transmissions sont couverts par une garantie pour la fiabilité et la confiance des clients."},
+      {"question": "Comment assurez-vous la qualité ?", "answer": "Chaque moteur est soigneusement testé et inspecté avant l'expédition, et nous travaillons uniquement avec des fournisseurs fiables respectant nos standards."},
+      {"question": "Expédiez-vous dans le monde entier ?", "answer": "Oui, nous expédions dans la plupart des pays et offrons également le retrait local pour les clients qui le préfèrent."}
+    ]
+  }
+}

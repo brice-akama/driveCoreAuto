@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { FaSearch, FaUser, FaBars, FaTimes, FaShoppingCart, FaHeart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
@@ -63,6 +63,7 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 const [popupSearchQuery, setPopupSearchQuery] = useState("");
 const { language } = useLanguage();
+const dropdownRef = useRef<HTMLDivElement>(null);
 const [dropdownResults, setDropdownResults] = useState<{
   products: ProductResult[];
   blogs: BlogResult[];
@@ -77,6 +78,26 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
 
 
 
+useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setDropdownResults({ products: [], blogs: [] });
+    }
+  }
+
+  if (dropdownResults.products.length || dropdownResults.blogs.length) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [dropdownResults, setDropdownResults]);
+
+
 
 
 
@@ -84,6 +105,9 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
   const [translatedTexts, setTranslatedTexts] = useState({
     login: '',
     specialOffer: '',
+    Shipping: '',
+    Warranty: '',
+    TrackOrder: '',
     aquaBite: '',
     shopNow: ''
   });
@@ -129,7 +153,7 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
               link: "/toyota",
               subMenu: [
                 { name: await translate("2GR-FKS"), link: `/toyota?category=${toSlug("2GR-FKS")}` },
-                { name: await translate("2TR-FE"), link: `/toyota?category=${toSlug("2TR-FE")}` },
+                
                 { name: await translate("1ZZ-FE"), link: `/toyota?category=${toSlug("1ZZ-FE")}` },
                 { name: await translate("2ZR-FXE"), link: `/toyota?category=${toSlug("2ZR-FXE")}` },
                 { name: await translate("2AZ-FE"), link: `/toyota?category=${toSlug("2AZ-FE")}` },
@@ -143,27 +167,28 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
   name: await translate("Subaru Engines"),
   link: "/subaru",
   subMenu: [
-    { name: await translate("EJ20"), link: `/subaru?category=${toSlug("EJ20")}` },
-    { name: await translate("EJ25"), link: `/subaru?category=${toSlug("EJ25")}` },
+    
+    
     { name: await translate("FB20"), link: `/subaru?category=${toSlug("FB20")}` },
-    { name: await translate("FA20"), link: `/subaru?category=${toSlug("FA20")}` },
-    { name: await translate("EZ36"), link: `/subaru?category=${toSlug("EZ36")}` },
+    
     { name: await translate("EJ205"), link: `/subaru?category=${toSlug("EJ205")}` },
+    { name: await translate("FA20DIT"), link: `/subaru?category=${toSlug("FA20DIT")}` },
+     { name: await translate("FB25"), link: `/subaru?category=${toSlug("FB25")}` },
   ],
-},
+}, 
 {
   name: await translate("Acura  Engines"),
   link: "/acura",
   subMenu: [
-    { name: await translate("K20A"), link: `/acura?category=${toSlug("K20A")}` },
+    
     { name: await translate("K24A"), link: `/acura?category=${toSlug("K24A")}` },
-    { name: await translate("B18C"), link: `/acura?category=${toSlug("B18C")}` },
-    { name: await translate("H22A"), link: `/acura?category=${toSlug("H22A")}` },
+   
+    
     { name: await translate("J37A1"), link: `/acura?category=${toSlug("J37A1")}` },
-    { name: await translate("F22B"), link: `/acura?category=${toSlug("F22B")}` },
-    { name: await translate("F23A"), link: `/acura?category=${toSlug("F23A")}` },
-    { name: await translate("B20B"), link: `/acura?category=${toSlug("B20B")}` },
-  ],
+    { name: await translate("J32A3"), link: `/acura?category=${toSlug("J32A3")}` },
+    { name: await translate("J35A"), link: `/acura?category=${toSlug("J35A")}` },
+   
+  ], 
 },
 
              {
@@ -171,26 +196,26 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
   link: "/infiniti",
   subMenu: [
     { name: await translate("VQ35DE"), link: `/infiniti?category=${toSlug("VQ35DE")}` },
-    { name: await translate("VK56DE"), link: `/infiniti?category=${toSlug("VK56DE")}` },
-    { name: await translate("VQ40DE"), link: `/infiniti?category=${toSlug("VQ40DE")}` },
-    { name: await translate("VQ25HR"), link: `/infiniti?category=${toSlug("VQ25HR")}` },
-    { name: await translate("VQ37VHR"), link: `/infiniti?category=${toSlug("VQ37VHR")}` },
-    { name: await translate("QR25DE"), link: `/infiniti?category=${toSlug("QR25DE")}` },
+   
+    
+    
     { name: await translate("VK45DE"), link: `/infiniti?category=${toSlug("VK45DE")}` },
-    { name: await translate("VR38DETT"), link: `/infiniti?category=${toSlug("VR38DETT")}` },
+    { name: await translate("VQ35"), link: `/infiniti?category=${toSlug("VQ35")}` },
+     { name: await translate("VG30DE"), link: `/infiniti?category=${toSlug("VG30DE")}` },
+      { name: await translate("VQ35HR"), link: `/infiniti?category=${toSlug("VQ35HR")}` },
+    
   ],
-},
+},  
 
            {
   name: await translate("Scion  Engines"),
   link: "/scion",
   subMenu: [
-    { name: await translate("2ZR-FE"), link: `/scion?category=${toSlug("2ZR-FE")}` },
-    { name: await translate("1NZ-FE"), link: `/scion?category=${toSlug("1NZ-FE")}` },
+    
+    
     { name: await translate("2AZ-FE"), link: `/scion?category=${toSlug("2AZ-FE")}` },
-    { name: await translate("1GR-FE"), link: `/scion?category=${toSlug("1GR-FE")}` },
-    { name: await translate("3ZR-FAE"), link: `/scion?category=${toSlug("3ZR-FAE")}` },
-    { name: await translate("5E-FE"), link: `/scion?category=${toSlug("5E-FE")}` },
+    { name: await translate("FA20"), link: `/scion?category=${toSlug("FA20")}` },
+    
   ],
 },
 
@@ -204,9 +229,8 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
     { name: await translate("VQ35DE"), link: `/nissan?category=${toSlug("VQ35DE")}` },
     { name: await translate("HR15DE"), link: `/nissan?category=${toSlug("HR15DE")}` },
     { name: await translate("MR18DE"), link: `/nissan?category=${toSlug("MR18DE")}` },
-    { name: await translate("YD25DDTi"), link: `/nissan?category=${toSlug("YD25DDTi")}` },
-    { name: await translate("GA16DE"), link: `/nissan?category=${toSlug("GA16DE")}` },
-    { name: await translate("VQ35HR"), link: `/nissan?category=${toSlug("VQ35HR")}` },
+  
+    
   ],
 },   
 
@@ -214,21 +238,24 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
   name: await translate("Honda  Engines"),
   link: "/honda",
   subMenu: [
-    { name: await translate("K20A"), link: `/honda?category=${toSlug("K20A")}` },
+    
     { name: await translate("K24A"), link: `/honda?category=${toSlug("K24A")}` },
     { name: await translate("R18A"), link: `/honda?category=${toSlug("R18A")}` },
-    { name: await translate("L15B"), link: `/honda?category=${toSlug("L15B")}` },
-    { name: await translate("B18C"), link: `/honda?category=${toSlug("B18C")}` },
+    { name: await translate("D17A"), link: `/honda?category=${toSlug("D17A")}` },
+    { name: await translate("J30A"), link: `/honda?category=${toSlug("J30A")}` },
+     { name: await translate("J35A"), link: `/honda?category=${toSlug("J35A")}` },
+     { name: await translate("K24W"), link: `/honda?category=${toSlug("K24W")}` },
+    
   ],
-},
+}, 
 {
   name: await translate("Lexus  Engines"),
   link: "/lexus",
   subMenu: [
-    { name: await translate("ES 250"), link: `/lexus?category=${toSlug("ES-250")}` },
-    { name: await translate("ES 350"), link: `/lexus?category=${toSlug("ES-350")}` },
-    { name: await translate("RX 350h"), link: `/lexus?category=${toSlug("RX-350h")}` },
-    { name: await translate("NX 350h"), link: `/lexus?category=${toSlug("NX-350h")}` },
+    { name: await translate("2GR-FE"), link: `/lexus?category=${toSlug("2GR-FE")}` },
+    { name: await translate("2GR-FKS"), link: `/lexus?category=${toSlug("2GR-FKS")}` },
+    { name: await translate("2GR-FSE"), link: `/lexus?category=${toSlug("2GR-FSE")}` },
+    { name: await translate("3UZ-FE"), link: `/lexus?category=${toSlug("3UZ-FE")}` },
       { name: await translate("1MZ-FE"), link: `/lexus?category=${toSlug("1MZ-FE")}` },
     // Add others as you get more data
   ],
@@ -407,16 +434,14 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
   name: await translate("SWAPS"),
   link: "/swaps/toyota",
   subLinks: [
-    { name: await translate("Toyota Swaps"), link: "/swaps/toyota" },
-    { name: await translate("Nissan Swaps"), link: "/swaps/nissan" },
-    { name: await translate("Honda Swaps"), link: "/swaps/honda" },
-    
-    { name: await translate("Subaru Swaps"), link: "/swaps/subaru" },
-    
-    { name: await translate("Infiniti Swaps"), link: "/swaps/infiniti" },
+    { name: `${await translate("Toyota")} ${await translate("Swaps")}`, link: "/swaps/toyota" },
+    { name: `${await translate("Nissan")} ${await translate("Swaps")}`, link: "/swaps/nissan" },
+    { name: `${await translate("Honda")} ${await translate("Swaps")}`, link: "/swaps/honda" },
+    { name: `${await translate("Subaru")} ${await translate("Swaps")}`, link: "/swaps/subaru" },
+    { name: `${await translate("Infiniti")} ${await translate("Swaps")}`, link: "/swaps/infiniti" },
   ]
-},
-
+}
+,
 
       { name: await translate("ABOUT US"), link: `/${language}/about-us` },
         { name: await translate("BLOG"), link: "/blog" },
@@ -442,9 +467,12 @@ const [popupDropdownResults, setPopupDropdownResults] = useState<{
 
       const aquaBite = await translate("16Zips");
       const login = await translate("Login");
+      const Warranty = await translate("Warranty");
+      const Shipping = await translate("Shipping");
+      const TrackOrder = await translate("Track Order");
       const shopNow = await translate("Shop Now");
       const specialOffer = await translate("Quality You Can Trust");
-      setTranslatedTexts({ aquaBite, login, specialOffer, shopNow });
+      setTranslatedTexts({ aquaBite, login, specialOffer, shopNow, Shipping, Warranty, TrackOrder });
     }
 
     fetchTranslations().catch(console.error);
@@ -632,20 +660,20 @@ useEffect(() => {
       href={`/${language}/warranty`}
       className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
     >
-      Warranty
+        {translatedTexts.Warranty}
     </Link>
   <Link
 href={`/${language}/shipping`}
   className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
 >
-  Shipping
+   {translatedTexts.Shipping}
 </Link>
 
     <Link
           href={`/${language}/track-order`}
       className="text-sm font-bold text-black hover:text-blue-900 uppercase transition"
     >
-      Track Order
+      {translatedTexts.TrackOrder}
     </Link>
   </div>
 </div>
@@ -673,7 +701,9 @@ href={`/${language}/shipping`}
         
 
 
-<div className="relative w-1/2 mx-auto mt-3 hidden md:flex">
+<div
+ref={dropdownRef}
+className="relative w-1/2 mx-auto mt-3 hidden md:flex">
   <div className="flex items-center bg-gray-50 rounded-full shadow-inner px-6 py-3 w-full">
     <input
       type="text"

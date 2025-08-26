@@ -9,6 +9,9 @@ import { SiCashapp, SiVenmo, SiZelle } from "react-icons/si";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Breadcrumb from "../components/Breadcrumbs";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+
 
 
 
@@ -173,6 +176,13 @@ const CheckOutPage = () => {
   const [cryptoWarning, setCryptoWarning] = useState(false);
   const [copied, setCopied] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+    const [discount, setDiscount] = useState(0);
+    const router = useRouter();
+    const [shippingCost, setShippingCost] = useState<number | null>(null);
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+  const [showRegistration, setShowRegistration] = useState(false);
+
   const {  language } = useLanguage();
  const [billingDetails, setBillingDetails] = useState<BillingDetails>({ 
     firstName: '',
@@ -202,6 +212,106 @@ const CheckOutPage = () => {
     state: '',
     zipCode: '',
   });
+
+  // Recalculate subtotal, tax, and total whenever quantities change
+  const subtotal = cartItems.reduce((acc, item) => {
+  const qty = quantities[item.slug] || 1;
+  return acc + item.price * qty;
+}, 0);
+
+const salesTaxAmount = subtotal * 0.07;
+const total = subtotal + (shippingCost || 0) + salesTaxAmount - discount;
+
+  const calculateShipping = () => {
+  if (subtotal > 2000) {
+    setShippingCost(200); // heavy items like engines
+  } else if (subtotal > 500) {
+    setShippingCost(100); // smaller transmissions
+  } else {
+    setShippingCost(50);  // small parts
+  }
+};
+React.useEffect(() => {
+  calculateShipping();
+}, [subtotal]);
+
+
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const response = await fetch("/api/secure-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginDetails),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success(data.message || "Logged in successfully");
+      setShowLogin(false);
+      // Optionally: set user in context or localStorage
+    } else {
+      toast.error(data.error || "Invalid email or password");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Login failed. Try again.");
+  }
+};
+
+
+const handleRegister = async ({ email, password }: { email: string, password: string }) => {
+  try {
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success(data.message || "Account created successfully");
+      setBillingDetails(prev => ({ ...prev, createAccount: false }));
+      // Optionally log them in automatically
+    } else {
+      toast.error(data.error || "Registration failed");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to register. Try again.");
+  }
+};
+
+
+// Coupon application
+const applyCoupon = async () => {
+  if (!couponCode) return;
+
+  try {
+    const response = await fetch("/api/cart/apply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ couponCode }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setDiscount(data.cart.discount || 0);
+      alert(`Coupon applied! You saved $${data.cart.discount?.toFixed(2) || 0}`);
+    } else {
+      setDiscount(0);
+      // Show server message (like minOrderValue requirement)
+      alert(data.message);
+    }
+  } catch (err) {
+    console.error(err);
+    setDiscount(0);
+    alert("Error applying coupon. Please try again.");
+  }
+};
+
 
 
   
@@ -254,42 +364,48 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Add your login backend call here
-    console.log("Logging in with:", loginDetails);
-
-  };
   
+  
+const handlePlaceOrder = async () => {
+  setOrderStatus('idle');
+  setCryptoWarning(false);
 
-  const handlePlaceOrder = async () => {
-    setOrderStatus('idle');
-    setCryptoWarning(false);
-    if (paymentMethod === 'crypto') {
-      setCryptoWarning(true);
-      return;
-    }
-    const orderData = {
-      cartItems,
-      totalPrice,
-      paymentMethod,
-      billingDetails
-    };
-    try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData),
-      });
-      if (!response.ok) throw new Error('Failed to place order');
-      const data = await response.json();
-      console.log('Order placed successfully:', data);
-      setOrderStatus('success');
-    } catch (error) {
-      console.error('Error placing order:', error);
-      setOrderStatus('error');
-    }
+  if (paymentMethod === 'crypto') {
+    setCryptoWarning(true);
+    return;
+  }
+
+  const orderData = {
+    cartItems,
+    totalPrice,
+    paymentMethod,
+    billingDetails,
   };
+
+  try {
+    const response = await fetch('/api/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+
+    if (!response.ok) throw new Error('Failed to place order');
+
+    // ✅ get backend response (must include orderId)
+    const { orderId } = await response.json();
+
+    console.log('Order placed successfully:', orderId);
+    setOrderStatus('success');
+
+    // ✅ redirect to confirmation page
+    router.push(`/order-confirmation/${orderId}`);
+
+  } catch (error) {
+    console.error('Error placing order:', error);
+    setOrderStatus('error');
+  }
+};
+
 
   const [showCoupon, setShowCoupon] = useState(false);
 
@@ -344,10 +460,10 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         If you are a new customer, please proceed to the Billing section.
       </p>
 
-      <form onSubmit={handleLogin} className="space-y-4">
+      <form onSubmit={handleLogin}className="space-y-4">
         
         {/* Email */}
-        <div className="relative">
+        <div  className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
     type="email"
@@ -426,10 +542,12 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     <input
       type="text"
       placeholder="Coupon code"
+      onChange={(e) => setCouponCode(e.target.value)}
       className="flex-1 border border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <button
       type="button"
+      onClick={applyCoupon}
       className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800"
     >
       Apply Coupon
@@ -467,40 +585,44 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   <span className="font-semibold">Create an account?</span>
 </label>
 
-<div
-  className="mt-2 space-y-2"
-  style={{ display: billingDetails.createAccount ? 'block' : 'none' }}
->
-  {/* Email input */}
-  <div>
-    <label className="block font-medium mb-1">
-      Email <span className="text-red-500">*</span>
-    </label>
+{billingDetails.createAccount && (
+  <div className="mt-4 space-y-2">
     <input
       type="email"
       name="email"
-      value={billingDetails.email || ''}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 px-3 py-2 rounded-full"
+      value={billingDetails.email || ""}
+      onChange={(e) => handleInputChange(e, 'billing')}
+      placeholder="Email"
       required
+      className="w-full border rounded-full px-3 py-2"
     />
-  </div>
-
-  {/* Password input */}
-  <div>
-    <label className="block font-medium mb-1">
-      Password <span className="text-red-500">*</span>
-    </label>
     <input
       type="password"
       name="password"
-      value={billingDetails.password || ''}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 px-3 py-2 rounded-full"
+      value={billingDetails.password || ""}
+      onChange={(e) => handleInputChange(e, 'billing')}
+      placeholder="Password"
       required
+      className="w-full border rounded-full px-3 py-2"
     />
+    <button
+      type="button"
+      onClick={async () => {
+        if (!billingDetails.email || !billingDetails.password) {
+          toast.error("Email and password are required");
+          return;
+        }
+        await handleRegister({
+          email: billingDetails.email,
+          password: billingDetails.password
+        });
+      }}
+      className="bg-blue-600 text-white px-4 py-2 rounded-md mt-2"
+    >
+      Create Account
+    </button>
   </div>
-</div>
+)}
 
               <label className="inline-flex items-center gap-2 cursor-pointer">
                 <input
@@ -557,10 +679,48 @@ const handleAccountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <p className="text-sm">${priceNum.toFixed(2)} x {item.quantity}</p>
                     <p className="text-sm font-semibold">Total: ${(priceNum * item.quantity).toFixed(2)}</p>
                   </div>
+                  
                 </div>
+                
               );
             })}
-            <p className="mt-2 text-lg font-bold">Grand Total: ${totalPrice.toFixed(2)}</p>
+           
+<div className="flex justify-between mt-1">
+  <span>Subtotal</span>
+  <span>${subtotal.toFixed(2)}</span>
+</div>
+
+{discount > 0 && (
+  <div className="flex justify-between mt-3 text-green-600 font-medium">
+    <span>Coupon Discount</span>
+    <span>- ${discount.toFixed(2)}</span>
+  </div>
+)}
+
+<div className="flex justify-between mt-1">
+  <span>Shipping</span>
+  <span>{shippingCost !== null ? `$${shippingCost.toFixed(2)}` : '—'}</span>
+</div>
+
+<div className="flex justify-between mt-1">
+  <span>Sales Tax (7%)</span>
+  <span>${salesTaxAmount.toFixed(2)}</span>
+</div>
+
+<p className="mt-4 text-lg font-bold border-t pt-2">
+  Grand Total: ${total.toFixed(2)}
+</p>
+
+{shippingCost === null && (
+  <button
+    type="button"
+    onClick={calculateShipping}
+    className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-medium"
+  >
+    Calculate Shipping
+  </button>
+)}
+
           </div>
           <h3 className="text-lg font-semibold mt-4">Payment Methods</h3>
           <div className="space-y-2">

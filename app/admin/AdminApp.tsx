@@ -25,6 +25,7 @@ import BlogPostShow from "./BlogPostShow";
 import BlogPostCreate from "./BlogPostCreate";
 import BlogPostEdit from "./BlogPostEdit";
 import ArticleIcon from '@mui/icons-material/Article'
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import CategoryEdit from "./CategoryEdit";
 import CategoryCreate from "./CategoryCreate";
 import CategoryList from "./CategoryList";
@@ -35,6 +36,10 @@ import ReviewEdit from "./ReviewEdit";
 import ReviewShow from "./ReviewShow";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import ReviewList from "./ReviewList";
+import CouponCreate from "./CouponCreate";
+import CouponShow from "./CouponShow";
+import CouponList from "./CouponList";
+import CouponEdit from "./CouponEdit";
 
 
 
@@ -79,7 +84,15 @@ const AdminPage = () => {
       />
 
 
-      
+      <Resource
+  name="coupons"
+  create={CouponCreate}
+  show={CouponShow}
+  list={CouponList}
+  edit={CouponEdit}
+    icon={() => <ConfirmationNumberIcon sx={{ color: "blue" }} />}
+/>
+
       
 
       

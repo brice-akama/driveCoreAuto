@@ -62,12 +62,12 @@ export default function BlogPost() {
   }, [language, translate]);
 
   if (loading)
-    return <p className="text-center mt-10 text-gray-600 animate-pulse">Loading posts...</p>;
+    return <p className="text-center text-gray-600 animate-pulse">Loading posts...</p>;
   if (error)
-    return <p className="text-center mt-10 text-red-500 font-medium">Error: {error}</p>;
+    return <p className="text-center  text-red-500 font-medium">Error: {error}</p>;
 
   return (
-    <div className="container mx-auto px-4 py-10 mt-7">
+    <div className="container mx-auto px-4 py-10">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">{translatedTexts.latestTitle}</h2>

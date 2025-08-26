@@ -49,10 +49,10 @@ const TrackOrderPage = ({ initialLanguage, initialTranslations }: Props) => {
     }
 
     try {
-      const res = await fetch(`/api/orders/track?orderNumber=${orderNumber}&email=${email}`);
-      const data = await res.json();
-      if (res.ok) setOrderData(data);
-      else setError(data.message || t?.errorNotFound);
+      const res = await fetch(`/api/order/track?orderNumber=${orderNumber}&email=${email}`);
+const data = await res.json();
+if (res.ok) setOrderData(data);
+else setError(data.message || t?.errorNotFound);
     } catch {
       setError(t?.errorGeneric);
     }
@@ -158,8 +158,13 @@ const TrackOrderPage = ({ initialLanguage, initialTranslations }: Props) => {
           </div>
 
           <div className="mt-6 text-center">
-            <Link href="/contact" className="text-blue-600 underline hover:text-blue-800">{t.needHelp}</Link>
-          </div>
+  <a
+    href="mailto:support@drivecoreauto.com"
+    className="text-blue-600 underline hover:text-blue-800"
+  >
+    {t.needHelp}
+  </a>
+</div>
         </div>
       )}
     </div>

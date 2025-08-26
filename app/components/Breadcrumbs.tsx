@@ -23,6 +23,14 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ separator = " / " }) => {
   const pathSegments = segments.slice(1); // remove language
   const [isMobile, setIsMobile] = useState(false);
 
+  const translations: Record<string, Record<string, string>> = {
+  en: { home: "Home" },
+  de: { home: "Startseite" },
+  fr: { home: "Accueil" },
+  es: { home: "Inicio" },
+};
+  const translatedHome = translations[language]?.home || translations['en'].home;
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -65,7 +73,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ separator = " / " }) => {
   return (
     <>
       <nav className="text-sm text-gray-500">
-        <Link href={`/?lang=${language}`}>Home</Link>
+        <Link href={`/?lang=${language}`}>{translatedHome}</Link>
         {displaySegments.map((segment, idx) => {
           const path = `/${segments[0]}/${displaySegments.slice(0, idx + 1).join("/")}`;
           const isLast = idx === displaySegments.length - 1;

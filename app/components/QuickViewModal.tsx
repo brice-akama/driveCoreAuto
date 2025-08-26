@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/app/context/CurrencyContext";
@@ -44,33 +44,45 @@ export default function QuickViewModal({
 }: QuickViewModalProps) {
   const { symbol } = useCurrency();
   const currencySymbol = propSymbol || symbol || "$";
-   const { translate} = useLanguage();
+  const { translate } = useLanguage();
 
-   
+  const [labels, setLabels] = useState({
+    specifications: "Specifications",
+    shipping: "Shipping & Delivery",
+    warranty: "Warranty",
+    viewDetails: "View Details",
+  });
+
+  useEffect(() => {
+    async function loadLabels() {
+      const specifications = await translate("Specifications");
+      const shipping = await translate("Shipping & Delivery");
+      const warranty = await translate("Warranty");
+      const viewDetails = await translate("View Details");
+      setLabels({ specifications, shipping, warranty, viewDetails });
+    }
+    loadLabels();
+  }, [translate]);
 
   const domain =
     process.env.NEXT_PUBLIC_API_URL ||
-    (typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com");
+    (typeof window !== "undefined" ? window.location.origin : "https://www.drivecoreauto.com");
 
   const productUrl = `${domain}/products/${product.slug.en}?lang=${currentLang}`;
   const shareText = encodeURIComponent(
     `Check out this product: ${product.name[currentLang] || product.name.en}`
   );
-  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-    productUrl
-  )}`;
-  const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-    productUrl
-  )}&text=${shareText}`;
+  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
+  const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(productUrl)}&text=${shareText}`;
 
   return (
     <div
-      className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 bg-black/50"
-      onClick={onClose} // click outside closes modal
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      onClick={onClose}
     >
       <div
         className="bg-white w-full max-w-4xl min-h-[500px] rounded-lg shadow-lg flex overflow-hidden relative"
-        onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
@@ -96,7 +108,7 @@ export default function QuickViewModal({
             href={`/products/${product.slug.en}?lang=${currentLang}`}
             className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
           >
-            View Details
+            {labels.viewDetails}
           </Link>
         </div>
 
@@ -108,8 +120,7 @@ export default function QuickViewModal({
             </h2>
 
             <p className="text-lg font-semibold mb-3">
-              {symbol}
-              {product.price}
+              {currencySymbol}{product.price}
             </p>
 
             {/* Buttons: Add to Cart + Wishlist */}
@@ -159,11 +170,8 @@ export default function QuickViewModal({
               </a>
             </div>
 
-            {/* Description */}
-            
-
             {/* Specifications */}
-            <h3 className="font-semibold text-lg mb-1">Specifications</h3>
+            <h3 className="font-semibold text-lg mb-1">{labels.specifications}</h3>
             <div
               className="product-details"
               dangerouslySetInnerHTML={{
@@ -172,7 +180,7 @@ export default function QuickViewModal({
             />
 
             {/* Shipping & Delivery */}
-            <h3 className="font-semibold text-lg mb-1">Shipping & Delivery</h3>
+            <h3 className="font-semibold text-lg mb-1">{labels.shipping}</h3>
             <div
               className="product-details"
               dangerouslySetInnerHTML={{
@@ -181,7 +189,7 @@ export default function QuickViewModal({
             />
 
             {/* Warranty */}
-            <h3 className="font-semibold text-lg mb-1">Warranty</h3>
+            <h3 className="font-semibold text-lg mb-1">{labels.warranty}</h3>
             <div
               className="product-details"
               dangerouslySetInnerHTML={{

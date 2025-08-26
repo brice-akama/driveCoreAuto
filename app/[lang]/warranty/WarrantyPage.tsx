@@ -99,9 +99,7 @@ const WarrantyPolicyPage = ({ initialLanguage, initialTranslations }: Props) => 
                 {t.contactInfo?.email}
               </a>
             </li>
-            <li>
-              <strong>{t.contactPhone}</strong> {t.contactInfo?.phone}
-            </li>
+            
             <li>
               <strong>{t.contactWebsite}</strong>{" "}
               <a href={t.contactInfo?.website} className="text-blue-600 underline">

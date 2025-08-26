@@ -81,6 +81,11 @@ export default function BestSeller() {
     description: `Premium quality engine parts sourced from trusted manufacturers.\nExperience performance and reliability with every component.`,
     addtoCart: "Add to Cart",
     addtoWishlist: "Add to Wishlist",
+    specifications: "Specifications",
+  shipping: "Shipping & Delivery",
+  warranty: "Warranty",
+  quickView: "Quick View",
+  viewDetails: "View Details",
   });
 
   useEffect(() => {
@@ -91,12 +96,22 @@ export default function BestSeller() {
       );
       const translatedAddToCart = await translate("Add to Cart");
       const translatedAddToWishlist = await translate("Add to Wishlist");
+      const translatedSpecifications = await translate("Specifications");
+    const translatedShipping = await translate("Shipping & Delivery");
+    const translatedWarranty = await translate("Warranty");
+    const translatedQuickView = await translate("Quick View");
+    const translatedViewDetails = await translate("View Details");
 
       setTranslatedTexts({
         title: translatedTitle,
         description: translatedDescription,
         addtoCart: translatedAddToCart,
         addtoWishlist: translatedAddToWishlist,
+        specifications: translatedSpecifications,
+      shipping: translatedShipping,
+      warranty: translatedWarranty,
+      quickView: translatedQuickView,
+      viewDetails: translatedViewDetails,
       });
     }
     translateTexts();
@@ -227,7 +242,7 @@ export default function BestSeller() {
                   href={`/products/${quickViewProduct.slug.en}?lang=${currentLang}`}
                   className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
                 >
-                  View Details
+                   {translatedTexts.viewDetails}    
                 </Link>
               </div>
 
@@ -287,17 +302,17 @@ export default function BestSeller() {
                     </a>
                   </div>
 
-                  <h3 className="font-semibold text-lg mb-1">Specifications</h3>
+                  <h3 className="font-semibold text-lg mb-1">{translatedTexts.specifications}</h3>
                   <div className="product-details" dangerouslySetInnerHTML={{
                     __html: quickViewProduct.Specifications[currentLang] || quickViewProduct.Specifications.en
                   }}></div>
 
-                  <h3 className="font-semibold text-lg mb-1">Shipping & Delivery</h3>
+                  <h3 className="font-semibold text-lg mb-1">{translatedTexts.shipping}</h3>
                   <div className="product-details" dangerouslySetInnerHTML={{
                     __html: quickViewProduct.Shipping[currentLang] || quickViewProduct.Shipping.en
                   }}></div>
 
-                  <h3 className="font-semibold text-lg mb-1">Warranty</h3>
+                  <h3 className="font-semibold text-lg mb-1">{translatedTexts.warranty}</h3>
                   <div className="product-details" dangerouslySetInnerHTML={{
                     __html: quickViewProduct.Warranty[currentLang] || quickViewProduct.Warranty.en
                   }}></div>

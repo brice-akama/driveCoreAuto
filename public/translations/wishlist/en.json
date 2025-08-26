@@ -2,5 +2,10 @@
   "heroTitle": "Wishlist",
   "mainHeading": "Your Wishlist",
   "emptyText": "Your wishlist is empty.",
-  "continueShopping": "Continue Shopping"
+  "continueShopping": "Continue Shopping",
+  "product": "Product",
+  "price": "Price",
+    "actions": "Actions",
+    "addToCart": "Add to Cart",
+    "remove": "Remove"
 }

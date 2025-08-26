@@ -2,5 +2,10 @@
   "heroTitle": "Wunschliste",
   "mainHeading": "Ihre Wunschliste",
   "emptyText": "Ihre Wunschliste ist leer.",
-  "continueShopping": "Einkauf fortsetzen"
+  "continueShopping": "Weiter einkaufen",
+  "product": "Produkt",
+  "price": "Preis",
+  "actions": "Aktionen",
+  "addToCart": "In den Warenkorb",
+  "remove": "Entfernen"
 }

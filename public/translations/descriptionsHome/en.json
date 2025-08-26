@@ -1,0 +1,39 @@
+{
+  "descriptionsHome": {
+    "whyChooseHeading": "Why Choose DriveCore Auto?",
+    "intro": "We are not your typical auto parts supplier. Here’s what makes us different:",
+    "expertiseTitle": "Expertise You Can Trust",
+    "expertiseText": "Our team has years of experience supplying high-quality engines, transmissions, and performance parts. We know our products inside and out: Honda and Toyota engines, Nissan, Subaru, Mazda, and more.",
+    "qualityTitle": "Quality Comes First",
+    "qualityText": "Every engine and part we sell is carefully inspected and tested to meet strict performance and durability standards. We never compromise on quality, because your vehicle deserves the best.",
+    "commitmentHeading": "Our Commitment to Quality",
+    "transparencyTitle": "Transparency",
+    "transparencyText": "We are transparent about our sourcing and testing processes. You will always know exactly what you are getting when you order from DriveCore Auto.",
+    "customerFocusTitle": "Customer Focus",
+    "customerFocusText": "We’re here to support you every step of the way—whether you’re a mechanic, a shop owner, or a DIY enthusiast. Our goal is to help you find the right solution for your vehicle.",
+    "qualityAssuranceTitle": "How We Ensure Quality and Reliability",
+    "qualityAssuranceItems": [
+      "Inspection & Testing: Each engine and transmission is inspected for performance, compression, and durability.",
+      "Trusted Sourcing: We work only with reputable suppliers and manufacturers.",
+      "Clear Labeling: Every product includes detailed specifications and compatibility information.",
+      "Warranty Coverage: We back our engines and transmissions with warranty for your peace of mind."
+    ],
+    "valuesHeading": "Our Values: Trust, Quality, and Performance",
+    "valuesItems": [
+      { "title": "Trust", "text": "We earn your trust by being honest, transparent, and reliable. Our goal is to build long-term relationships with every customer." },
+      { "title": "Quality", "text": "Every product meets strict standards before leaving our warehouse. We inspect each part to ensure flawless performance." },
+      { "title": "Performance", "text": "We provide parts that enhance your vehicle’s power and reliability." },
+      { "title": "Customer Service", "text": "Our team is always ready to answer your questions and provide support." },
+      { "title": "Responsibility", "text": "We make sure every engine and transmission is safe, tested, and ready to run." },
+      { "title": "Integrity", "text": "We operate with honesty and strong moral principles in every transaction." }
+      
+    ],
+    "faqHeading": "FAQ About Buying from DriveCore Auto",
+    "faqItems": [
+      { "question": "What products do you sell at DriveCore Auto?", "answer": "We specialize in engines, transmissions, suspensions, and high-quality accessories for leading brands such as Toyota, Honda, Nissan, Subaru, Mazda, and Mitsubishi." },
+      { "question": "Do your engines come with a warranty?", "answer": "Yes, all our engines and transmissions come with a warranty for customer reliability and peace of mind." },
+      { "question": "How do you ensure quality?", "answer": "Each engine is thoroughly tested and inspected before shipping, and we only work with trusted suppliers that meet our standards." },
+      { "question": "Do you ship worldwide?", "answer": "Yes, we ship to most countries and also offer local pickup for customers who prefer it." }
+    ]
+  }
+}

@@ -12,6 +12,7 @@ type CartItem = {
 type Cart = {
   guestId: string;
   items: CartItem[];
+   
 };
 
 // POST: Add or update cart items
@@ -254,3 +255,5 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: 'Failed to update cart' }, { status: 500 });
   }
 }
+
+// The above code defines API routes for managing a shopping cart, including adding, updating, retrieving, and deleting cart items, with guest user support via cookies.

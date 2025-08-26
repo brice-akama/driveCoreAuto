@@ -10,7 +10,7 @@ interface ProductMetaInfoProps {
 
 const ProductMetaInfo = ({ sku, category }: ProductMetaInfoProps) => {
   const pathname = usePathname();
-  const shareUrl = `https://yourdomain.com${pathname}`; // replace with your actual domain
+  const shareUrl = `https://www.drivecoreauto.com${pathname}`; // replace with your actual domain
   const fixedSku = "AUTO12345"; // fixed SKU as you wanted
   const [copied, setCopied] = useState(false);
 
