@@ -287,7 +287,8 @@ const applyCoupon = async () => {
              {/* Proceed to Checkout Button */}
 <div className="relative">
   <Link
-    href={shippingCost === null ? "#" : "/checkout"}
+    href={shippingCost === null ? "#" : `/${language}/checkout`}
+
     className={`block mt-6 text-white text-center py-3 rounded font-semibold transition-colors
       ${shippingCost === null 
         ? "bg-gray-400 cursor-not-allowed border border-red-500" 

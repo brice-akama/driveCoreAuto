@@ -5,11 +5,13 @@ import { useCart } from "@/app/context/CartContext"; // Adjust the path as neces
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "../context/LanguageContext";
 
 const CartDrawer: React.FC = () => {
   const { cartItems, totalPrice, removeFromCart, updateQuantity: contextUpdateQuantity, isCartOpen, closeCart } = useCart();
   const [quantities, setQuantities] = useState<{ [slug: string]: number }>({});
   const router = useRouter();
+  const {  language } = useLanguage();
 
   // Initialize quantities when the cart items change
   useEffect(() => {
@@ -149,7 +151,7 @@ const CartDrawer: React.FC = () => {
     View Cart
   </button>
   <div className="mt-1">
-     <Link href="/checkout" className="block  bg-blue-600 text-white text-center py-2 rounded" onClick={handleLinkClick}>
+     <Link href={`/${language}/checkout`} className="block  bg-blue-600 text-white text-center py-2 rounded" onClick={handleLinkClick}>
               Checkout
             </Link>
              </div>

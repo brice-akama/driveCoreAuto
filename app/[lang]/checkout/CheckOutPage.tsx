@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState  } from 'react';
 import Link from 'next/link';
 import { useCart } from "@/app/context/CartContext";
-import QRCodeWrapper from '../components/QRCodeWrapper';
+import QRCodeWrapper from '@/app/components/QRCodeWrapper';
 import { FaPaypal, FaBitcoin, FaApple, FaCcVisa } from "react-icons/fa";
 import { SiCashapp, SiVenmo, SiZelle } from "react-icons/si";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -39,6 +39,12 @@ interface AddressFormProps {
   data: AddressDetails;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
+
+interface CheckOutPageProps {
+  initialLanguage: "en" | "fr" | "es" | "de";
+  initialTranslations: Record<string, string>;
+}
+
 
 const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
   <div className="space-y-4">
@@ -168,7 +174,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
 
 
 
-const CheckOutPage = () => {
+const CheckOutPage = ({ initialLanguage, initialTranslations }: CheckOutPageProps) => {
+  const [ setLanguage] = useState(initialLanguage);
+  const [t, setT] = useState(initialTranslations);
   const [paymentMethod, setPaymentMethod] = useState<'Cash App' | 'Paypal' | 'Zelle' | 'Apple Pay' | 'Venmo' | 'crypto' | ''>('');
 
   const [orderStatus, setOrderStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -447,14 +455,14 @@ const handlePlaceOrder = async () => {
         href="/cart-drawer"
         className="hidden md:inline text-white font-bold hover:underline text-4xl"
       >
-        shopping Cart
+         {t['shoppingCart']}
       </Link>
       
       {/* Arrow separator only visible on md+ */}
       <span className="hidden md:inline text-white">→</span>
 
       {/* Current page */}
-      <span className="text-white font-bold text-4xl">Checkout</span>
+      <span className="text-white font-bold text-4xl">{t['checkout']}</span>
     </div>
           </div>
     <div className="max-w-7xl mx-auto p-6">
