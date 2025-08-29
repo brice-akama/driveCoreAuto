@@ -527,7 +527,7 @@ const handlePlaceOrder = async () => {
         {/* Remember me and lost password */}
         <div className="flex items-center justify-between text-sm">
           <Link
-            href="/forgot-password"
+            href="/forgot-password"   
             className="text-blue-700 underline hover:text-blue-900 transition"
           >
             Lost your password?

@@ -35,5 +35,38 @@
   "streetAddress": "Street Address *",
   "city": "City",
   "state": "State",
-  "zipCode": "ZIP Code"
+  "zipCode": "ZIP Code",
+  "optional": "optional",
+  
+  "cashAppTitle": "Cash App Payment Instructions:",
+  "cashAppStep1": "Open the Cash App mobile application.",
+  "cashAppStep2": "Add money to your Cash App balance before making the payment to avoid failures.",
+  "cashAppStep3": "Enter the amount you want to send.",
+  "cashAppStep4": "Tap 'Pay'.",
+  "cashAppStep5": "Contact us via live chat or email to get our cashtag: support@drivecoreauto.com",
+  "cashAppStep6": "Enter the email, phone number, or '$Cashtag'.",
+  "cashAppStep7": "Enter the reason for the payment. Example: 'ORDER #7895'.",
+  "cashAppStep8": "Tap 'Pay'.",
+  "cashAppWarning": "⚠️ Do not send Cash App payment to our website email. Please contact us via live chat or email to get the correct information.",
+
+  "paypalTitle": "PayPal Payment Instructions:",
+  "paypalStep1": "After placing your order, contact us via live chat or email to receive our PayPal details.",
+
+  "zelleTitle": "Zelle Payment Instructions:",
+  "zelleStep1": "Download the Zelle app to get started.",
+  "zelleStep2": "All you need is the recipient’s email address or mobile number.",
+  "zelleStep3": "Please contact us via live chat or email: support@drivecoreauto.com to receive our Zelle details.",
+  "zelleStep4": "After making the payment, send us a screenshot via chat or email.",
+  "zelleStep5": "Your order will be valid once we receive confirmation with your order ID.",
+  "zelleStep6": "Contact us via live chat or email for assistance.",
+
+  "zelleWarning": "⚠️ Do not send Zelle payment to our website email. Please contact us to get the correct information.",
+
+  "applePayTitle": "Apple Pay Payment Instructions:",
+  "applePayStep1": "Please contact us via live chat or email after placing your order to receive our Apple Pay details.",
+
+  "venmoTitle": "Venmo Payment Instructions:",
+  "venmoStep1": "Please contact us via live chat or email after placing your order to receive our Venmo details."
+
+
 }

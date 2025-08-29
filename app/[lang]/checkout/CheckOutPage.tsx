@@ -805,110 +805,62 @@ const handlePlaceOrder = async () => {
           {/* Cash App Instructions */}
 {paymentMethod === 'Cash App' && (
   <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">
-      Cashapp payment instructions at checkout: 
-    </p>
+    <p className="font-semibold text-blue-700">{t['cashAppTitle']}</p>
     <ol className="list-decimal list-inside space-y-1">
-      <li>Open the Cash App mobile app.</li>
-      <li>
-        Add “cash” to your “Cash App balance” before making the payment so as to avoid fail payment.
-      </li>
-      <li>Enter the amount you want to send.</li>
-      <li>Tap “Pay.”</li>
-      <li>
-        Get in touch with us through our live chat or email: 
-        <a href="mailto:support@drivecoreauto.com" className="text-blue-600 underline">
-         support@drivecoreauto.com
-        </a> 
-        for our cashtag.
-      </li>
-      <li>Enter the email address, phone number, or “$Cashtag”.</li>
-      <li>
-        Enter what you are sending the payment for. For example: “ORDER #7895”.
-      </li>
-      <li>Tap “Pay.”</li>
+      <li>{t['cashAppStep1']}</li>
+      <li>{t['cashAppStep2']}</li>
+      <li>{t['cashAppStep3']}</li>
+      <li>{t['cashAppStep4']}</li>
+      <li>{t['cashAppStep5']}</li>
+      <li>{t['cashAppStep6']}</li>
+      <li>{t['cashAppStep7']}</li>
+      <li>{t['cashAppStep8']}</li>
     </ol>
-    <p className="text-red-600 font-medium mt-2">
-      NB: Please don’t make the Cash App payment to our website email 
-      <strong>support@drivecoreauto.com</strong>. Kindly get in touch via live chat or email for our Cash App info.  
-      Payments made to our website email won’t be validated nor confirmed.
-    </p>
+    <p className="text-red-600 font-medium mt-2">{t['cashAppWarning']}</p>
   </div>
 )}
 
-      {/* Paypal Instructions */}
-{/* Paypal Instructions */}
-{/* Paypal Instructions */}
 {paymentMethod === 'Paypal' && (
   <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">
-      PayPal Payment Instructions:
-    </p>
+    <p className="font-semibold text-blue-700">{t['paypalTitle']}</p>
     <ol className="list-decimal list-inside space-y-1">
-      <li>
-        After placing your order, please contact us via live chat or email to receive our PayPal payment details.
-        <br />
-        Email: <a href="mailto:support@drivecoreauto.com" className="text-blue-600 underline">support@drivecoreauto.com</a>
-      </li>
+      <li>{t['paypalStep1']}</li>
     </ol>
   </div>
 )}
 
 {paymentMethod === 'Zelle' && (
   <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">
-      Zelle Payment Instructions at Checkout:
-    </p>
+    <p className="font-semibold text-blue-700">{t['zelleTitle']}</p>
     <ol className="list-decimal list-inside space-y-1">
-      <li>Download the Zelle App to get started!</li>
-      <li>All you need to send money with Zelle is the preferred email address or mobile number of the trusted recipient.</li>
-      <li>Please kindly get in touch with us via live chat or email: 
-        <a href="mailto:support@drivecoreauto.com" className="text-blue-600 underline">support@drivecoreauto.com</a> for our Zelle details.
-      </li>
-      <li>After making payment, take a screenshot and send it to our live chat or email: 
-        <a href="mailto:support@drivecoreauto.com" className="text-blue-600 underline">support@drivecoreauto.com</a> for confirmation.
-      </li>
-      <li>Your order is considered valid once we receive details of your payment, which should be pictures or screenshots showing transaction details alongside your Order ID.</li>
-      <li>Contact our live chat or email: 
-        <a href="mailto:support@drivecoreauto.com" className="text-blue-600 underline">support@drivecoreauto.com</a> for assistance regarding the Zelle payment.
-      </li>
+      <li>{t['zelleStep1']}</li>
+      <li>{t['zelleStep2']}</li>
+      <li>{t['zelleStep3']}</li>
+      <li>{t['zelleStep4']}</li>
+      <li>{t['zelleStep5']}</li>
+      <li>{t['zelleStep6']}</li>
     </ol>
-    <p className="text-red-600 font-medium mt-2">
-      NB: Please don’t make the Zelle payment to our website email ”support@drivecoreauto.com”. Kindly get in touch via live chat or email for our Zelle info. Payments made to our website email won’t be validated nor confirmed.
-    </p>
+    <p className="text-red-600 font-medium mt-2">{t['zelleWarning']}</p>
   </div>
 )}
 
 {paymentMethod === 'Apple Pay' && (
   <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">
-      Apple Pay Payment Instructions:
-    </p>
+    <p className="font-semibold text-blue-700">{t['applePayTitle']}</p>
     <ol className="list-decimal list-inside space-y-1">
-      <li>
-        Kindly contact us via live chat or email after placing your order to receive our Apple Pay information.
-        <br />
-        Email: <a href="mailto:support@drivecoreauto.com" className="text-blue-600 underline">support@drivecoreauto.com</a>
-      </li>
+      <li>{t['applePayStep1']}</li>
     </ol>
   </div>
 )}
 
 {paymentMethod === 'Venmo' && (
   <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">
-      Venmo Payment Instructions:
-    </p>
+    <p className="font-semibold text-blue-700">{t['venmoTitle']}</p>
     <ol className="list-decimal list-inside space-y-1">
-      <li>
-        Kindly contact us via live chat or email after placing your order to receive our Venmo payment details.
-        <br />
-        Email: <a href="mailto:support@drivecoreauto.com" className="text-blue-600 underline">support@drivecoreauto.com</a>
-      </li>
+      <li>{t['venmoStep1']}</li>
     </ol>
   </div>
 )}
-
 
 
 

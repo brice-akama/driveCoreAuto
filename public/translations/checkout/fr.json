@@ -35,5 +35,38 @@
   "streetAddress": "Adresse *",
   "city": "Ville",
   "state": "État / Région",
-  "zipCode": "Code postal"
+  "zipCode": "Code postal",
+  "optional": "facultatif",
+  
+  "cashAppTitle": "Instructions de paiement Cash App :",
+  "cashAppStep1": "Ouvrez l’application mobile Cash App.",
+  "cashAppStep2": "Ajoutez de l’argent à votre solde Cash App avant d’effectuer le paiement afin d’éviter tout échec.",
+  "cashAppStep3": "Saisissez le montant que vous souhaitez envoyer.",
+  "cashAppStep4": "Appuyez sur 'Payer'.",
+  "cashAppStep5": "Contactez-nous via le chat en direct ou par email pour obtenir notre cashtag : support@drivecoreauto.com",
+  "cashAppStep6": "Entrez l’adresse email, le numéro de téléphone ou le '$Cashtag'.",
+  "cashAppStep7": "Indiquez la raison du paiement. Exemple : 'COMMANDE #7895'.",
+  "cashAppStep8": "Appuyez sur 'Payer'.",
+  "cashAppWarning": "⚠️ Ne faites pas de paiement Cash App à notre adresse email du site. Veuillez nous contacter via le chat en direct ou par email pour obtenir les bonnes informations.",
+
+  "paypalTitle": "Instructions de paiement PayPal :",
+  "paypalStep1": "Après avoir passé votre commande, contactez-nous via le chat en direct ou par email pour recevoir nos informations PayPal.",
+
+  "zelleTitle": "Instructions de paiement Zelle :",
+  "zelleStep1": "Téléchargez l’application Zelle pour commencer.",
+  "zelleStep2": "Tout ce dont vous avez besoin est l’adresse email ou le numéro de mobile du destinataire de confiance.",
+  "zelleStep3": "Veuillez nous contacter via le chat en direct ou par email : support@drivecoreauto.com pour recevoir nos informations Zelle.",
+  "zelleStep4": "Après le paiement, envoyez une capture d’écran par chat ou par email.",
+  "zelleStep5": "Votre commande sera validée une fois que nous aurons reçu la confirmation avec votre ID de commande.",
+  "zelleStep6": "Contactez-nous via le chat en direct ou par email pour toute assistance.",
+
+  "zelleWarning": "⚠️ Ne faites pas de paiement Zelle à notre adresse email du site. Veuillez nous contacter pour obtenir les bonnes informations.",
+
+  "applePayTitle": "Instructions de paiement Apple Pay :",
+  "applePayStep1": "Veuillez nous contacter via le chat en direct ou par email après avoir passé votre commande pour recevoir nos informations Apple Pay.",
+
+  "venmoTitle": "Instructions de paiement Venmo :",
+  "venmoStep1": "Veuillez nous contacter via le chat en direct ou par email après avoir passé votre commande pour recevoir nos informations Venmo."
+
+
 }

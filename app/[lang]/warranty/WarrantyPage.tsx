@@ -14,8 +14,9 @@ const WarrantyPolicyPage = ({ initialLanguage, initialTranslations }: Props) => 
 
   // Set initial SSR language and translations
   useEffect(() => {
-    if (initialLanguage) setLanguage(initialLanguage, "warranty");
-  }, [initialLanguage, setLanguage]);
+  if (initialLanguage) setLanguage(initialLanguage, "warranty");
+}, [initialLanguage, setLanguage]);
+
 
   // Use translations from SSR or client-side switch
   const t = translations?.warrantyPolicy || {};

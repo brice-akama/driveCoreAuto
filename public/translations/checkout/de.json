@@ -35,5 +35,39 @@
   "streetAddress": "Straße & Hausnummer *",
   "city": "Stadt",
   "state": "Bundesland",
-  "zipCode": "Postleitzahl"
+  "zipCode": "Postleitzahl",
+  "optional": "optional",
+
+  
+  "cashAppTitle": "Cash App Zahlungsanweisungen:",
+  "cashAppStep1": "Öffnen Sie die Cash App Mobile-App.",
+  "cashAppStep2": "Fügen Sie Geld zu Ihrem Cash App Guthaben hinzu, bevor Sie die Zahlung vornehmen, um Fehler zu vermeiden.",
+  "cashAppStep3": "Geben Sie den Betrag ein, den Sie senden möchten.",
+  "cashAppStep4": "Tippen Sie auf 'Zahlen'.",
+  "cashAppStep5": "Kontaktieren Sie uns über den Live-Chat oder per E-Mail, um unser Cashtag zu erhalten: support@drivecoreauto.com",
+  "cashAppStep6": "Geben Sie die E-Mail-Adresse, Telefonnummer oder den '$Cashtag' ein.",
+  "cashAppStep7": "Geben Sie den Zahlungsgrund ein. Beispiel: 'BESTELLUNG #7895'.",
+  "cashAppStep8": "Tippen Sie auf 'Zahlen'.",
+  "cashAppWarning": "⚠️ Senden Sie keine Cash App Zahlung an unsere Website-E-Mail. Bitte kontaktieren Sie uns über den Live-Chat oder per E-Mail, um die richtigen Informationen zu erhalten.",
+
+  "paypalTitle": "PayPal Zahlungsanweisungen:",
+  "paypalStep1": "Nachdem Sie Ihre Bestellung aufgegeben haben, kontaktieren Sie uns über den Live-Chat oder per E-Mail, um unsere PayPal-Daten zu erhalten.",
+
+  "zelleTitle": "Zelle Zahlungsanweisungen:",
+  "zelleStep1": "Laden Sie die Zelle-App herunter, um zu beginnen.",
+  "zelleStep2": "Alles, was Sie benötigen, ist die E-Mail-Adresse oder Handynummer des Empfängers.",
+  "zelleStep3": "Bitte kontaktieren Sie uns über den Live-Chat oder per E-Mail: support@drivecoreauto.com, um unsere Zelle-Daten zu erhalten.",
+  "zelleStep4": "Senden Sie uns nach der Zahlung einen Screenshot per Chat oder E-Mail.",
+  "zelleStep5": "Ihre Bestellung wird gültig, sobald wir die Bestätigung mit Ihrer Bestell-ID erhalten haben.",
+  "zelleStep6": "Kontaktieren Sie uns über den Live-Chat oder per E-Mail für Unterstützung.",
+
+  "zelleWarning": "⚠️ Senden Sie keine Zelle Zahlung an unsere Website-E-Mail. Bitte kontaktieren Sie uns, um die richtigen Informationen zu erhalten.",
+
+  "applePayTitle": "Apple Pay Zahlungsanweisungen:",
+  "applePayStep1": "Bitte kontaktieren Sie uns über den Live-Chat oder per E-Mail, nachdem Sie Ihre Bestellung aufgegeben haben, um unsere Apple Pay-Daten zu erhalten.",
+
+  "venmoTitle": "Venmo Zahlungsanweisungen:",
+  "venmoStep1": "Bitte kontaktieren Sie uns über den Live-Chat oder per E-Mail, nachdem Sie Ihre Bestellung aufgegeben haben, um unsere Venmo-Daten zu erhalten."
+
+
 }

@@ -35,5 +35,38 @@
   "streetAddress": "Dirección *",
   "city": "Ciudad",
   "state": "Estado / Región",
-  "zipCode": "Código postal"
+  "zipCode": "Código postal",
+
+  "optional": "opcional",
+  "cashAppTitle": "Instrucciones de pago con Cash App:",
+  "cashAppStep1": "Abra la aplicación móvil Cash App.",
+  "cashAppStep2": "Agregue dinero a su saldo de Cash App antes de realizar el pago para evitar fallos.",
+  "cashAppStep3": "Ingrese la cantidad que desea enviar.",
+  "cashAppStep4": "Toque 'Pagar'.",
+  "cashAppStep5": "Contáctenos por chat en vivo o correo electrónico para obtener nuestro cashtag: support@drivecoreauto.com",
+  "cashAppStep6": "Ingrese el correo electrónico, número de teléfono o '$Cashtag'.",
+  "cashAppStep7": "Ingrese el motivo del pago. Ejemplo: 'PEDIDO #7895'.",
+  "cashAppStep8": "Toque 'Pagar'.",
+  "cashAppWarning": "⚠️ No envíe el pago de Cash App a nuestro correo de la web. Por favor contáctenos por chat en vivo o correo para obtener la información correcta.",
+
+  "paypalTitle": "Instrucciones de pago con PayPal:",
+  "paypalStep1": "Después de realizar su pedido, contáctenos por chat en vivo o correo electrónico para recibir los detalles de PayPal.",
+
+  "zelleTitle": "Instrucciones de pago con Zelle:",
+  "zelleStep1": "Descargue la aplicación Zelle para comenzar.",
+  "zelleStep2": "Todo lo que necesita es el correo electrónico o número móvil del destinatario.",
+  "zelleStep3": "Por favor contáctenos por chat en vivo o correo: support@drivecoreauto.com para recibir nuestros datos de Zelle.",
+  "zelleStep4": "Después del pago, envíe una captura de pantalla por chat o correo.",
+  "zelleStep5": "Su pedido será válido una vez recibamos la confirmación con su ID de pedido.",
+  "zelleStep6": "Contáctenos por chat en vivo o correo para asistencia.",
+
+  "zelleWarning": "⚠️ No envíe el pago de Zelle a nuestro correo de la web. Contáctenos para obtener la información correcta.",
+
+  "applePayTitle": "Instrucciones de pago con Apple Pay:",
+  "applePayStep1": "Contáctenos por chat en vivo o correo electrónico después de realizar su pedido para recibir la información de Apple Pay.",
+
+  "venmoTitle": "Instrucciones de pago con Venmo:",
+  "venmoStep1": "Contáctenos por chat en vivo o correo electrónico después de realizar su pedido para recibir los detalles de Venmo."
+
+
 }

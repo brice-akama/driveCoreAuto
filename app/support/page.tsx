@@ -91,7 +91,7 @@ const SupportPage: React.FC = () => {
           <h2 className="text-2xl font-semibold mb-4">{translatedTexts.buyerTitle}</h2>
           <p className="mb-6">{translatedTexts.buyerDescription}</p>
 <Link
-    href={`/${language}/buyer-services`}
+    href={`/${language}/support/buyer-services`}
     className="inline-block bg-blue-800 text-white py-3 px-6 rounded-lg hover:bg-blue-700"
   >
     {translatedTexts.buyerButton}

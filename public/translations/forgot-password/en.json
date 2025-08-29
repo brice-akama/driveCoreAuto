@@ -1,0 +1,12 @@
+{
+  "forgotPasswordTitle": "Forgot Password",
+  "forgotPasswordDesc": "Enter your email below and we'll send you a link to reset your password.",
+  "emailLabel": "Email",
+  "emailPlaceholder": "Enter your email",
+  "sendReset": "Send Reset Link",
+  "sending": "Sending...",
+  "successMessage": "Check your email for reset instructions.",
+  "errorMessage": "Something went wrong. Please try again.",
+  "rememberPassword": "Remembered your password?",
+  "login": "Login"
+}
