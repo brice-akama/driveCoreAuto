@@ -5,8 +5,20 @@ import jwt from "jsonwebtoken";
 import zxcvbn from "zxcvbn";
 import sanitizeHtml from "sanitize-html";
 import he from "he";
+import nodemailer from "nodemailer";
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY || "your_secret_key";
+
+// Email config
+const transporter = nodemailer.createTransport({
+  host: "smtp.zoho.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER!,
+    pass: process.env.EMAIL_PASS!,
+  },
+});
 
 let ipLoginAttempts: Record<string, { attempts: number; lastAttempt: number }> = {};
 let userLoginAttempts: Record<string, { attempts: number; lastAttempt: number }> = {};
@@ -27,7 +39,6 @@ function isStrongPassword(password: string): boolean {
   return result.score >= 3;
 }
 
-// IP-based logging
 function logFailedLogin(ip: string) {
   if (!ipLoginAttempts[ip]) {
     ipLoginAttempts[ip] = { attempts: 1, lastAttempt: Date.now() };
@@ -49,7 +60,6 @@ function hasExceededRateLimit(ip: string): boolean {
   return false;
 }
 
-// Email-based brute-force logging
 function logFailedUserLogin(email: string) {
   if (!userLoginAttempts[email]) {
     userLoginAttempts[email] = { attempts: 1, lastAttempt: Date.now() };
@@ -90,10 +100,7 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = await request.json();
     if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
     }
 
     const sanitizedEmail = sanitizeInput(email.toLowerCase());
@@ -110,15 +117,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!isStrongPassword(sanitizedPassword)) {
-      return NextResponse.json(
-        { error: "Password must be strong (score ≥ 3)." },
-        { status: 400 }
-      );
-    }
-
     const client = await clientPromise;
-     const db = client.db("autodrive");
+    const db = client.db("autodrive");
     const usersCollection = db.collection("users");
 
     const user = await usersCollection.findOne({ email: sanitizedEmail });
@@ -136,21 +136,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Clear attempts on successful login
-    if (userLoginAttempts[sanitizedEmail]) {
-      delete userLoginAttempts[sanitizedEmail];
-    }
-    if (ipLoginAttempts[ip]) {
-      delete ipLoginAttempts[ip];
-    }
+    if (userLoginAttempts[sanitizedEmail]) delete userLoginAttempts[sanitizedEmail];
+    if (ipLoginAttempts[ip]) delete ipLoginAttempts[ip];
 
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
+    // ✅ Send email to company on login
+    await transporter.sendMail({
+      from: `"DriveCore Auto" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: "User Login Notification",
+      html: `
+        <h3>New User Login</h3>
+        <p>User <strong>${sanitizedEmail}</strong> has logged in.</p>
+        <p><strong>IP:</strong> ${ip}</p>
+        <p><small>Time: ${new Date().toLocaleString()}</small></p>
+      `,
+    });
 
     const response = NextResponse.json({ message: "Login successful", token }, { status: 200 });
-
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -165,10 +169,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("Error handling login:", error);
-    return NextResponse.json(
-      { error: "Something went wrong. Please try again later." },
-      { status: 500 }
-    );
+    console.error("❌ Login error:", error);
+    return NextResponse.json({ error: "Something went wrong. Please try again later." }, { status: 500 });
   }
 }

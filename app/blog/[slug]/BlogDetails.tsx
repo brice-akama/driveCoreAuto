@@ -6,6 +6,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useLanguage } from '@/app/context/LanguageContext';
 import RelatedPosts from './RelatedPosts';
+import { useEffect, useState } from 'react';
 
 interface BlogPost {
   title: string | Record<string, string>;
@@ -15,31 +16,41 @@ interface BlogPost {
 }
 
 export default function BlogDetails({ post }: { post: BlogPost }) {
-  const { language } = useLanguage();
+  const { language, translate } = useLanguage();
   const currentLang = language || 'en';
-
   
+  const [translatedTexts, setTranslatedTexts] = useState({
+    home: 'Home',
+    blog: 'Blog',
+  });
+
+  // Update translations whenever language changes
+  useEffect(() => {
+    const updateTranslations = async () => {
+      setTranslatedTexts({
+        home: await translate('Home'),
+        blog: await translate('Blog'),
+      });
+    };
+    updateTranslations();
+  }, [currentLang, translate]);
 
   if (!post) return <div className="text-center py-10">Loading blog post...</div>;
 
-  // Determine title based on whether it's string or object
   const localizedTitle = typeof post.title === 'string' 
     ? post.title 
     : post.title?.[currentLang] || post.title?.['en'] || '';
 
-  // Same for content
   const localizedContent = typeof post.content === 'string' 
     ? post.content 
     : post.content?.[currentLang] || post.content?.['en'] || '';
 
-  // Validate createdAt date
   const dateObj = new Date(post.createdAt);
   const isValidDate = !isNaN(dateObj.getTime());
   const formattedDate = isValidDate
     ? dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
 
-  // Structured Data (JSON-LD)
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -47,10 +58,7 @@ export default function BlogDetails({ post }: { post: BlogPost }) {
     image: post.imageUrl || '',
     datePublished: post.createdAt,
     dateModified: post.createdAt,
-    author: {
-      '@type': 'Person',
-      name: 'Author Name',
-    },
+    author: { '@type': 'Person', name: 'Author Name' },
     description: localizedContent.slice(0, 150),
     articleBody: localizedContent,
   };
@@ -83,13 +91,13 @@ export default function BlogDetails({ post }: { post: BlogPost }) {
             <ol className="inline-flex items-center space-x-1 sm:space-x-2">
               <li>
                 <Link href={`/?lang=${language}`} className="text-blue-600 hover:underline">
-                  Home
+                  {translatedTexts.home}
                 </Link>
               </li>
               <li>/</li>
               <li>
-                <Link href="/blog" className="text-blue-600 hover:underline">
-                  Blog
+                <Link href={`/blog?lang=${language}`} className="text-blue-600 hover:underline">
+                  {translatedTexts.blog}
                 </Link>
               </li>
             </ol>
@@ -127,13 +135,8 @@ export default function BlogDetails({ post }: { post: BlogPost }) {
           },
         })}
       </div>
-      <RelatedPosts
-  lang={currentLang}
-  translatedTexts={{ readMore: currentLang === 'es' ? 'Leer más' : 'Read More' }}
-  category="relatedBlog"  // or your category
-  limit={3}
-/>
 
+      <RelatedPosts category="relatedBlog" limit={3} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../lib/mongodb";
-import nodemailer from "nodemailer"; // ✅ Add this to send email
+import nodemailer from "nodemailer";
 
 // In-memory rate limit
 const ipRequests: Record<string, { attempts: number; lastRequestTime: number }> = {};
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     }
 
     const client = await clientPromise;
-   const db = client.db("autodrive");
+    const db = client.db("autodrive");
     const collection = db.collection("newsletters");
 
     const existing = await collection.findOne({ email: sanitizedEmail });
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       subscribedAt: new Date(),
     });
 
-    // ✅ Send email to the company
+    // Send email to DriveCore Auto
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.com",
       port: 465,
@@ -85,12 +85,12 @@ export async function POST(req: Request) {
     });
 
     await transporter.sendMail({
-      from: `"16Zip Newsletter" <${process.env.EMAIL_USER}>`,
-      to: "info@16zip.com",
+      from: `"DriveCore Auto Newsletter" <${process.env.EMAIL_USER}>`,
+      to: "support@drivecoreauto.com",
       subject: "New Newsletter Subscription",
       html: `
         <h3>New Subscriber</h3>
-        <p>A new user has subscribed to the 16Zip newsletter.</p>
+        <p>A new user has subscribed to the DriveCore Auto newsletter.</p>
         <p><strong>Email:</strong> ${sanitizedEmail}</p>
         <p><small>Time: ${new Date().toLocaleString()}</small></p>
       `,

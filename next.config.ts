@@ -27,28 +27,34 @@ const nextConfig: NextConfig = {
         source: '/(.*)', // Apply these headers globally to all routes
         headers: [
        // next.config.js or headers() in middleware
-   {
+    {
   key: 'Content-Security-Policy',
   value: `
     default-src 'self';
+
     script-src 'self' 'unsafe-inline' 'unsafe-eval'
-      https://code.jivosite.com
+      https://www.smartsuppchat.com
+      https://*.smartsuppcdn.com
       https://www.googletagmanager.com
       https://www.google-analytics.com;
-    style-src 'self' 'unsafe-inline'
-      http://code.jivosite.com
-      https://code.jivosite.com;
-    img-src 'self' data: https: blob:;
-    connect-src 'self' https: wss:
-      https://code.jivosite.com
-      wss://*.jivosite.com;
+
+    style-src 'self' 'unsafe-inline' https://*.smartsuppcdn.com;
+
+    img-src 'self' data: blob: https://*.smartsuppchat.com https://*.smartsuppcdn.com https://res.cloudinary.com;
+
+    connect-src 'self' 
+      https://*.smartsuppchat.com 
+      https://*.smartsuppcdn.com 
+      wss://*.smartsuppchat.com 
+      wss://websocket-visitors.smartsupp.com;
+
     font-src 'self' https:;
-    media-src 'self' https://code.jivosite.com;
-    frame-src https://www.google.com https://maps.google.com;
-    child-src https://www.google.com https://maps.google.com;
+
+    media-src 'self' https://*.smartsuppchat.com;
+
+    frame-src https://*.smartsuppchat.com https://www.google.com https://maps.google.com;
   `.replace(/\s{2,}/g, ' ').trim(),
 },
-
 
           {
             key: 'Strict-Transport-Security',

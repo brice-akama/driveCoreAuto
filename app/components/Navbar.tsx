@@ -69,6 +69,7 @@ const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 const [popupSearchQuery, setPopupSearchQuery] = useState("");
 const { language } = useLanguage();
+
 const dropdownRef = useRef<HTMLDivElement>(null);
 const [dropdownResults, setDropdownResults] = useState<{
   products: ProductResult[];
@@ -106,51 +107,94 @@ useEffect(() => {
 
 
 // Example categories array
+// Categories array with multilingual support
 const categories = [
   {
-    brand: "Toyota",
+    brand: { en: "Toyota", fr: "Toyota", es: "Toyota", de: "Toyota" },
     subcategories: [
-      "Toyota Swaps",
-      "Toyota Engines",
-      "Toyota Transmissions"
+      { en: "Toyota Swaps", fr: "Échanges Toyota", es: "Intercambios Toyota", de: "Toyota Swaps" },
+      { en: "Toyota Engines", fr: "Moteurs Toyota", es: "Motores Toyota", de: "Toyota Motoren" },
+      { en: "Toyota Transmissions", fr: "Transmissions Toyota", es: "Transmisiones Toyota", de: "Toyota Getriebe" }
     ]
   },
   {
-    brand: "Honda",
+    brand: { en: "Honda", fr: "Honda", es: "Honda", de: "Honda" },
     subcategories: [
-      "Honda Swaps",
-      "Honda Engines",
-      "Honda Transmissions"
+      { en: "Honda Swaps", fr: "Échanges Honda", es: "Intercambios Honda", de: "Honda Swaps" },
+      { en: "Honda Engines", fr: "Moteurs Honda", es: "Motores Honda", de: "Honda Motoren" },
+      { en: "Honda Transmissions", fr: "Transmissions Honda", es: "Transmisiones Honda", de: "Honda Getriebe" }
     ]
   },
   {
-    brand: "Infiniti",
+    brand: { en: "Infiniti", fr: "Infiniti", es: "Infiniti", de: "Infiniti" },
     subcategories: [
-      "Infiniti Swaps",
-      "Infiniti Engines",
-      "Infiniti Transmissions"
+      { en: "Infiniti Swaps", fr: "Échanges Infiniti", es: "Intercambios Infiniti", de: "Infiniti Swaps" },
+      { en: "Infiniti Engines", fr: "Moteurs Infiniti", es: "Motores Infiniti", de: "Infiniti Motoren" },
+      { en: "Infiniti Transmissions", fr: "Transmissions Infiniti", es: "Transmisiones Infiniti", de: "Infiniti Getriebe" }
     ]
   },
   {
-    brand: "Scion",
+    brand: { en: "Scion", fr: "Scion", es: "Scion", de: "Scion" },
     subcategories: [
-      "Scion Swaps",
-      "Scion Engines",
-      "Scion Transmissions"
+      { en: "Scion Swaps", fr: "Échanges Scion", es: "Intercambios Scion", de: "Scion Swaps" },
+      { en: "Scion Engines", fr: "Moteurs Scion", es: "Motores Scion", de: "Scion Motoren" },
+      { en: "Scion Transmissions", fr: "Transmissions Scion", es: "Transmisiones Scion", de: "Scion Getriebe" }
     ]
   },
-  // ...add more brands and subcategories as needed
   {
-    brand: "Accessories",
-    subcategories: []
+    brand: { en: "Nissan", fr: "Nissan", es: "Nissan", de: "Nissan" },
+    subcategories: [
+      { en: "Nissan Swaps", fr: "Échanges Nissan", es: "Intercambios Nissan", de: "Nissan Swaps" },
+      { en: "Nissan Engines", fr: "Moteurs Nissan", es: "Motores Nissan", de: "Nissan Motoren" },
+      { en: "Nissan Transmissions", fr: "Transmissions Nissan", es: "Transmisiones Nissan", de: "Nissan Getriebe" }
+    ]
   },
   {
-    brand: "ECUs",
-    subcategories: []
+    brand: { en: "Subaru", fr: "Subaru", es: "Subaru", de: "Subaru" },
+    subcategories: [
+      { en: "Subaru Swaps", fr: "Échanges Subaru", es: "Intercambios Subaru", de: "Subaru Swaps" },
+      { en: "Subaru Engines", fr: "Moteurs Subaru", es: "Motores Subaru", de: "Subaru Motoren" },
+      { en: "Subaru Transmissions", fr: "Transmissions Subaru", es: "Transmisiones Subaru", de: "Subaru Getriebe" }
+    ]
   },
-  // ...other single categories
+  {
+    brand: { en: "Acura", fr: "Acura", es: "Acura", de: "Acura" },
+    subcategories: [
+      { en: "Acura Swaps", fr: "Échanges Acura", es: "Intercambios Acura", de: "Acura Swaps" },
+      { en: "Acura Engines", fr: "Moteurs Acura", es: "Motores Acura", de: "Acura Motoren" },
+      { en: "Acura Transmissions", fr: "Transmissions Acura", es: "Transmisiones Acura", de: "Acura Getriebe" }
+    ]
+  },
+  {
+    brand: { en: "Lexus", fr: "Lexus", es: "Lexus", de: "Lexus" },
+    subcategories: [
+      { en: "Lexus Swaps", fr: "Échanges Lexus", es: "Intercambios Lexus", de: "Lexus Swaps" },
+      { en: "Lexus Engines", fr: "Moteurs Lexus", es: "Motores Lexus", de: "Lexus Motoren" },
+      { en: "Lexus Transmissions", fr: "Transmissions Lexus", es: "Transmisiones Lexus", de: "Lexus Getriebe" }
+    ]
+  },
+  // Single categories without subcategories
+  { brand: { en: "Accessories", fr: "Accessoires", es: "Accesorios", de: "Zubehör" }, subcategories: [] },
+  { brand: { en: "Subframe", fr: "Châssis", es: "Subchasis", de: "Unterrahmen" }, subcategories: [] },
+  { brand: { en: "Free Shipping", fr: "Livraison gratuite", es: "Envío gratis", de: "Kostenloser Versand" }, subcategories: [] },
+  { brand: { en: "Best Sellers", fr: "Meilleures ventes", es: "Más vendidos", de: "Bestseller" }, subcategories: [] }
 ];
 
+
+useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // If dropdown exists and the clicked element is not inside it
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsCategoryOpen(false);
+      }
+    }
+
+    // Listen to all clicks on the page
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const [translatedTexts, setTranslatedTexts] = useState({
     login: '',
@@ -528,7 +572,25 @@ const categories = [
     fetchTranslations().catch(console.error);
   }, [translate]);
 
-  const knownPaths = ["/privacy-policy", "/terms", "/support", "/about-us", "/refund-policy", "/shipping-info", "/faqs", "/contact-us"];
+  const languages = ["en", "es", "fr", "it"];
+const staticPages = [
+  "privacy-policy",
+  "terms-conditions",
+  "buyer-services",
+  "about-us",
+  "refund-policy",
+  "shipping",
+  "faqs",
+  "track-order",
+  "warranty"
+];
+
+const knownPaths = languages.flatMap(lang =>
+  staticPages.map(page => `/${lang}/${page}`)
+);
+
+console.log(knownPaths);
+
 
   // LIVE SEARCH
   useEffect(() => {
@@ -553,6 +615,7 @@ const categories = [
 
   // STATIC SEARCH (button click)
   const handleSearch = async () => {
+     console.log("Searching:", searchQuery, "in category:", selectedCategory);
     if (!searchQuery.trim()) return;
 
     const matchedPath = knownPaths.find(path => path.toLowerCase().includes(searchQuery.trim().toLowerCase()));
@@ -797,50 +860,59 @@ className="relative w-1/2 mx-auto mt-3 hidden lg:flex">
   
 
     {/* Select Category */}
-    <div className="relative flex items-center px-4 cursor-pointer" onClick={() => setIsCategoryOpen((open) => !open)}>
     
+    {/* Select Category */}
+<div ref={dropdownRef}
+  className="relative flex items-center px-4 cursor-pointer"
+  onClick={() => setIsCategoryOpen((open) => !open)}
+>
+  <span className="text-gray-700 font-normal text-base flex items-center gap-2">
+    {selectedCategory || (language === 'en' ? "All Categories" :
+                          language === 'fr' ? "Toutes les catégories" :
+                          language === 'es' ? "Todas las categorías" :
+                          "Alle Kategorien")}
+    <ChevronDown
+      className={`w-4 h-4 ml-1 transition-transform duration-300 ${
+        isCategoryOpen ? "rotate-180" : ""
+      }`}
+    />
+  </span>
 
-      <span className="text-gray-700 font-normal text-base flex items-center gap-2">
-        {selectedCategory || "All Categories"}
-        <ChevronDown className={`w-4 h-4 ml-1 transition-transform duration-300 ${isCategoryOpen ? "rotate-180" : ""}`} />
-      </span>
+  {isCategoryOpen && (
+    <div className="absolute right-0 top-full mt-2 w-56 max-h-64 overflow-y-auto bg-white rounded-lg shadow-lg border border-gray-200 z-50 animate-fadeIn">
+      {categories.map((cat) => (
+  <div key={cat.brand.en}>
+    {/* Main brand name */}
+    <div
+      className="px-4 py-2 font-semibold text-gray-800 cursor-pointer hover:bg-blue-50"
+      onClick={() => {
+        setSelectedCategory(cat.brand[language as keyof typeof cat.brand]);
+        setIsCategoryOpen(false);
+      }}
+    >
+      {cat.brand[language as keyof typeof cat.brand]}
+    </div>
 
-      {isCategoryOpen && (
-  <div className="absolute right-0 top-full mt-2 w-56 max-h-64 overflow-y-auto bg-white rounded-lg shadow-lg border border-gray-200 z-50 animate-fadeIn">
-    {categories.map((cat) => (
-      <div key={cat.brand}>
-        {/* Main brand name */}
-        <div
-          className="px-4 py-2 font-semibold text-gray-800 cursor-pointer hover:bg-blue-50"
-          onClick={() => {
-            setSelectedCategory(cat.brand);
-            setIsCategoryOpen(false);
-            setSearchQuery(cat.brand);
-          }}
-        >
-          {cat.brand}
-        </div>
-        {/* Subcategories, indented */}
-        {cat.subcategories.map((sub) => (
-          <div
-            key={sub}
-            className="pl-8 pr-4 py-2 text-gray-700 cursor-pointer hover:bg-blue-100"
-            onClick={() => {
-              setSelectedCategory(sub);
-              setIsCategoryOpen(false);
-              setSearchQuery(sub);
-            }}
-          >
-            {sub}
-          </div>
-          
-        ))}
+    {/* Subcategories */}
+    {cat.subcategories.map((sub) => (
+      <div
+        key={sub.en}
+        className="pl-8 pr-4 py-2 text-gray-700 cursor-pointer hover:bg-blue-100"
+        onClick={() => {
+          setSelectedCategory(sub[language as keyof typeof sub]);
+          setIsCategoryOpen(false);
+        }}
+      >
+        {sub[language as keyof typeof sub]}
       </div>
-      
     ))}
   </div>
-)}
+))}
+
     </div>
+  )}
+</div>
+
     
 
 

@@ -10,6 +10,8 @@ import FooterLanguageButton from "./FooterLanguageButton";
 import ScrollToTop from "./ScrollToTop";
 import CurrencySelector from "./CurrencySelector";
 import CartDrawer from "./CartDrawer";
+import ScrollRestoration from "./ScrollRestoration";
+import SmartsuppChat from "./ClientSideTawk";
 
 const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -23,6 +25,7 @@ const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       <main>
         <ScrollToTop />
+         <ScrollRestoration />
         {children}
         {!isAdminRoute && <BackToTop />}
       </main>
@@ -30,6 +33,7 @@ const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       {!isAdminRoute && <Footer />}
       {!isAdminRoute && <FooterLanguageButton />}
       {!isAdminRoute && <CookieConsent />}
+          <SmartsuppChat />
     </>
   );
 };

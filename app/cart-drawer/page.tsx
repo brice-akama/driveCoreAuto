@@ -14,6 +14,7 @@ const CartPage: React.FC = () => {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [shippingCost, setShippingCost] = useState<number | null>(null);
+  const [showShippingWarning, setShowShippingWarning] = useState(false);
   
 
   const { language, translate } = useLanguage();
@@ -36,6 +37,9 @@ const CartPage: React.FC = () => {
     salesTax: "Sales Tax",
     total: "Total",
     proceedToCheckout: "PROCEED TO CHECKOUT",
+    shippingWarning: "Please calculate your shipping cost before proceeding to checkout.",
+    shippingDisclaimer: "Final shipping cost may vary depending on location. If actual shipping differs, we’ll contact you before processing payment.",
+    
   });
 
   // Load translations
@@ -59,6 +63,13 @@ const CartPage: React.FC = () => {
         salesTax: await translate("Sales Tax"),
         total: await translate("Total"),
         proceedToCheckout: await translate("PROCEED TO CHECKOUT"),
+        shippingDisclaimer: await translate(
+      "Final shipping cost may vary depending on location. If actual shipping differs, we’ll contact you before processing payment.",
+    ),
+    shippingWarning: await translate(
+  "Please calculate your shipping cost before proceeding to checkout."
+),
+
       });
     }
     loadTranslations();
@@ -72,6 +83,13 @@ const CartPage: React.FC = () => {
     }, {} as { [key: string]: number });
     setQuantities(initialQuantities);
   }, [cartItems]);
+
+  // Hide warning automatically when shipping is calculated
+useEffect(() => {
+  if (shippingCost !== null) {
+    setShowShippingWarning(false);
+  }
+}, [shippingCost]);
 
   // Recalculate subtotal, tax, and total whenever quantities change
   const subtotal = cartItems.reduce((acc, item) => {
@@ -140,6 +158,7 @@ const applyCoupon = async () => {
       <div className="bg-black text-white py-8 text-center w-full">
         <h1 className="text-4xl font-black">{labels.shoppingCart}</h1>
         <Breadcrumb />
+        
       </div>
 
       <div className="container mx-auto p-4">
@@ -153,7 +172,8 @@ const applyCoupon = async () => {
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+
             {/* Left side: Cart Items */}
             <div className="flex-1">
               <ul className="space-y-4">
@@ -228,7 +248,8 @@ const applyCoupon = async () => {
             </div>
 
             {/* Right side: Cart Totals */}
-            <div className="md:w-1/3 bg-white p-6 rounded-lg shadow-md">
+            <div className="w-full md:w-2/3 lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
+
               <h3 className="font-bold text-xl mb-6">{labels.cartTotals}</h3>
 
               <div className="flex justify-between mb-3">
@@ -246,6 +267,12 @@ const applyCoupon = async () => {
                   <span>${shippingCost.toFixed(2)}</span>
                 )}
               </div>
+              {/* Shipping disclaimer */}
+{shippingCost !== null && (
+  <p className="text-sm text-gray-600 mt-1">
+    {labels.shippingDisclaimer}
+  </p>
+)}
 
               <div className="flex justify-between mb-3">
                 <span>{labels.salesTax}</span>
@@ -257,12 +284,48 @@ const applyCoupon = async () => {
                 <span>${total.toFixed(2)} USD</span>
               </div>
 
-              <Link
-                href="/checkout"
-                className="block mt-6 bg-blue-600 text-white whitespace-nowrap text-center py-3 rounded hover:bg-blue-700"
-              >
-                {labels.proceedToCheckout}
-              </Link>
+             {/* Proceed to Checkout Button */}
+<div className="relative">
+  <Link
+    href={shippingCost === null ? "#" : "/checkout"}
+    className={`block mt-6 text-white text-center py-3 rounded font-semibold transition-colors
+      ${shippingCost === null 
+        ? "bg-gray-400 cursor-not-allowed border border-red-500" 
+        : "bg-blue-600 hover:bg-blue-700"}`
+    }
+    onClick={(e) => {
+      if (shippingCost === null) e.preventDefault();
+    }}
+  >
+    {labels.proceedToCheckout}
+  </Link>
+
+  {/* Always visible warning on mobile/small screens */}
+  {shippingCost === null && (
+  <p className="mt-2 text-red-600 text-sm md:hidden flex items-center">
+    ⚠️ {labels.shippingWarning}
+  </p>
+)}
+
+
+  {/* Visible on medium+ screens when hovering */}
+  {shippingCost === null && (
+    <p className="mt-2 text-red-600 text-sm hidden md:block">
+      ⚠️ {labels.shippingWarning}
+    </p>
+  )}
+</div>
+
+
+
+{/* Inline message below the button */}
+{showShippingWarning && (
+  <p className="mt-2 text-red-600 text-sm font-semibold">
+    {labels.shippingWarning}
+  </p>
+)}
+
+
             </div>
           </div>
         )}

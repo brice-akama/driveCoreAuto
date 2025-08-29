@@ -74,6 +74,39 @@ const stripHtmlToParagraphs = (html: string): string[] => {
 };
 // ...existing code...
 
+
+// Star rating component
+const StarRating: React.FC<{ rating?: number; reviewCount: number }> = ({
+  rating = 5,
+  reviewCount,
+}) => {
+  const fullStars = Math.floor(rating);
+  const emptyStars = 5 - fullStars;
+
+  return (
+    <div className="flex items-center gap-2 mt-2">
+      <div className="flex text-yellow-500">
+        {Array(fullStars)
+          .fill(0)
+          .map((_, idx) => (
+            <span key={idx}>★</span>
+          ))}
+        {Array(emptyStars)
+          .fill(0)
+          .map((_, idx) => (
+            <span key={idx} className="text-gray-300">
+              ★
+            </span>
+          ))}
+      </div>
+      <span className="text-gray-600 text-sm">
+        ({reviewCount} {reviewCount === 1 ? "customer review" : "customer reviews"})
+      </span>
+    </div>
+  );
+};
+
+
   
 
 const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }) => {
@@ -246,8 +279,13 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
               </ol>
             </nav>
 
-            <h1 className="text-3xl font-semibold text-gray-900">{product.name[language] || product.name.en}</h1>
-            <p className="text-gray-600 mt-1 font-semibold">{symbol}{totalPrice.toFixed(2)}</p>
+           <h1 className="text-3xl font-semibold text-gray-900">{product.name[language] || product.name.en}</h1>
+
+{/* ⭐ Star Rating + Review Count */}
+<StarRating rating={5} reviewCount={reviewCount} />
+
+<p className="text-gray-600 mt-2 font-semibold">{symbol}{totalPrice.toFixed(2)}</p>
+
 
             <div className="border-t border-gray-300 my-4" />
 

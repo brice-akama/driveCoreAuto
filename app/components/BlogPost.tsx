@@ -95,6 +95,7 @@ export default function BlogPost() {
                   src={post.imageUrl}
                   alt={post.title[language] || post.title.en}
                   fill
+                  unoptimized
                   className="object-cover transition-transform duration-300 hover:scale-105"
                 />
                 {/* Optional date badge */}

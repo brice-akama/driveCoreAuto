@@ -7,7 +7,7 @@ import QRCodeWrapper from '../components/QRCodeWrapper';
 import { FaPaypal, FaBitcoin, FaApple, FaCcVisa } from "react-icons/fa";
 import { SiCashapp, SiVenmo, SiZelle } from "react-icons/si";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import Breadcrumb from "../components/Breadcrumbs";
+
 import { useLanguage } from "@/app/context/LanguageContext";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -431,10 +431,25 @@ const handlePlaceOrder = async () => {
     <div className="mt-20 lg:mt-40">
           {/* Full-width black section */}
           <div className="bg-black text-white py-8 text-center w-full">
-            <h1 className="text-4xl font-black">Checkout
-    </h1>
+            
     
-            <Breadcrumb />
+            
+           {/* Breadcrumb + Shopping Cart link inline on md+ screens */}
+    <div className="mt-2 flex justify-center items-center text-sm space-x-2">
+      {/* Shopping Cart link only on md+ screens */}
+      <Link
+        href="/cart-drawer"
+        className="hidden md:inline text-white font-bold hover:underline text-4xl"
+      >
+        Shopping Cart
+      </Link>
+      
+      {/* Arrow separator only visible on md+ */}
+      <span className="hidden md:inline text-white">→</span>
+
+      {/* Current page */}
+      <span className="text-white font-bold text-4xl">Checkout</span>
+    </div>
           </div>
     <div className="max-w-7xl mx-auto p-6">
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -760,8 +775,8 @@ const handlePlaceOrder = async () => {
       <li>Tap “Pay.”</li>
       <li>
         Get in touch with us through our live chat or email: 
-        <a href="mailto:sales@psychedelicmushroomstore.com" className="text-blue-600 underline">
-          sales@psychedelicmushroomstore.com
+        <a href="mailto:sales@drivecoreauto.com" className="text-blue-600 underline">
+          sales@drivecoreauto.com
         </a> 
         for our cashtag.
       </li>
@@ -773,7 +788,7 @@ const handlePlaceOrder = async () => {
     </ol>
     <p className="text-red-600 font-medium mt-2">
       NB: Please don’t make the Cash App payment to our website email 
-      <strong> sales@psychedelicmushroomstore.com</strong>. Kindly get in touch via live chat or email for our Cash App info.  
+      <strong> sales@drivecoreauto.com</strong>. Kindly get in touch via live chat or email for our Cash App info.  
       Payments made to our website email won’t be validated nor confirmed.
     </p>
   </div>
@@ -791,7 +806,7 @@ const handlePlaceOrder = async () => {
       <li>
         After placing your order, please contact us via live chat or email to receive our PayPal payment details.
         <br />
-        Email: <a href="mailto:mstmynabibi@gmail.com" className="text-blue-600 underline">mstmynabibi@gmail.com</a>
+        Email: <a href="mailto:sales@drivecoreauto.com" className="text-blue-600 underline">sales@drivecoreauto.com</a>
       </li>
     </ol>
   </div>
@@ -806,18 +821,18 @@ const handlePlaceOrder = async () => {
       <li>Download the Zelle App to get started!</li>
       <li>All you need to send money with Zelle is the preferred email address or mobile number of the trusted recipient.</li>
       <li>Please kindly get in touch with us via live chat or email: 
-        <a href="mailto:sales@psychedelicmushroomstore.com" className="text-blue-600 underline">sales@psychedelicmushroomstore.com</a> for our Zelle details.
+        <a href="mailto:sales@drivecoreauto.com" className="text-blue-600 underline">sales@drivecoreauto.com</a> for our Zelle details.
       </li>
       <li>After making payment, take a screenshot and send it to our live chat or email: 
-        <a href="mailto:sales@psychedelicshopsolutions.com" className="text-blue-600 underline">sales@psychedelicshopsolutions.com</a> for confirmation.
+        <a href="mailto:sales@drivecoreauto.com" className="text-blue-600 underline">sales@drivecoreauto.com</a> for confirmation.
       </li>
       <li>Your order is considered valid once we receive details of your payment, which should be pictures or screenshots showing transaction details alongside your Order ID.</li>
       <li>Contact our live chat or email: 
-        <a href="mailto:sales@psychedelicmushroomstore.com" className="text-blue-600 underline">sales@psychedelicmushroomstore.com</a> for assistance regarding the Zelle payment.
+        <a href="mailto:sales@drivecoreauto.com" className="text-blue-600 underline">sales@drivecoreauto.com</a> for assistance regarding the Zelle payment.
       </li>
     </ol>
     <p className="text-red-600 font-medium mt-2">
-      NB: Please don’t make the Zelle payment to our website email ”sales@psychedelicmushroomstore.com”. Kindly get in touch via live chat or email for our Zelle info. Payments made to our website email won’t be validated nor confirmed.
+      NB: Please don’t make the Zelle payment to our website email ”sales@drivecoreauto.com”. Kindly get in touch via live chat or email for our Zelle info. Payments made to our website email won’t be validated nor confirmed.
     </p>
   </div>
 )}
@@ -831,7 +846,7 @@ const handlePlaceOrder = async () => {
       <li>
         Kindly contact us via live chat or email after placing your order to receive our Apple Pay information.
         <br />
-        Email: <a href="mailto:mstmynabibi@gmail.com" className="text-blue-600 underline">mstmynabibi@gmail.com</a>
+        Email: <a href="mailto:sales@drivecoreauto.com" className="text-blue-600 underline">sales@drivecoreauto.com</a>
       </li>
     </ol>
   </div>
@@ -846,7 +861,7 @@ const handlePlaceOrder = async () => {
       <li>
         Kindly contact us via live chat or email after placing your order to receive our Venmo payment details.
         <br />
-        Email: <a href="mailto:mstmynabibi@gmail.com" className="text-blue-600 underline">mstmynabibi@gmail.com</a>
+        Email: <a href="sales@drivecoreauto.com" className="text-blue-600 underline">sales@drivecoreauto.com</a>
       </li>
     </ol>
   </div>
@@ -864,7 +879,7 @@ const handlePlaceOrder = async () => {
               <p><strong>Send BTC to:</strong></p>
               <div className="flex items-center justify-between bg-white p-2 rounded border">
                 <span className="break-all font-mono text-gray-800">
-                  bc1qvar3m86w6d2s33gq63jrew6a5nqdxg34ytqnwd
+                  bc1qv8wl5n9pe89qv9hptvnhljc0cg57c4j63nrynm
                 </span>
                 <button
                   onClick={handleCopy}
@@ -875,7 +890,7 @@ const handlePlaceOrder = async () => {
               </div>
               <p>Or scan QR code:</p>
               <QRCodeWrapper
-                value="bitcoin:bc1qvar3m86w6d2s33gq63jrew6a5nqdxg34ytqnwd"
+                value="bc1qv8wl5n9pe89qv9hptvnhljc0cg57c4j63nrynm"
                 size={160}
               />
             </div>

@@ -4,14 +4,13 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 interface LanguageContextType {
   language: string;
-  setLanguage: (lang: string, namespace?: string) => void; // <-- allow optional second arg
+  setLanguage: (lang: string, namespace?: string) => void;
   translate: (text: string) => Promise<string>;
   fetchTranslatedProducts: () => Promise<any[]>;
   fetchTranslatedBlogPosts: () => Promise<any[]>;
   fetchStaticTranslation: (key: string, namespace?: string) => any;
   translations?: Record<string, any>;
 }
-
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
@@ -35,44 +34,45 @@ export function LanguageProvider({
     }
   }, [initialLanguage]);
 
-  
+  // ✅ Updated setLanguage with namespace & fallback logic
+  const setLanguage = async (lang: string, namespace: string = "") => {
+    setLanguageState(lang);
+    localStorage.setItem("preferredLang", lang);
 
-  // Save selected language to localStorage
- // Updated setLanguage with namespace support
-const setLanguage = async (lang: string, namespace: string = "") => {
-  setLanguageState(lang);
-  localStorage.setItem("preferredLang", lang);
-
-  try {
-    // Use namespace if provided, otherwise fallback to root translations
     const path = namespace
       ? `/translations/${namespace}/${lang}.json`
       : `/translations/${lang}.json`;
 
-    const res = await fetch(path);
-    const data = await res.json();
-    setTranslations(data);
-  } catch (err) {
-    console.error("Failed to fetch translations for", lang, err);
-  }
-};
+    try {
+      const res = await fetch(path);
 
+      // Handle missing file
+      if (!res.ok) {
+        console.warn(`Translation file not found: ${path}`);
+        setTranslations({}); // fallback to empty
+        return;
+      }
 
-  
+      const data = await res.json();
+      setTranslations(data);
+    } catch (err) {
+      console.error(`Failed to fetch translations for ${lang} (${namespace})`, err);
+      setTranslations({}); // fallback
+    }
+  };
 
-  // ✅ Uses SSR translations if available
+  // Fetch translation from loaded JSON
   const fetchStaticTranslation = (key: string, namespace?: string): any => {
-  if (!translations) return key;
+    if (!translations) return key;
 
-  if (namespace && translations[namespace]) {
-    return translations[namespace][key] || key;
-  }
+    if (namespace && translations[namespace]) {
+      return translations[namespace][key] || key;
+    }
 
-  return translations[key] || key;
-};
+    return translations[key] || key;
+  };
 
-
-  // Dynamic translation via API (still available for runtime)
+  // Dynamic translation via API (runtime)
   const translate = async (text: string): Promise<string> => {
     if (language === "en") return text;
 
@@ -132,8 +132,6 @@ const setLanguage = async (lang: string, namespace: string = "") => {
 
 export function useLanguage() {
   const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
-  }
+  if (!context) throw new Error("useLanguage must be used within a LanguageProvider");
   return context;
 }

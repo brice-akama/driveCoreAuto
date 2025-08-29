@@ -1,31 +1,32 @@
-import clientPromise from "../../lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
+import clientPromise from "../../lib/mongodb";
 import bcrypt from "bcrypt";
+import zxcvbn from "zxcvbn";
+import nodemailer from "nodemailer";
 import { ObjectId } from "mongodb";
-import zxcvbn from "zxcvbn"; // Import zxcvbn for password strength evaluation
 
-// Helper function to get the users collection from the database
+// Helper function to get the users collection
 async function getUsersCollection() {
   const client = await clientPromise;
-  const db = client.db("autodrive");// Replace with your DB name
+  const db = client.db("autodrive");
   return db.collection("users");
 }
 
-// Helper to sanitize input
+// Sanitize input
 function sanitizeInput(input: string): string {
   return input.replace(/[<>\/\\$'"`]/g, "").trim();
 }
 
-// Validate email using regex
+// Validate email format
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Validate password strength using zxcvbn
+// Validate password strength
 function isStrongPassword(password: string): boolean {
   const result = zxcvbn(password);
-  return result.score >= 3; // Score ranges from 0 to 4, where 3 is considered strong
+  return result.score >= 3;
 }
 
 export async function POST(request: NextRequest) {
@@ -34,20 +35,14 @@ export async function POST(request: NextRequest) {
 
     const contentType = request.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      return NextResponse.json(
-        { error: "Invalid content type" },
-        { status: 415 }
-      );
+      return NextResponse.json({ error: "Invalid content type" }, { status: 415 });
     }
 
     const body = await request.json();
     let { email, password } = body;
 
     if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
     }
 
     // Sanitize inputs
@@ -61,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     if (!isStrongPassword(password)) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters long" },
+        { error: "Password must be at least 8 characters long and strong." },
         { status: 400 }
       );
     }
@@ -83,6 +78,34 @@ export async function POST(request: NextRequest) {
 
     const result = await usersCollection.insertOne(newUser);
 
+    // ✅ Send notification email to company
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.zoho.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"DriveCore Auto" <${process.env.EMAIL_USER}>`,
+        to: "support@drivecoreauto.com",
+        subject: "New User Registration",
+        html: `
+          <h3>New User Registered on DriveCore Auto</h3>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Registered At:</strong> ${new Date().toLocaleString()}</p>
+        `,
+      });
+
+      console.log("✅ Registration notification email sent");
+    } catch (emailError) {
+      console.error("❌ Failed to send registration email:", emailError);
+    }
+
     return NextResponse.json(
       { message: "Registration successful", userId: result.insertedId },
       { status: 201 }
@@ -93,60 +116,5 @@ export async function POST(request: NextRequest) {
       { error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
-  }
-}
-
-// ✅ GET: Fetch all users
-export async function GET() {
-  try {
-    const client = await clientPromise;
-    const db = client.db("autodrive"); // Replace with your DB name
-    const usersCollection = db.collection("users");
-
-    console.log("Fetching all users...");
-
-    const users = await usersCollection.find().toArray();
-    const formattedUsers = users.map((user) => ({
-      ...user,
-      id: user._id.toString(), // Convert _id to string
-    }));
-
-    console.log("Fetched users:", formattedUsers);
-
-    return NextResponse.json(
-      { data: formattedUsers, total: formattedUsers.length }, // ✅ Matches required format
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
-  }
-}
-
-// ✅ DELETE: Delete user by ID (supports `DELETE /api/register?id=registerId`)
-export async function DELETE(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
-    }
-
-    const client = await clientPromise;
-    const db = client.db("autodrive");
-    const usersCollection = db.collection("users");
-
-    // ✅ Ensure correct ObjectId conversion
-    const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ message: "User deleted successfully" }, { status: 200 });
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
   }
 }

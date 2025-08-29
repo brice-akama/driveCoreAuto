@@ -142,6 +142,7 @@ const Footer: React.FC = () => {
 </div>
 
 
+
     {/* Customer Support */}
     <div>
       <h3 className="font-semibold text-lg mb-4  pb-2">  {translatedTexts.customerSupport}</h3>
