@@ -38,6 +38,7 @@ interface BillingDetails extends AddressDetails {
 interface AddressFormProps {
   data: AddressDetails;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+   t: Record<string, string>; // add this
 }
 
 interface CheckOutPageProps {
@@ -46,11 +47,11 @@ interface CheckOutPageProps {
 }
 
 
-const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
+const AddressForm: React.FC<AddressFormProps> = ({ data, onChange, t }) => (
   <div className="space-y-4">
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1">
-        <label className="block font-medium mb-1">First name <span className="text-red-500">*</span></label>
+        <label className="block font-medium mb-1">{t['firstName']}  <span className="text-red-500">*</span></label>
         <input
           type="text"
           name="firstName"
@@ -60,7 +61,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
         />
       </div>
       <div className="flex-1">
-        <label className="block font-medium mb-1">Last name <span className="text-red-500">*</span></label>
+        <label className="block font-medium mb-1">{t['lastName']} <span className="text-red-500">*</span></label>
         <input
           type="text"
           name="lastName"
@@ -73,7 +74,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
     </div>
 
     <div>
-      <label className="block font-medium mb-1">Company name (optional)</label>
+      <label className="block font-medium mb-1">{t['companyName']}</label>
       <input
         type="text"
         name="companyName"
@@ -84,7 +85,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
     </div>
 
     <div>
-      <label className="block font-medium mb-1">Email <span className="text-red-500">*</span></label>
+      <label className="block font-medium mb-1">{t['email']} <span className="text-red-500">*</span></label>
       <input
         type="email"
         name="email"
@@ -96,7 +97,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
     </div>
 
     <div>
-      <label className="block font-medium mb-1">Phone <span className="text-red-500">*</span></label>
+      <label className="block font-medium mb-1">{t['phone']} <span className="text-red-500">*</span></label>
       <input
         type="tel"
         name="phone"
@@ -108,7 +109,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
     </div>
 
     <div>
-      <label className="block font-medium mb-1">Country / Region <span className="text-red-500">*</span></label>
+      <label className="block font-medium mb-1">{t['countryRegion']} <span className="text-red-500">*</span></label>
       <input
         type="text"
         name="country"
@@ -120,7 +121,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
     </div>
 
     <div>
-      <label className="block font-medium mb-1">Street Address <span className="text-red-500">*</span></label>
+      <label className="block font-medium mb-1">  {t['streetAddress']} <span className="text-red-500">*</span></label>
       <input
         type="text"
         name="streetAddress"
@@ -132,7 +133,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
     </div>
 
     <div>
-      <label className="block font-medium mb-1">City <span className="text-red-500">*</span></label>
+      <label className="block font-medium mb-1"> {t['city']} <span className="text-red-500">*</span></label>
       <input
         type="text"
         name="city"
@@ -145,7 +146,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
 
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1">
-        <label className="block font-medium mb-1">State <span className="text-red-500">*</span></label>
+        <label className="block font-medium mb-1"> {t['state']} <span className="text-red-500">*</span></label>
         <input
           type="text"
           name="state"
@@ -156,7 +157,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ data, onChange }) => (
         />
       </div>
       <div className="flex-1">
-        <label className="block font-medium mb-1">ZIP Code <span className="text-red-500">*</span></label>
+        <label className="block font-medium mb-1"> {t['zipCode']} <span className="text-red-500">*</span></label>
         <input
           type="text"
           name="zipCode"
@@ -470,30 +471,34 @@ const handlePlaceOrder = async () => {
         {/* Order Page Header Section */}
           <div className="w-full space-y-3 lg:col-span-3">
 <div className="mt-4 relative" >
-  <span className="text-gray-700">Returning customer? </span>
+  <span className="text-gray-700"> {t['returningCustomer']} </span>
   <button
     type="button"
     onClick={() => setShowLogin(!showLogin)}
     className="text-blue-700 font-medium underline hover:text-blue-900 transition"
   >
-    Click here to login
+     {t['clickHereLogin']}
   </button>
 
   {showLogin && (
     <div className="absolute mt-2 w-full max-w-sm bg-white border border-gray-300 rounded-lg shadow-lg p-6">
       
       {/* Informational text */}
-      <p className="text-sm text-gray-700 mb-4">
-        If you have shopped with us before, please enter your details below.
-        <br />
-        If you are a new customer, please proceed to the Billing section.
-      </p>
+<p className="text-sm text-gray-700 mb-4">
+  {t['loginInfo'].split("\n").map((line, idx) => (
+    <React.Fragment key={idx}>
+      {line}
+      <br />
+    </React.Fragment>
+  ))}
+</p>
+        {/* Login Form */}
 
       <form onSubmit={handleLogin}className="space-y-4">
         
         {/* Email */}
         <div  className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t['email']}</label>
           <input
     type="email"
     name="email"
@@ -507,7 +512,7 @@ const handlePlaceOrder = async () => {
 
         {/* Password */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t['password']}</label>
          <div className="relative mt-3">
   <input
     type={showPassword ? "text" : "password"}
@@ -538,7 +543,7 @@ const handlePlaceOrder = async () => {
             href="/forgot-password"
             className="text-blue-700 underline hover:text-blue-900 transition"
           >
-            Lost your password?
+              {t['lostPassword']}
           </Link>
         </div>
 
@@ -547,7 +552,7 @@ const handlePlaceOrder = async () => {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-medium"
         >
-          Login
+          {t['login']}
         </button>
       </form>
     </div>
@@ -555,13 +560,13 @@ const handlePlaceOrder = async () => {
 </div>
 
           <div>
-  <span className="text-gray-700">Have a coupon? </span>
+  <span className="text-gray-700">{t['haveCoupon']} </span>
   <button
     type="button"
     onClick={() => setShowCoupon(!showCoupon)}
     className="text-blue-700 font-medium underline hover:text-blue-900 transition"
   >
-    Click here to enter your code
+      {t['clickHereEnter']}
   </button>
 </div>
 
@@ -579,7 +584,7 @@ const handlePlaceOrder = async () => {
       onClick={applyCoupon}
       className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800"
     >
-      Apply Coupon
+      {t['applyCoupon']}
     </button>
   </div>
 )}
@@ -590,7 +595,7 @@ const handlePlaceOrder = async () => {
 {totalPrice >= freeShippingThreshold ? (
   <div>
     <span className="font-medium text-gray-800">
-      Your order qualifies for free shipping!
+       {t['yourOrderQualifies']}
     </span>
     <div className="w-full bg-green-200 rounded-full mt-1 h-2">
       <div
@@ -602,8 +607,9 @@ const handlePlaceOrder = async () => {
 ) : (
   <div>
     <span className="font-medium text-gray-800">
-      Add ${remaining.toLocaleString()} more to qualify for free shipping.
-    </span>
+  {t['addMoreForFreeShipping'].replace('${remaining}', remaining.toLocaleString())}
+</span>
+
     <div className="w-full bg-red-200 rounded-full mt-1 h-2">
       <div
         className="bg-blue-500 h-2 rounded-full transition-all"
@@ -619,10 +625,11 @@ const handlePlaceOrder = async () => {
           <div className="w-full space-y-3 lg:col-span-3">
           {/* Billing Details */}
           <div className="space-y-4 p-6 rounded-lg shadow-md mt-6 bg-white">
-            <h2 className="text-lg font-bold uppercase mb-6 tracking-wide">Billing Details</h2>
+            <h2 className="text-lg font-bold uppercase mb-6 tracking-wide"> {t['billingDetails']}</h2>
             <AddressForm
               data={billingDetails}
               onChange={(e) => handleInputChange(e, 'billing')}
+              t={t} // pass translations
             />
             {/* Checkboxes */}
             <div className="flex flex-col gap-3 mt-6">
@@ -634,7 +641,7 @@ const handlePlaceOrder = async () => {
   onChange={(e) => handleInputChange(e, 'billing')}
     className="form-checkbox accent-blue-600"
   />
-  <span className="font-semibold">Create an account?</span>
+  <span className="font-semibold"> {t['createAccount']}</span>
 </label>
 
 {billingDetails.createAccount && (
@@ -671,7 +678,7 @@ const handlePlaceOrder = async () => {
       }}
       className="bg-blue-600 text-white px-4 py-2 rounded-md mt-2"
     >
-      Create Account
+       {t['createAccount']}
     </button>
   </div>
 )}
@@ -684,16 +691,17 @@ const handlePlaceOrder = async () => {
                   onChange={(e) => handleInputChange(e, 'billing')}
                   className="form-checkbox accent-blue-600"
                 />
-                <span className="font-semibold">Ship to a different address?</span>
+                <span className="font-semibold"> {t['shipDifferentAddress']}</span>
               </label>
             </div>
             {/* Shipping Details */}
             {billingDetails.shipToDifferentAddress && (
               <div className="space-y-4 p-6 rounded-lg shadow-md mt-6 bg-white">
-                <h2 className="text-lg font-bold uppercase mb-6 tracking-wide">Shipping Details</h2>
+                <h2 className="text-lg font-bold uppercase mb-6 tracking-wide">{t['shippingDetails']}</h2>
                 <AddressForm
                   data={shippingDetails}
                   onChange={(e) => handleInputChange(e, 'shipping')}
+                  t={t} // pass translations
                 />
               </div>
             )}
@@ -715,7 +723,7 @@ const handlePlaceOrder = async () => {
         </div>
         {/* Right: Cart Summary & Payment */}
         <div className=" space-y-4 bg-gray-50  p-6 rounded-lg shadow-md lg:col-span-2">
-          <h2 className="text-xl font-semibold">YOUR ORDER</h2>
+          <h2 className="text-xl font-semibold"> {t['orderNotes']}</h2>
           <div>
             {cartItems.map((item) => {
               const priceNum = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
@@ -726,11 +734,8 @@ const handlePlaceOrder = async () => {
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded-md"
                   />
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm">${priceNum.toFixed(2)} x {item.quantity}</p>
-                    <p className="text-sm font-semibold">Total: ${(priceNum * item.quantity).toFixed(2)}</p>
-                  </div>
+                <div> <p className="font-medium">{item.name}</p> <p className="text-sm">${priceNum.toFixed(2)} x {item.quantity}</p> <p className="text-sm font-semibold">Total: ${(priceNum * item.quantity).toFixed(2)}</p> </div>
+
                   
                 </div>
                 
@@ -738,29 +743,29 @@ const handlePlaceOrder = async () => {
             })}
            
 <div className="flex justify-between mt-1">
-  <span>Subtotal</span>
+  <span>  {t['subtotal']}</span>
   <span>${subtotal.toFixed(2)}</span>
 </div>
 
 {discount > 0 && (
   <div className="flex justify-between mt-3 text-green-600 font-medium">
-    <span>Coupon Discount</span>
+    <span> {t['couponDiscount']}</span>
     <span>- ${discount.toFixed(2)}</span>
   </div>
 )}
 
 <div className="flex justify-between mt-1">
-  <span>Shipping</span>
+  <span> {t['shipping']}</span>
   <span>{shippingCost !== null ? `$${shippingCost.toFixed(2)}` : '—'}</span>
 </div>
 
 <div className="flex justify-between mt-1">
-  <span>Sales Tax (7%)</span>
+  <span> {t['salesTax']} </span>
   <span>${salesTaxAmount.toFixed(2)}</span>
 </div>
 
 <p className="mt-4 text-lg font-bold border-t pt-2">
-  Grand Total: ${total.toFixed(2)}
+  {t['grandTotal']}: ${total.toFixed(2)}
 </p>
 
 {shippingCost === null && (
@@ -769,12 +774,12 @@ const handlePlaceOrder = async () => {
     onClick={calculateShipping}
     className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-medium"
   >
-    Calculate Shipping
+    Calculate Shipping 
   </button>
 )}
 
           </div>
-          <h3 className="text-lg font-semibold mt-4">Payment Methods</h3>
+          <h3 className="text-lg font-semibold mt-4">  {t['paymentMethods']}</h3>
           <div className="space-y-2">
   {['Cash App', 'Paypal', 'Zelle', 'Apple Pay', 'Venmo', 'crypto'].map((method) => (
     <label key={method} className="flex items-center gap-2 cursor-pointer mt-5">
@@ -801,7 +806,7 @@ const handlePlaceOrder = async () => {
 {paymentMethod === 'Cash App' && (
   <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
     <p className="font-semibold text-blue-700">
-      Cashapp payment instructions at checkout:
+      Cashapp payment instructions at checkout: 
     </p>
     <ol className="list-decimal list-inside space-y-1">
       <li>Open the Cash App mobile app.</li>
@@ -948,7 +953,7 @@ const handlePlaceOrder = async () => {
           </p>
           {cryptoWarning && (
             <p className="text-sm text-orange-700 bg-orange-100 p-2 rounded-md">
-              ⚠️ You selected Crypto. Please send the payment to the wallet address above and contact us with a screenshot of your transaction. We will process your order once we verify the payment.
+              {t['cryptoWarning']}
             </p>
           )}
 
@@ -962,8 +967,11 @@ const handlePlaceOrder = async () => {
     className="w-4 h-4"
   />
   <label htmlFor="terms" className="text-sm">
-    I have read and agree to the website <Link href={`/${language}/terms-conditions`} className="text-blue-600 underline">terms and conditions</Link>
-  </label>
+  <Link href={`/${language}/terms-conditions`} className="text-blue-600 underline">
+    {t['termsAndConditions']}
+  </Link>
+</label>
+
 </div>
           
 <button
@@ -976,7 +984,7 @@ const handlePlaceOrder = async () => {
   }}
   className="w-full bg-blue-600 text-white py-2 rounded-md mt-4 hover:bg-blue-700 transition"
 >
-  Place Order
+   {t['placeOrder']}
 </button>
         </div>
       </div>
