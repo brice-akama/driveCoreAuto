@@ -98,7 +98,7 @@ useEffect(() => {
       {cartItems.length === 0 ? (
         <div className="text-center mt-6">
           <p>{translatedTexts.emptyCartMessage}</p>
-          <Link href="/shop" className="block bg-blue-600 text-white text-center py-2 rounded mt-10" onClick={handleLinkClick}>
+          <Link href="/toyota" className="block bg-blue-600 text-white text-center py-2 rounded mt-10" onClick={handleLinkClick}>
             {translatedTexts.continueShopping}
           </Link>
         </div>
