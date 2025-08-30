@@ -7,7 +7,6 @@ import {
   TextField,
   NumberField,
   DateField,
-  NumberInput,
 } from "react-admin";
 
 const CouponShow = (props: any) => (
@@ -18,11 +17,11 @@ const CouponShow = (props: any) => (
       <TextField source="type" label="Discount Type" />
       <DateField source="expiresAt" label="Expiration Date" />
       <NumberField source="usageLimit" label="Usage Limit" />
-      <NumberInput
-              source="minOrderValue"
-              label="Minimum Order Value"
-              helperText="The minimum cart subtotal required to apply this coupon"
-            />
+      <NumberField
+        source="minOrderValue"
+        label="Minimum Order Value"
+        options={{ style: "currency", currency: "USD" }}
+      />
       <NumberField source="usageCount" label="Times Used" />
       <DateField source="createdAt" label="Created At" />
     </SimpleShowLayout>
@@ -30,4 +29,3 @@ const CouponShow = (props: any) => (
 );
 
 export default CouponShow;
-// The above code defines a React component for displaying coupon details in an admin interface using react-admin.
