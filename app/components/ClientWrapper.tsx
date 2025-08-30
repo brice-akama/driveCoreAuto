@@ -6,7 +6,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import CookieConsent from "./CookieConsent";
 import BackToTop from "./BackToTop";
-import FooterLanguageButton from "./FooterLanguageButton";
+
 import ScrollToTop from "./ScrollToTop";
 import CurrencySelector from "./CurrencySelector";
 import CartDrawer from "./CartDrawer";
@@ -31,7 +31,7 @@ const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </main>
 
       {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <FooterLanguageButton />}
+      
       {!isAdminRoute && <CookieConsent />}
           <SmartsuppChat />
     </>

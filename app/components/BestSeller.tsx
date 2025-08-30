@@ -236,6 +236,7 @@ export default function BestSeller() {
                   src={quickViewProduct.mainImage}
                   alt={quickViewProduct.name[currentLang] || quickViewProduct.name.en}
                   fill
+                  unoptimized
                   className="object-cover"
                 />
                 <Link
@@ -339,6 +340,7 @@ export default function BestSeller() {
               alt="Flying Product"
               width={64}
               height={64}
+              unoptimized
               className="rounded"
             />
           </motion.div>
@@ -397,6 +399,7 @@ function ProductCard({
             src={hovered && hasThumbnail ? thumbnail || product.mainImage : product.mainImage}
             alt={nameForLang}
             fill
+            unoptimized
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             priority

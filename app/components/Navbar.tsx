@@ -10,7 +10,7 @@ import { ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useLanguage } from "../context/LanguageContext";
 import { useWishlist } from "../context/WishlistContext";
-import SelectLanguageButton from "./SelectLanguageButton";
+
 
 
 
@@ -1100,7 +1100,7 @@ className="relative w-1/2 mx-auto mt-3 hidden lg:flex">
               </div>
             ))}
 
-            <SelectLanguageButton />
+            
           </div>
         </div>
       ) : null}

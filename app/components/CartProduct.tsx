@@ -186,6 +186,7 @@ if (quickViewProduct) {
           src={quickViewProduct.mainImage}
           alt={quickViewProduct.name[currentLang] || quickViewProduct.name.en}
           fill
+          unoptimized
           className="object-cover"
         />
 

@@ -120,6 +120,7 @@ useEffect(() => {
     alt={item.name}
     width={64}
     height={64}
+    unoptimized
     className="object-cover flex-shrink-0 mt-5"
   />
   <div className="flex-1 flex flex-col">
