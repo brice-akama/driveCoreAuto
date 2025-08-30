@@ -11,7 +11,8 @@ const CartDrawer: React.FC = () => {
   const { cartItems, totalPrice, removeFromCart, updateQuantity: contextUpdateQuantity, isCartOpen, closeCart } = useCart();
   const [quantities, setQuantities] = useState<{ [slug: string]: number }>({});
   const router = useRouter();
-  const {  language } = useLanguage();
+  const { language, translate } = useLanguage();
+
 
   // Initialize quantities when the cart items change
   useEffect(() => {
@@ -27,6 +28,41 @@ const CartDrawer: React.FC = () => {
   closeCart();
   router.push("/cart-drawer");
 };
+
+const [translatedTexts, setTranslatedTexts] = useState({
+  yourCart: "Your Cart",
+  emptyCartMessage: "Your cart is empty, continue shopping.",
+  continueShopping: "Continue Shopping",
+  remove: "Remove",
+  total: "Total",
+  viewCart: "View Cart",
+  checkout: "Checkout",
+});
+
+useEffect(() => {
+  async function translateTexts() {
+    const yourCart = await translate("Your Cart");
+    const emptyCartMessage = await translate("Your cart is empty, continue shopping.");
+    const continueShopping = await translate("Continue Shopping");
+    const remove = await translate("Remove");
+    const total = await translate("Total");
+    const viewCart = await translate("View Cart");
+    const checkout = await translate("Checkout");
+
+    setTranslatedTexts({
+      yourCart,
+      emptyCartMessage,
+      continueShopping,
+      remove,
+      total,
+      viewCart,
+      checkout,
+    });
+  }
+
+  translateTexts();
+}, [language, translate]);
+
 
   // Update the quantity and recalculate the total price
   const updateQuantity = (slug: string, value: number) => {
@@ -57,13 +93,13 @@ const CartDrawer: React.FC = () => {
         ✖
       </button>
 
-      <h2 className="text-xl font-bold mt-20 text-center">Your Cart</h2>
+      <h2 className="text-xl font-bold mt-20 text-center">{translatedTexts.yourCart}</h2>
 
       {cartItems.length === 0 ? (
         <div className="text-center mt-6">
-          <p>Your cart is empty, continue shopping.</p>
+          <p>{translatedTexts.emptyCartMessage}</p>
           <Link href="/shop" className="block bg-blue-600 text-white text-center py-2 rounded mt-10" onClick={handleLinkClick}>
-            Continue Shopping
+            {translatedTexts.continueShopping}
           </Link>
         </div>
       ) : (
@@ -120,7 +156,7 @@ const CartDrawer: React.FC = () => {
         onClick={() => removeFromCart(slugKey)}
         className="text-red-500 underline text-sm self-start"
       >
-        Remove
+        {translatedTexts.remove}
       </button>
     </div>
   </div>
@@ -148,11 +184,11 @@ const CartDrawer: React.FC = () => {
     onClick={handleViewCartClick}
     className="mt-4 w-full bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition"
   >
-    View Cart
+    {translatedTexts.viewCart}
   </button>
   <div className="mt-1">
      <Link href={`/${language}/checkout`} className="block  bg-blue-600 text-white text-center py-2 rounded" onClick={handleLinkClick}>
-              Checkout
+                {translatedTexts.checkout}
             </Link>
              </div>
 </div>
