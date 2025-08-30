@@ -25,6 +25,16 @@ interface RelatedProductsProps {
   currentProductSlug: string;
 }
 
+// Utility function
+const stripHtml = (html: string) => {
+  if (!html) return "";
+  return html.replace(/<\/p>/gi, "\n\n") // new paragraph for each </p>
+             .replace(/<br\s*\/?>/gi, "\n") // line breaks
+             .replace(/<[^>]+>/g, "") // remove all other tags
+             .trim();
+};
+
+
 const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug }) => {
   const [quickViewProduct, setQuickViewProduct] = useState<RelatedProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
@@ -94,16 +104,17 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   };
 
   useEffect(() => {
-    const fetchRelatedProducts = async () => {
-      try {
-        const response = await fetch(`/api/products?slug=${currentProductSlug}&lang=${language || "en"}`);
-        const data = await response.json();
+  const fetchRelatedProducts = async () => {
+    try {
+      const response = await fetch(`/api/products?slug=${currentProductSlug}&lang=${language || "en"}`);
+      const data = await response.json();
 
-        if (!response.ok) throw new Error(data.error || "Failed to fetch related products");
-
-        const related = data.data?.relatedProducts || [];
-        if (related.length > 0) {
-          setRelatedProducts(related.map((p: any) => ({
+      // ✅ Instead of throwing error, check gracefully
+      if (response.ok && data?.data?.relatedProducts?.length > 0) {
+        // Normal related products
+        const related = data.data.relatedProducts;
+        setRelatedProducts(
+          related.map((p: any) => ({
             id: p.id || p._id,
             name: p.name,
             slug: p.slug,
@@ -111,31 +122,46 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
             price: p.price,
             description: p.description,
             Specifications: p.Specifications,
-          })));
-        } else {
-          setIsFallback(true);
-          const fallbackRes = await fetch(`/api/products?freeShipping=true&limit=4`);
-          const fallbackData = await fallbackRes.json();
-          setRelatedProducts(fallbackData.data.map((p: any) => ({
-            id: p.id || p._id,
-            name: p.name,
-            slug: p.slug,
-            mainImage: p.mainImage,
-            price: p.price,
-            description: p.description,
-            Specifications: p.Specifications,
-          })));
+            Shipping: p.Shipping,
+            Warranty: p.Warranty,
+          }))
+        );
+      } else {
+        // ✅ Fallback if no related products or API error
+        setIsFallback(true);
+        const fallbackRes = await fetch(`/api/products?freeShipping=true&limit=4`);
+        const fallbackData = await fallbackRes.json();
+
+        if (fallbackRes.ok) {
+          setRelatedProducts(
+            fallbackData.data.map((p: any) => ({
+              id: p.id || p._id,
+              name: p.name,
+              slug: p.slug,
+              mainImage: p.mainImage,
+              price: p.price,
+              description: p.description,
+              Specifications: p.Specifications,
+              Shipping: p.Shipping,
+              Warranty: p.Warranty,
+            }))
+          );
         }
-      } catch (err: any) {
-        console.error("Error fetching products:", err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err: any) {
+      console.warn("⚠️ Falling back to default products due to error:", err.message);
 
-    fetchRelatedProducts();
-  }, [currentProductSlug, language]);
+      // ✅ Final fallback (in case both requests fail)
+      setIsFallback(true);
+      setRelatedProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchRelatedProducts();
+}, [currentProductSlug, language]);
+
 
   if (loading) return <p>Loading related products...</p>;
   if (error) return <p className="text-red-500 mt-10">Error: {error}</p>;
@@ -317,19 +343,35 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
                   </button>
                 </div>
 
-                {quickViewProduct.description && (
-                  <>
-                    <h3 className="font-semibold text-lg mb-1">Description</h3>
-                    <p>{quickViewProduct.description[language] || quickViewProduct.description.en}</p>
-                  </>
-                )}
+               
 
-                {quickViewProduct.Specifications && (
-                  <>
-                    <h3 className="font-semibold text-lg mb-1">Specifications</h3>
-                    <p>{quickViewProduct.Specifications[language] || quickViewProduct.Specifications.en}</p>
-                  </>
-                )}
+{quickViewProduct.Specifications && (
+  <>
+    <h3 className="font-semibold text-lg mb-1">Specifications</h3>
+    <p className="whitespace-pre-line">
+      {stripHtml(quickViewProduct.Specifications[language] || quickViewProduct.Specifications.en)}
+    </p>
+  </>
+)}
+
+{quickViewProduct.Shipping && (
+  <>
+    <h3 className="font-semibold text-lg mb-1">Shipping</h3>
+    <p className="whitespace-pre-line">
+      {stripHtml(quickViewProduct.Shipping[language] || quickViewProduct.Shipping.en)}
+    </p>
+  </>
+)}
+
+{quickViewProduct.Warranty && (
+  <>
+    <h3 className="font-semibold text-lg mb-1">Warranty</h3>
+    <p className="whitespace-pre-line">
+      {stripHtml(quickViewProduct.Warranty[language] || quickViewProduct.Warranty.en)}
+    </p>
+  </>
+)}
+
               </div>
             </div>
           </div>

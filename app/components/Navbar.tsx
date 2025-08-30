@@ -1025,10 +1025,16 @@ className="relative w-1/2 mx-auto mt-3 hidden lg:flex">
   <FaSearch />
 </button>
 
-          <Link  href={`/${language}/wishlist`} className="relative">
-            <FaHeart className="text-2xl cursor-pointer text-black hover:text-red-700 mt-3" />
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full mt-3">{wishlist.length}</span>
-          </Link>
+          <Link
+  href={`/${language}/wishlist`}
+  className="relative hidden md:flex"
+>
+  <FaHeart className="text-2xl cursor-pointer text-black hover:text-red-700 mt-3" />
+  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full mt-3">
+    {wishlist.length}
+  </span>
+</Link>
+
 <Link href="/profile">
             <FaUser className="text-2xl cursor-pointer hidden md:block mt-3" />
           </Link>
