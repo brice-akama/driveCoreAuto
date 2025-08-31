@@ -28,27 +28,27 @@ export async function GET() {
   });
 
   try {
-    // Localized static pages (with /en/, /fr/, etc.)
-    const localizedStaticUrls = [
-      { url: "warranty", changefreq: "monthly", priority: 0.6 },
-      { url: "shipping", changefreq: "monthly", priority: 0.6 },
-      { url: "support", changefreq: "monthly", priority: 0.6 },
-      { url: "track-order", changefreq: "monthly", priority: 0.6 },
-      { url: "faqs", changefreq: "monthly", priority: 0.6 },
-      { url: "refund-policy", changefreq: "monthly", priority: 0.6 },
-      { url: "privacy-policy", changefreq: "monthly", priority: 0.6 },
-      { url: "terms-condictions", changefreq: "monthly", priority: 0.6 },
-    ];
+    // ✅ Remove localized static pages for now
+    // const localizedStaticUrls = [
+    //   { url: "warranty", changefreq: "monthly", priority: 0.6 },
+    //   { url: "shipping", changefreq: "monthly", priority: 0.6 },
+    //   { url: "support", changefreq: "monthly", priority: 0.6 },
+    //   { url: "track-order", changefreq: "monthly", priority: 0.6 },
+    //   { url: "faqs", changefreq: "monthly", priority: 0.6 },
+    //   { url: "refund-policy", changefreq: "monthly", priority: 0.6 },
+    //   { url: "privacy-policy", changefreq: "monthly", priority: 0.6 },
+    //   { url: "terms-condictions", changefreq: "monthly", priority: 0.6 },
+    // ];
 
-    localizedStaticUrls.forEach((page) => {
-      languages.forEach((lang) => {
-        sitemap.write({
-          url: `/${lang}/${page.url}`,
-          changefreq: page.changefreq,
-          priority: page.priority,
-        });
-      });
-    });
+    // localizedStaticUrls.forEach((page) => {
+    //   languages.forEach((lang) => {
+    //     sitemap.write({
+    //       url: `/${lang}/${page.url}`,
+    //       changefreq: page.changefreq,
+    //       priority: page.priority,
+    //     });
+    //   });
+    // });
 
     // Plain static pages (no language prefix)
     const plainStaticUrls = [
