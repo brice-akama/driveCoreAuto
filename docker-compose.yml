@@ -1,25 +1,24 @@
-
-
+version: "3.8"
 services:
-  app:
-    build: .
-    container_name: nextjs-app
+  secondapp:                   # name of your app service
+    build: .                   # build from current directory (needs Dockerfile here)
+    container_name: nextjs-secondapp
     restart: always
     ports:
-      - '3000:3000'
+      - "4000:3000"            # ✅ outside port 4000 → inside container port 3000
     env_file:
-      - .env.production
+      - .env.production        # ✅ your environment variables file
     depends_on:
-      - mongo
+      - mongo2                 # waits until MongoDB starts
 
-  mongo:
+  mongo2:                      # MongoDB for second app
     image: mongo:6
-    container_name: mongodb
+    container_name: mongodb2
     restart: always
     ports:
-      - '27017:27017'
+      - "27018:27017"          # ✅ outside port 27018 → inside MongoDB 27017
     volumes:
-      - mongodb_data:/data/db
+      - mongodb2_data:/data/db # ✅ keeps your MongoDB data safe even if container stops
 
 volumes:
-  mongodb_data:
+  mongodb2_data:               # ✅ named volume for persistence

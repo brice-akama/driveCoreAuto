@@ -723,7 +723,7 @@ const handlePlaceOrder = async () => {
         </div>
         {/* Right: Cart Summary & Payment */}
         <div className=" space-y-4 bg-gray-50  p-6 rounded-lg shadow-md lg:col-span-2">
-          <h2 className="text-xl font-semibold"> {t['orderNotes']}</h2>
+          <h2 className="text-xl font-semibold uppercase">Your Order</h2>
           <div>
             {cartItems.map((item) => {
               const priceNum = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
