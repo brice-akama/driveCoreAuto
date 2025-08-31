@@ -800,7 +800,7 @@ href={`/${language}/shipping`}
             </button>
           )}
 
-          <Link
+         <Link
   href={`/?lang=${language}`}
   className="hidden md:block mt-4 bg-transparent"
 >
@@ -810,6 +810,7 @@ href={`/${language}/shipping`}
       alt="logo"
       fill
       style={{ objectFit: "contain" }}
+      sizes="(min-width: 768px) 250px, 50vw"
       priority
     />
   </div>
@@ -823,6 +824,7 @@ href={`/${language}/shipping`}
         alt="logo"
         fill
         style={{ objectFit: "contain" }}
+        sizes="200px"
         priority
       />
     </div>

@@ -1,4 +1,5 @@
 // app/[lang]/checkout/page.tsx
+// app/[lang]/checkout/page.tsx
 import fs from "fs";
 import path from "path";
 import { Metadata } from "next";
@@ -14,7 +15,7 @@ const metaTranslations = {
   description: {
     en: "Complete your DriveCore Auto order by entering your billing and shipping details. Review your order and select your preferred payment method.",
     fr: "Complétez votre commande DriveCore Auto en entrant vos informations de facturation et de livraison. Vérifiez votre commande et sélectionnez votre mode de paiement.",
-    es: "Complete su pedido de DriveCore Auto ingresando sus datos de facturación y envío. Revise su pedido y seleccione su método de pago preferido.",
+    es: "Complete su pedido de DriveCore Auto ingresando sus datos de facturación y envío. Revise su pedido y seleccione su método de pago.",
     de: "Schließen Sie Ihre DriveCore Auto-Bestellung ab, indem Sie Ihre Rechnungs- und Lieferinformationen eingeben. Überprüfen Sie Ihre Bestellung und wählen Sie Ihre bevorzugte Zahlungsmethode.",
   },
   keywords: {
@@ -28,9 +29,7 @@ const metaTranslations = {
 type Lang = "en" | "fr" | "es" | "de";
 const allowedLangs: Lang[] = ["en", "fr", "es", "de"];
 
-// --------------------------------------
-// Metadata generation for SEO
-// --------------------------------------
+// Metadata generation
 export async function generateMetadata({
   params,
 }: {
@@ -48,9 +47,7 @@ export async function generateMetadata({
   };
 }
 
-// --------------------------------------
-// SSR translations loader
-// --------------------------------------
+// Load translations
 async function loadTranslations(lang: Lang) {
   const translationsDir = path.join(
     process.cwd(),
@@ -69,14 +66,13 @@ async function loadTranslations(lang: Lang) {
   }
 }
 
-// --------------------------------------
 // Main page
-// --------------------------------------
 interface Props {
   params: { lang: string };
 }
 
 export default async function CheckoutPage({ params }: Props) {
+  // ✅ Resolve lang in server component
   const lang: Lang = allowedLangs.includes(params.lang as Lang)
     ? (params.lang as Lang)
     : "en";
@@ -112,7 +108,7 @@ export default async function CheckoutPage({ params }: Props) {
       <link rel="alternate" hrefLang="de" href={`${baseUrl}/de/checkout`} />
       <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/en/checkout`} />
 
-      {/* Checkout page with SSR translations */}
+      {/* ✅ Pass only resolved values to client component */}
       <CheckOutPage
         initialLanguage={lang}
         initialTranslations={initialTranslations}

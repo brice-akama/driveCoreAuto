@@ -47,12 +47,14 @@ const EngineBrandGrid: React.FC = () => (
               transition={{ duration: 0.4 }}
             >
               <Image
-                src={brand.background}
-                alt={`${brand.name} background`}
-                fill
-                className="object-cover object-center absolute top-0 left-0 w-full h-full opacity-40"
-                priority
-              />
+  src={brand.background}
+  alt={`${brand.name} background`}
+  fill
+  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+  className="object-cover object-center absolute top-0 left-0 w-full h-full opacity-40"
+  priority
+/>
+
             </motion.div>
           )}
         </motion.div>

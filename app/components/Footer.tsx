@@ -121,6 +121,7 @@ const Footer: React.FC = () => {
 
     {/* Company Logo */}
     {/* Company Logo */}
+{/* Company Logo */}
 <div className="flex flex-col items-center sm:items-start">
   <Link href="/">
     <div className="relative w-[250px] h-[120px] mb-4">
@@ -129,10 +130,13 @@ const Footer: React.FC = () => {
         alt="DriveCore Auto Logo"
         fill
         style={{ objectFit: "contain" }}
+        sizes="(max-width: 640px) 200px, 250px"
         priority
       />
     </div>
   </Link>
+
+
 
   <div className="text-gray-300 text-sm mb-4"> 
     <p className="text-gray-300 text-sm mb-10">

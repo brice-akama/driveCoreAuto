@@ -187,6 +187,7 @@ const applyCoupon = async () => {
                       alt={item.name}
                       width={100}
                       height={100}
+                      unoptimized
                       className="object-cover"
                     />
 

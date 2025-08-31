@@ -730,10 +730,13 @@ const handlePlaceOrder = async () => {
               return (
                 <div key={item.slug} className="flex items-center gap-4 border-b pb-2">
                   <img
-                    src={item.mainImage}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
+  src={item.mainImage}
+  alt={item.name}
+  width={64}   // pixels, matches w-16
+  height={64}  // pixels, matches h-16
+  className="object-cover rounded-md"
+/>
+
                 <div> <p className="font-medium">{item.name}</p> <p className="text-sm">${priceNum.toFixed(2)} x {item.quantity}</p> <p className="text-sm font-semibold">Total: ${(priceNum * item.quantity).toFixed(2)}</p> </div>
 
                   
