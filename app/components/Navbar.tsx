@@ -756,11 +756,11 @@ useEffect(() => {
 
   {/* Left side - Special Offer */}
   <div className="w-full md:w-auto flex justify-center md:justify-start">
-    <p className="text-black text-sm font-semibold flex items-center gap-2">
+    <p className="text-black uppercase text-sm font-semibold flex items-center gap-2">
       {translatedTexts.specialOffer}
       <Link
         href="/toyota"
-        className="text-blue-600 font-bold underline hover:text-blue-800 transition"
+        className="text-blue-600  font-normal underline hover:text-blue-800 transition"
       >
         {translatedTexts.shopNow}
       </Link>
