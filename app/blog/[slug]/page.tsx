@@ -9,6 +9,19 @@ type Props = {
 
 export const dynamic = "force-dynamic";
 
+
+// Remove HTML tags and trim to desired length
+export function getPlainTextSnippet(html: string, maxLength = 150) {
+  if (!html) return "";
+  // Remove HTML tags
+  const plainText = html.replace(/<[^>]*>/g, "");
+  // Trim to maxLength without cutting words in half
+  if (plainText.length <= maxLength) return plainText;
+  const truncated = plainText.slice(0, maxLength);
+  return truncated.slice(0, truncated.lastIndexOf(" ")) + "...";
+}
+
+
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const lang = searchParams?.lang || 'en';
 

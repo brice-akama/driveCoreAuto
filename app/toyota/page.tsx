@@ -2,12 +2,12 @@ import ToyotaPage, { Product as ToyotaProduct } from './ToyotaPage';
 import { cookies } from 'next/headers';
 import { Metadata } from 'next';
 
-
 export async function generateMetadata({ searchParams }: { searchParams?: { category?: string; vehicleModel?: string } }): Promise<Metadata> {
   const categorySlug = searchParams?.category || '';
   const vehicleModel = searchParams?.vehicleModel || '';
   const engineCodeForApi = categorySlug ? categorySlug.toUpperCase() : '';
 
+  // Fetch products from API
   let apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products?toyota=true`;
   if (vehicleModel) apiUrl += `&vehicleModel=${encodeURIComponent(vehicleModel)}`;
   if (engineCodeForApi) apiUrl += `&engineCode=${encodeURIComponent(engineCodeForApi)}`;
@@ -33,9 +33,10 @@ export async function generateMetadata({ searchParams }: { searchParams?: { cate
   }));
 
   const seoProduct = products[0];
-  const cookieStore = await cookies();
-const langCookie = cookieStore.get('language');
 
+  // Determine language
+  const cookieStore = await cookies();
+  const langCookie = cookieStore.get('language');
   const currentLang = langCookie?.value || 'en';
 
   const title = seoProduct?.metaTitle?.[currentLang] || seoProduct?.name?.[currentLang] || 'Toyota Products';
@@ -43,7 +44,7 @@ const langCookie = cookieStore.get('language');
   const image = seoProduct?.imageUrl || '/assets/hero.png';
   const pageUrl = `${process.env.NEXT_PUBLIC_API_URL}/toyota${categorySlug ? `?category=${categorySlug}` : ''}`;
 
-  // Structured data (JSON-LD)
+  // JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -60,6 +61,21 @@ const langCookie = cookieStore.get('language');
     }
   };
 
+  // Multi-language alternates
+  // Multi-language alternates (TypeScript-safe)
+const supportedLanguages = ['en', 'fr', 'de', 'es'];
+const alternates: Metadata['alternates'] = {
+  canonical: pageUrl,
+  languages: {} as Record<string, string>, // cast to safe key-value object
+};
+
+supportedLanguages.forEach(lang => {
+  (alternates.languages as Record<string, string>)[lang] = `${pageUrl}?lang=${lang}`;
+});
+
+// x-default fallback
+(alternates.languages as Record<string, string>)['x-default'] = pageUrl;
+
   return {
     title,
     description,
@@ -75,42 +91,26 @@ const langCookie = cookieStore.get('language');
       description,
       images: [image],
     },
-    // Add JSON-LD structured data for Google
-    alternates: { canonical: pageUrl },
+    alternates,
     metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL!),
     icons: { icon: '/favicon.ico' },
     other: { 'application/ld+json': JSON.stringify(jsonLd) },
   };
 }
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams?: { category?: string; vehicleModel?: string };
-}) {
-  // Read from URL
-  const categorySlug = searchParams?.category || '';      // e.g. "1zz-fe"
+export default async function Page({ searchParams }: { searchParams?: { category?: string; vehicleModel?: string } }) {
+  const categorySlug = searchParams?.category || '';
   const vehicleModel = searchParams?.vehicleModel || '';
+  const engineCodeForApi = categorySlug ? categorySlug.toUpperCase() : '';
 
-  // Convert to DB/API format (uppercase with dash)
-  const engineCodeForApi = categorySlug
-    ? categorySlug.toUpperCase()
-    : '';
-
-  // Build API URL
+  // Fetch products
   let apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products?toyota=true`;
-  if (vehicleModel) {
-    apiUrl += `&vehicleModel=${encodeURIComponent(vehicleModel)}`;
-  }
-  if (engineCodeForApi) {
-    apiUrl += `&engineCode=${encodeURIComponent(engineCodeForApi)}`;
-  }
+  if (vehicleModel) apiUrl += `&vehicleModel=${encodeURIComponent(vehicleModel)}`;
+  if (engineCodeForApi) apiUrl += `&engineCode=${encodeURIComponent(engineCodeForApi)}`;
 
-  // Always fetch fresh
   const res = await fetch(apiUrl, { cache: 'no-store' });
   const data = await res.json();
 
-  // Map the fetched data to match ToyotaPage.Product type
   const products: ToyotaProduct[] = (Array.isArray(data.data) ? data.data : []).map((p: any) => ({
     _id: p._id,
     name: p.name,
@@ -128,7 +128,7 @@ export default async function Page({
   const uniqueCategories: string[] = Array.from(new Set(products.map(p => p.category))).sort();
 
   const modelsSet = new Set<string>();
-  products.forEach((p) => {
+  products.forEach(p => {
     const name = p.name['en'] || '';
     const match = name.match(/Toyota\s+(\w+)/i);
     if (match && match[1]) modelsSet.add(match[1]);
@@ -140,7 +140,7 @@ export default async function Page({
       initialProducts={products}
       initialCategories={uniqueCategories}
       initialVehicleModels={vehicleModels}
-      categorySlug={categorySlug} // still pass the lowercase slug for UI
+      categorySlug={categorySlug}
     />
   );
 }

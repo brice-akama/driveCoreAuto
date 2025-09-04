@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
@@ -6,7 +7,11 @@ import clientPromise from "../../lib/mongodb";
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
-    if (!email) return NextResponse.json({ message: "Email is required" }, { status: 400 });
+    if (!email)
+      return NextResponse.json(
+        { message: "Email is required" },
+        { status: 400 }
+      );
 
     const client = await clientPromise;
     const db = client.db("autodrive");
@@ -14,7 +19,9 @@ export async function POST(req: NextRequest) {
     const user = await db.collection("users").findOne({ email });
     if (!user) {
       // Always respond with success to prevent email enumeration
-      return NextResponse.json({ message: "If this email exists, a reset link has been sent." });
+      return NextResponse.json({
+        message: "If this email exists, a reset link has been sent.",
+      });
     }
 
     const token = crypto.randomBytes(32).toString("hex");
@@ -28,19 +35,23 @@ export async function POST(req: NextRequest) {
       used: false,
     });
 
-    // Nodemailer transporter
+    // ✅ Use SMTP config (works with professional email)
+    // ✅ Use SMTP config (works with Zoho professional email)
     const transporter = nodemailer.createTransport({
-      service: "Gmail", // Or your email service
+        host: "smtp.zoho.com",
+        port: 465,            // Hardcoded SSL port
+      secure: true,            // 465 requires SSL
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER, // from .env
+        pass: process.env.EMAIL_PASS, // from .env
       },
     });
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password?token=${token}&email=${email}`;
+
+    const resetUrl = `${process.env.NEXT_PUBLIC_API_URL}/reset-password?token=${token}&email=${email}`;
 
     await transporter.sendMail({
-      from: `"Your Company" <${process.env.EMAIL_USER}>`,
+      from: `"DriveCore Auto" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Password Reset Request",
       html: `
@@ -50,9 +61,14 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    return NextResponse.json({ message: "If this email exists, a reset link has been sent." });
+    return NextResponse.json({
+      message: "If this email exists in our system, you’ll receive a password reset link from DriveCore Auto shortly.",
+    });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
