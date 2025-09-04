@@ -9,6 +9,7 @@ interface CartItem {
   price: number;     // price stored as number, NOT string
   quantity: number;
   mainImage: string;
+   
 }
 
 interface CartContextType {
