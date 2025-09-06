@@ -67,7 +67,7 @@ const ResetPasswordPage = () => {
       } else {
         setMessage(data.message);
         setTimeout(() => {
-          router.push("/login");
+          router.push("/profile");
         }, 3000);
       }
     } catch (err) {

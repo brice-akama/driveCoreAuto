@@ -326,7 +326,12 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
             >
               {t.productDescription}
             </span>
-            {showDescription && <div className="space-y-2 mt-2">{stripHtmlToParagraphs(product.description[language] || product.description.en).map((p, idx) => <p key={idx}>{p}</p>)}</div>}
+            {showDescription && (
+  <div className="space-y-2 mt-2">
+    {parse(product.description[language] || product.description.en, parseOptions)}
+  </div>
+)}
+
           </div>
 
           {/* Specifications */}

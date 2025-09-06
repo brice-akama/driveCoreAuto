@@ -78,6 +78,10 @@ export async function POST(req: NextRequest) {
 
     // Other fields
     const rawPrice = form.get('price') as string;
+    // Get discount percent from the form (optional)
+const discountPercentRaw = form.get('discountPercent') as string;
+const discountPercent = discountPercentRaw ? parseFloat(discountPercentRaw) : 0;
+
     const price = parseFloat(rawPrice.replace(/,/g, ''));
 
     const category = sanitizeInput(form.get('category') as string);
@@ -223,6 +227,8 @@ accessories,
 bumpers,
 freeShipping,
 topSellers,
+discountPercent,
+
 
       popularProduct,
       isPublished,
@@ -633,6 +639,9 @@ export async function PUT(req: NextRequest) {
 
     // Other fields
     const rawPrice = form.get('price') as string;
+    const discountPercentRaw = form.get('discountPercent') as string;
+const discountPercent = discountPercentRaw ? parseFloat(discountPercentRaw) : 0;
+
     const price = rawPrice ? parseFloat(rawPrice.replace(/,/g, '')) : 0;
 
     const category = sanitizeInput(form.get('category') as string || '');
@@ -777,6 +786,7 @@ topSellers,
       isPublished,
       weights,
       seeds,
+      discountPercent,
       updatedAt: new Date(),
     };
 

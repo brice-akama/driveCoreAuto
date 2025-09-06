@@ -77,6 +77,11 @@ const ProductEditForm = () => {
 
     formData.append("id", record.id || record._id);
     formData.append("price", data.price);
+    formData.append(
+  "discountPercent",
+  data.discountPercent ? data.discountPercent.toString() : "0"
+);
+
     formData.append("category", category);
     formData.append("popularProduct", data.popularProduct ? "true" : "false");
     formData.append("isPublished", data.isPublished ? "true" : "false");
@@ -226,6 +231,14 @@ formData.append("swapsInfiniti", data.swapsInfiniti ? "true" : "false");
         onChange={(e) => setCategory(e.target.value)}
         fullWidth
       />
+      <NumberInput
+  source="discountPercent"
+  label="Discount (%)"
+  min={0}
+  max={100}
+  defaultValue={record?.discountPercent || 0}
+/>
+
 
       <h3>Brand Flags</h3>
       <BooleanInput source="toyota" label="Toyota" defaultValue={record?.toyota} />
