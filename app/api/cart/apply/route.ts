@@ -1,15 +1,59 @@
-// app/api/cart/apply/route.ts
+// File: /app/api/cart/apply/route.ts
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
+import sanitizeHtml from "sanitize-html";
+
+// In-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; lastRequest: number }>();
+const MAX_REQUESTS = 3; // max 3 requests
+const WINDOW_TIME = 60 * 60 * 1000; // 1 hour
+
+
+const checkRateLimit = (key: string) => {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+
+  if (!entry) {
+    rateLimitMap.set(key, { count: 1, lastRequest: now });
+    return true;
+  }
+
+  if (now - entry.lastRequest > WINDOW_TIME) {
+    rateLimitMap.set(key, { count: 1, lastRequest: now });
+    return true;
+  }
+
+  if (entry.count >= MAX_REQUESTS) return false;
+
+  rateLimitMap.set(key, { count: entry.count + 1, lastRequest: now });
+  return true;
+};
+
+// Helper to sanitize strings
+const sanitizeInput = (input: string) => 
+  sanitizeHtml(input, { allowedTags: [], allowedAttributes: {} }).trim();
 
 export async function POST(req: Request) {
-  const { couponCode } = await req.json();
+  const { couponCode: rawCouponCode } = await req.json();
+
+  // Rate limit key: guestId or couponCode
   const cookies = req.headers.get('cookie') || '';
   const guestId = cookies.split('; ').find(c => c.startsWith('guestId='))?.split('=')[1];
 
   if (!guestId) {
     return NextResponse.json({ success: false, message: 'No cart found' }, { status: 400 });
   }
+
+  // Apply rate limiting per guest
+ if (!checkRateLimit(guestId)) {
+  const entry = rateLimitMap.get(guestId);
+  const retryAfter = entry ? Math.ceil((WINDOW_TIME - (Date.now() - entry.lastRequest)) / 1000 / 60) : 60;
+  return NextResponse.json({
+    success: false, 
+    message: `Too many requests. Try again in ${retryAfter} minutes.`
+  }, { status: 429 });
+}
+
 
   try {
     const client = await clientPromise;
@@ -23,12 +67,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Cart is empty' });
     }
 
-    // Normalize code for safer matching
-    const normalizedCode = couponCode.replace(/\s+/g, ' ').trim().toUpperCase();
+    // Sanitize & normalize coupon code
+    const couponCode = sanitizeInput(rawCouponCode).toUpperCase();
 
     // Fetch coupon
     const coupon = await couponsCollection.findOne({
-      code: { $regex: `^${normalizedCode}$`, $options: 'i' }
+      code: { $regex: `^${couponCode}$`, $options: 'i' }
     });
 
     if (!coupon) {
@@ -64,5 +108,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, message: 'Error applying coupon' }, { status: 500 });
   }
 }
-
-
