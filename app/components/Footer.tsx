@@ -157,6 +157,7 @@ const Footer: React.FC = () => {
         <li><Link href={`/${language}/support/faqs`}className="hover:underline"> {translatedTexts.fAQs}</Link></li>
         
         <li><Link href={`/${language}/shipping`} className="hover:underline">{translatedTexts.shippingInfo}</Link></li>
+        <li><Link href="reviews" className="hover:underline">Reviews</Link></li>
          <li><Link href={`/${language}/refund-policy`} className="hover:underline"> {translatedTexts.returPolicy}</Link></li>
         <li><a href="mailto:support@drivecoreauto.com" className="hover:underline">support@drivecoreauto.com</a></li>
       </ul>

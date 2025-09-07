@@ -538,12 +538,13 @@ useEffect(() => {
 ,
 
       { name: await translate("ABOUT US"), link: `/${language}/about-us` },
-        { name: await translate("BLOG"), link: "/blog" },
+       
         
         {
           name: await translate("SUPPORT"), link: "/support",
           subLinks: [
           { name: await translate("FAQS"), link: `/${language}/support/faqs` },
+          { name: await translate("BLOG"), link: "/blog" },
             
             { 
   name: await translate("Buyer Services"), 
@@ -553,7 +554,7 @@ useEffect(() => {
            
           ]
         },
-
+ { name: await translate("REVIEWS"), link: "/reviews" },
         
         
       ];
