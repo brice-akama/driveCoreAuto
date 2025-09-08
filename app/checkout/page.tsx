@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useState  } from 'react';
 import Link from 'next/link';
-import { useCart } from "@/app/context/CartContext";
+import { useCart, CartItem } from "@/app/context/CartContext";
 import QRCodeWrapper from '../components/QRCodeWrapper';
 import { FaPaypal, FaBitcoin, FaApple, FaCcVisa } from "react-icons/fa";
 import { SiCashapp, SiVenmo, SiZelle } from "react-icons/si";
@@ -182,6 +182,8 @@ const CheckOutPage = () => {
     const router = useRouter();
     const [shippingCost, setShippingCost] = useState<number | null>(null);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+
+  
  
 
   const {  language } = useLanguage();
@@ -215,16 +217,20 @@ const CheckOutPage = () => {
   });
 
   // Recalculate subtotal, tax, and total whenever quantities change
-  const subtotal = cartItems.reduce((acc, item) => {
-  const qty = quantities[item.slug] || 1;
-  return acc + item.price * qty;
-}, 0);
+  // Helper to get the effective price (consider discount)
+// Helper to get the effective price (with discount applied safely)
+// Helper: calculate discounted price from discountPercent
+const getItemPrice = (item: CartItem) => {
+  if (item.discountPercent && item.discountPercent > 0) {
+    return item.price - (item.price * item.discountPercent) / 100;
+  }
+  return item.price;
+};
 
-const freeShippingThreshold = 5000;
-const remaining = freeShippingThreshold - totalPrice;
 
-const salesTaxAmount = subtotal * 0.07;
-const total = subtotal + (shippingCost || 0) + salesTaxAmount - discount;
+
+// Subtotal calculation
+
 
   const calculateShipping = () => {
   if (subtotal > 2000) {
@@ -234,7 +240,19 @@ const total = subtotal + (shippingCost || 0) + salesTaxAmount - discount;
   } else {
     setShippingCost(50);  // small parts
   }
-};
+};// Subtotal (discounted prices included)
+const subtotal = cartItems.reduce((acc, item) => {
+  const price = getItemPrice(item);
+  return acc + price * item.quantity;
+}, 0);
+
+const freeShippingThreshold = 5000;
+const remaining = freeShippingThreshold - totalPrice;
+
+// Tax & totals
+const salesTaxAmount = subtotal * 0.07;
+const total = subtotal + (shippingCost || 0) + salesTaxAmount - discount;
+
 React.useEffect(() => {
   calculateShipping();
 }, [subtotal]);
@@ -709,25 +727,41 @@ const handlePlaceOrder = async () => {
         <div className=" space-y-4 bg-gray-50  p-6 rounded-lg shadow-md lg:col-span-2">
           <h2 className="text-xl font-semibold">YOUR ORDER</h2>
           <div>
-            {cartItems.map((item) => {
-              const priceNum = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
-              return (
-                <div key={item.slug} className="flex items-center gap-4 border-b pb-2">
-                  <img
-                    src={item.mainImage}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm">${priceNum.toFixed(2)} x {item.quantity}</p>
-                    <p className="text-sm font-semibold">Total: ${(priceNum * item.quantity).toFixed(2)}</p>
-                  </div>
-                  
-                </div>
-                
-              );
-            })}
+      {cartItems.map((item) => (
+  <div key={item.slug} className="flex items-center gap-4 border-b pb-2">
+    <img
+      src={item.mainImage}
+      alt={item.name}
+      className="w-16 h-16 object-cover rounded-md"
+    />
+    <div>
+      <p className="font-medium">{item.name}</p>
+
+      {item.discountPercent && item.discountPercent > 0 ? (
+        <>
+          {/* Original price strikethrough */}
+          <p className="text-sm text-gray-500 line-through">
+            ${item.originalPrice.toFixed(2)}
+          </p>
+
+          {/* Discounted price */}
+          <p className="text-sm text-green-600">
+            ${item.price.toFixed(2)} x {item.quantity}
+          </p>
+        </>
+      ) : (
+        <p className="text-sm">
+          ${item.price.toFixed(2)} x {item.quantity}
+        </p>
+      )}
+
+      <p className="text-sm font-semibold">
+        Total: ${(item.price * item.quantity).toFixed(2)}
+      </p>
+    </div>
+  </div>
+))}
+
            
 <div className="flex justify-between mt-1">
   <span>Subtotal</span>

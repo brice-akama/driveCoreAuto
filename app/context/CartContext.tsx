@@ -3,14 +3,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { usePathname } from 'next/navigation'; // Import usePathname
 
-interface CartItem {
+export interface CartItem {
   slug: string;      // language-specific slug string (e.g., 'piece-moteur-123')
   name: string;      // language-specific product name string
   price: number;     // price stored as number, NOT string
   quantity: number;
   mainImage: string;
-   
+  discountPercent?: number;
+  originalPrice: number;
 }
+
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -58,36 +60,45 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     fetchCart();
   }, []);
 
- const addToCart = async (item: CartItem, language: string) => {
-    // Use slug to identify items in the cart
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.slug === item.slug); // Use slug, not _id
-      if (existingItem) {
-        return prevItems.map((i) =>
-          i.slug === item.slug ? { ...i, quantity: i.quantity + item.quantity } : i // Use slug here as well
-        );
-      }
-      return [...prevItems, item];
-    });
+const addToCart = async (item: CartItem, language: string) => {
+  const finalPrice =
+    item.discountPercent && item.discountPercent > 0
+      ? item.price - (item.price * item.discountPercent) / 100
+      : item.price;
 
-    try {
-    const res = await fetch('/api/cart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ slug: item.slug, quantity: item.quantity, language }), // send language here
-    });
-    const data = await res.json();
-    if (data.cart) {
-      setCartItems(data.cart.items);
+  const itemToAdd: CartItem = {
+    ...item,
+    originalPrice: item.price, // keep original
+    price: finalPrice          // discounted price
+  };
+
+  setCartItems((prevItems) => {
+    const existingItem = prevItems.find((i) => i.slug === item.slug);
+    if (existingItem) {
+      return prevItems.map((i) =>
+        i.slug === item.slug ? { ...i, quantity: i.quantity + item.quantity } : i
+      );
     }
+    return [...prevItems, itemToAdd];
+  });
+
+  try {
+    await fetch("/api/cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slug: item.slug,
+        quantity: item.quantity,
+        price: finalPrice,
+        language,
+      }),
+    });
   } catch (error) {
-    console.error('Error adding item to cart:', error);
+    console.error("Error adding item to cart:", error);
   }
 
-    setIsCartOpen(true);
-  };
+  setIsCartOpen(true);
+};
 
   const updateQuantity = async (slug: string, quantity: number) => {
     if (quantity <= 0) return;

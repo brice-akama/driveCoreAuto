@@ -30,6 +30,7 @@ export type Product = {
   metaTitle?: Record<string, string>;
   metaDescription?: Record<string, string>;
   imageUrl?: string;
+  discountPercent?: number;
 };
 
 export type ToyotaPageProps = {
@@ -125,6 +126,11 @@ const iconVariants = {
 const buttonVariants = {
   hover: { scale: 1.05 },
 };
+
+
+function getDiscountedPrice(price: number, discountPercent?: number) {
+  return discountPercent ? price - price * (discountPercent / 100) : price;
+}
 
 
 
@@ -281,7 +287,10 @@ const currentProducts = sortedProducts.slice(
   const name = product.name[currentLang] || product.name["en"] || "";
 
   addToCart(
-    { slug, name, price: product.price, mainImage: product.mainImage, quantity: 1 },
+    {
+      slug, name, price: product.price, mainImage: product.mainImage, quantity: 1,
+      originalPrice: 0
+    },
     currentLang
   );
   openCart();
@@ -795,10 +804,19 @@ useEffect(() => {
     onMouseEnter={() => setHoveredProductId(product._id)}
     onMouseLeave={() => setHoveredProductId(null)}
   >
-    {/* Model label */}
-    <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-1 rounded shadow z-10">
-      {extractModel(product.name[currentLang] || product.name.en)}
-    </div>
+
+{/* Discount Badge */}
+{product.discountPercent && (
+  <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+    -{product.discountPercent}%
+  </div>
+)}
+
+{/* Model label */}
+<div className="absolute top-10 left-2 z-10 bg-white text-xs font-semibold text-black px-1 py-2 rounded shadow">
+  {extractModel(product.name[currentLang] || product.name.en)}
+</div>
+
 
     {/* Product images */}
     {hoveredProductId === product._id && product.thumbnails?.[0] ? (

@@ -5,104 +5,100 @@ type CartItem = {
   slug: string;
   quantity: number;
   name: string;
-  price: number;
+  price: number;        // original price
+  discountPrice?: number; // discounted price (if applicable)
   mainImage: string;
 };
 
 type Cart = {
   guestId: string;
   items: CartItem[];
-   
+};
+
+// Helper to calculate discounted price
+const calculateDiscountPrice = (price: number, discountPercent?: number) => {
+  if (discountPercent && discountPercent > 0) {
+    return price - (price * discountPercent) / 100;
+  }
+  return price;
 };
 
 // POST: Add or update cart items
 export async function POST(req: Request) {
   const { slug, quantity, language } = await req.json();
-  console.log(`Received data: slug=${slug}, quantity=${quantity}`);
 
-  // Extract or generate guestId
   const cookies = req.headers.get('cookie') || '';
   const newGuestId = 'guest-' + Date.now();
   const guestId =
     cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1] || newGuestId;
 
-  console.log(`[POST] Updating cart. GuestID: ${guestId}, Slug: ${slug}, Quantity: ${quantity}`);
-
-  if (!slug) {
-    return NextResponse.json({ error: 'Product slug is required' }, { status: 400 });
-  }
-  if (!language) {
-    return NextResponse.json({ error: 'Language is required' }, { status: 400 });
-  }
-  if (!Number.isInteger(quantity)) {
-    return NextResponse.json({ error: 'Quantity must be an integer' }, { status: 400 });
+  if (!slug || !language || !Number.isInteger(quantity)) {
+    return NextResponse.json({ error: 'Invalid request data' }, { status: 400 });
   }
 
   try {
     const client = await clientPromise;
-   const db = client.db("autodrive");
+    const db = client.db("autodrive");
     const cartCollection = db.collection('cart');
     const productsCollection = db.collection("products");
 
-    // Fetch product using slug
-    const product = await productsCollection.findOne({ [`slug.${language}`]: slug })
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-    }
+    // Fetch product
+    const product = await productsCollection.findOne({ [`slug.${language}`]: slug });
+    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 
-    // Fetch or create the cart
+    const discountPrice = calculateDiscountPrice(product.price, product.discountPercent);
+
+    // Fetch or create cart
     let cart = (await cartCollection.findOne({ guestId })) as Cart | null;
 
     if (!cart) {
-  if (quantity > 0) {
-    cart = {
-      guestId,
-      items: [
-        {
+      if (quantity > 0) {
+        cart = {
+          guestId,
+          items: [
+            {
+              slug,
+              quantity,
+              name: product.name[language] || product.name.en,
+              price: product.price,
+              discountPrice,
+              mainImage: product.mainImage,
+            },
+          ],
+        };
+        await cartCollection.insertOne(cart);
+      }
+    } else {
+      const itemIndex = cart.items.findIndex((item) => item.slug === slug);
+      if (itemIndex >= 0) {
+        cart.items[itemIndex].quantity += quantity;
+        cart.items[itemIndex].discountPrice = discountPrice; // update discounted price
+        if (cart.items[itemIndex].quantity <= 0) {
+          cart.items.splice(itemIndex, 1);
+        }
+      } else if (quantity > 0) {
+        cart.items.push({
           slug,
           quantity,
           name: product.name[language] || product.name.en,
           price: product.price,
+          discountPrice,
           mainImage: product.mainImage,
-        },
-      ],
-    };
-    await cartCollection.insertOne(cart);
-  }
-} else {
-  const itemIndex = cart.items.findIndex((item) => item.slug === slug);
-  if (itemIndex >= 0) {
-    cart.items[itemIndex].quantity += quantity;
-    if (cart.items[itemIndex].quantity <= 0) {
-      cart.items.splice(itemIndex, 1); // Remove item if quantity reaches zero
-    }
-  } else if (quantity > 0) {
-    cart.items.push({
-      slug,
-      quantity,
-      name: product.name[language] || product.name.en,
-      price: product.price,
-      mainImage: product.mainImage,
-    });
-  }
+        });
+      }
 
-  if (cart.items.length > 0) {
-    await cartCollection.updateOne({ guestId }, { $set: { items: cart.items } });
-  } else {
-    await cartCollection.deleteOne({ guestId }); // Delete cart if empty
-  }
-}
+      if (cart.items.length > 0) {
+        await cartCollection.updateOne({ guestId }, { $set: { items: cart.items } });
+      } else {
+        await cartCollection.deleteOne({ guestId });
+      }
+    }
 
     const headers = new Headers();
-    if (newGuestId === guestId) {
-      headers.append('Set-Cookie', `guestId=${guestId}; Path=/; HttpOnly; SameSite=Strict`);
-    }
+    if (newGuestId === guestId) headers.append('Set-Cookie', `guestId=${guestId}; Path=/; HttpOnly; SameSite=Strict`);
 
     const updatedCart = await cartCollection.findOne({ guestId });
-    return NextResponse.json(
-      { message: 'Cart updated', cart: updatedCart },
-      { headers }
-    );
+    return NextResponse.json({ message: 'Cart updated', cart: updatedCart }, { headers });
   } catch (error) {
     console.error('Error updating cart:', error);
     return NextResponse.json({ error: 'Failed to update cart' }, { status: 500 });
@@ -116,8 +112,6 @@ export async function GET(req: Request) {
   const guestId =
     cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1] || newGuestId;
 
-  console.log(`[GET] Fetching cart. GuestID: ${guestId}`);
-
   try {
     const client = await clientPromise;
     const db = client.db("autodrive");
@@ -125,16 +119,7 @@ export async function GET(req: Request) {
     const cart = (await cartCollection.findOne({ guestId })) as Cart | null;
 
     const headers = new Headers();
-    if (newGuestId === guestId) {
-      headers.append('Set-Cookie', `guestId=${guestId}; Path=/; HttpOnly; SameSite=Strict`);
-    }
-
-    if (!cart) {
-      return NextResponse.json(
-        { message: 'Cart is empty', cart: null },
-        { headers }
-      );
-    }
+    if (newGuestId === guestId) headers.append('Set-Cookie', `guestId=${guestId}; Path=/; HttpOnly; SameSite=Strict`);
 
     return NextResponse.json({ cart }, { headers });
   } catch (error) {
@@ -146,39 +131,27 @@ export async function GET(req: Request) {
 // DELETE: Remove an item or clear the cart
 export async function DELETE(req: Request) {
   const { slug } = await req.json();
-
-  // Extract guestId
   const cookies = req.headers.get('cookie') || '';
-  const guestId =
-    cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1];
+  const guestId = cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1];
 
-  if (!guestId) {
-    return NextResponse.json({ error: 'No cart found' }, { status: 400 });
-  }
-
-  console.log(`[DELETE] Removing item from cart. GuestID: ${guestId}, Slug: ${slug}`);
+  if (!guestId) return NextResponse.json({ error: 'No cart found' }, { status: 400 });
 
   try {
     const client = await clientPromise;
-   const db = client.db("autodrive");
+    const db = client.db("autodrive");
     const cartCollection = db.collection('cart');
 
-    // Fetch the cart
     let cart = (await cartCollection.findOne({ guestId })) as Cart | null;
-    if (!cart) {
-      return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
-    }
+    if (!cart) return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
 
     if (slug) {
-      // Remove specific item
       cart.items = cart.items.filter((item) => item.slug !== slug);
       if (cart.items.length > 0) {
         await cartCollection.updateOne({ guestId }, { $set: { items: cart.items } });
       } else {
-        await cartCollection.deleteOne({ guestId }); // Delete cart if empty
+        await cartCollection.deleteOne({ guestId });
       }
     } else {
-      // Delete entire cart
       await cartCollection.deleteOne({ guestId });
     }
 
@@ -189,26 +162,18 @@ export async function DELETE(req: Request) {
   }
 }
 
+// PUT: Update cart quantity
 export async function PUT(req: Request) {
   const { slug, quantity, language } = await req.json();
 
-  if (!slug) {
-    return NextResponse.json({ error: 'Product slug is required' }, { status: 400 });
-  }
-  if (!language) {
-    return NextResponse.json({ error: 'Language is required' }, { status: 400 });
-  }
-  if (!Number.isInteger(quantity)) {
-    return NextResponse.json({ error: 'Quantity must be an integer' }, { status: 400 });
+  if (!slug || !language || !Number.isInteger(quantity)) {
+    return NextResponse.json({ error: 'Invalid request data' }, { status: 400 });
   }
 
   const cookies = req.headers.get('cookie') || '';
-  const guestId =
-    cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1];
+  const guestId = cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1];
 
-  if (!guestId) {
-    return NextResponse.json({ error: 'No cart found' }, { status: 400 });
-  }
+  if (!guestId) return NextResponse.json({ error: 'No cart found' }, { status: 400 });
 
   try {
     const client = await clientPromise;
@@ -216,29 +181,22 @@ export async function PUT(req: Request) {
     const cartCollection = db.collection('cart');
     const productsCollection = db.collection("products");
 
-    // Fetch product by slug
     const product = await productsCollection.findOne({ [`slug.${language}`]: slug });
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-    }
+    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 
-    // Fetch cart
+    const discountPrice = calculateDiscountPrice(product.price, product.discountPercent);
+
     let cart = await cartCollection.findOne({ guestId });
-
-    if (!cart) {
-      return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
-    }
+    if (!cart) return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
 
     const itemIndex = cart.items.findIndex((item: { slug: any; }) => item.slug === slug);
-
-    if (itemIndex === -1) {
-      return NextResponse.json({ error: 'Item not found in cart' }, { status: 404 });
-    }
+    if (itemIndex === -1) return NextResponse.json({ error: 'Item not found in cart' }, { status: 404 });
 
     if (quantity <= 0) {
       cart.items.splice(itemIndex, 1);
     } else {
       cart.items[itemIndex].quantity = quantity;
+      cart.items[itemIndex].discountPrice = discountPrice; // update discounted price
     }
 
     if (cart.items.length > 0) {
@@ -248,12 +206,9 @@ export async function PUT(req: Request) {
     }
 
     const updatedCart = await cartCollection.findOne({ guestId });
-
     return NextResponse.json({ message: 'Cart updated', cart: updatedCart });
   } catch (error) {
     console.error('Error updating cart:', error);
     return NextResponse.json({ error: 'Failed to update cart' }, { status: 500 });
   }
 }
-
-// The above code defines API routes for managing a shopping cart, including adding, updating, retrieving, and deleting cart items, with guest user support via cookies.

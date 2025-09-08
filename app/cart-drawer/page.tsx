@@ -15,8 +15,6 @@ const CartPage: React.FC = () => {
   const [discount, setDiscount] = useState(0);
   const [shippingCost, setShippingCost] = useState<number | null>(null);
   const [showShippingWarning, setShowShippingWarning] = useState(false);
-  
-
   const { language, translate } = useLanguage();
 
   const [labels, setLabels] = useState({
@@ -39,10 +37,8 @@ const CartPage: React.FC = () => {
     proceedToCheckout: "PROCEED TO CHECKOUT",
     shippingWarning: "Please calculate your shipping cost before proceeding to checkout.",
     shippingDisclaimer: "Final shipping cost may vary depending on location. If actual shipping differs, we’ll contact you before processing payment.",
-    
   });
 
-  // Load translations
   useEffect(() => {
     async function loadTranslations() {
       setLabels({
@@ -63,13 +59,8 @@ const CartPage: React.FC = () => {
         salesTax: await translate("Sales Tax"),
         total: await translate("Total"),
         proceedToCheckout: await translate("PROCEED TO CHECKOUT"),
-        shippingDisclaimer: await translate(
-      "Final shipping cost may vary depending on location. If actual shipping differs, we’ll contact you before processing payment.",
-    ),
-    shippingWarning: await translate(
-  "Please calculate your shipping cost before proceeding to checkout."
-),
-
+        shippingDisclaimer: await translate("Final shipping cost may vary depending on location. If actual shipping differs, we’ll contact you before processing payment."),
+        shippingWarning: await translate("Please calculate your shipping cost before proceeding to checkout."),
       });
     }
     loadTranslations();
@@ -84,24 +75,25 @@ const CartPage: React.FC = () => {
     setQuantities(initialQuantities);
   }, [cartItems]);
 
-  // Hide warning automatically when shipping is calculated
-useEffect(() => {
-  if (shippingCost !== null) {
-    setShowShippingWarning(false);
-  }
-}, [shippingCost]);
+  useEffect(() => {
+    if (shippingCost !== null) setShowShippingWarning(false);
+  }, [shippingCost]);
 
-  // Recalculate subtotal, tax, and total whenever quantities change
+  // ---------------------------
+  // Helper: Get price with discount
+  const getItemPrice = (item: any) => {
+    return item.discountPrice ?? item.price;
+  };
+
+  // Recalculate subtotal using discounted price
   const subtotal = cartItems.reduce((acc, item) => {
-  const qty = quantities[item.slug] || 1;
-  return acc + item.price * qty;
-}, 0);
+    const qty = quantities[item.slug] || 1;
+    return acc + getItemPrice(item) * qty;
+  }, 0);
 
-const salesTaxAmount = subtotal * 0.07;
-const total = subtotal + (shippingCost || 0) + salesTaxAmount - discount;
+  const salesTaxAmount = subtotal * 0.07;
+  const total = subtotal + (shippingCost || 0) + salesTaxAmount - discount;
 
-
-  // Quantity handlers
   const handleQuantityChange = (slug: string, change: number) => {
     const newQuantity = (quantities[slug] || 1) + change;
     if (newQuantity >= 1) {
@@ -111,54 +103,41 @@ const total = subtotal + (shippingCost || 0) + salesTaxAmount - discount;
   };
 
   const calculateShipping = () => {
-  if (subtotal > 2000) {
-    setShippingCost(200); // heavy items like engines
-  } else if (subtotal > 500) {
-    setShippingCost(100); // smaller transmissions
-  } else {
-    setShippingCost(50);  // small parts
-  }
-};
+    if (subtotal > 2000) setShippingCost(200);
+    else if (subtotal > 500) setShippingCost(100);
+    else setShippingCost(50);
+  };
 
+  const applyCoupon = async () => {
+    if (!couponCode) return;
 
-  // Coupon application
-  // Coupon application
-const applyCoupon = async () => {
-  if (!couponCode) return;
+    try {
+      const response = await fetch("/api/cart/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ couponCode }),
+      });
 
-  try {
-    const response = await fetch("/api/cart/apply", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ couponCode }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setDiscount(data.cart.discount || 0);
-      alert(`Coupon applied! You saved $${data.cart.discount?.toFixed(2) || 0}`);
-    } else {
+      const data = await response.json();
+      if (data.success) {
+        setDiscount(data.cart.discount || 0);
+        alert(`Coupon applied! You saved $${data.cart.discount?.toFixed(2) || 0}`);
+      } else {
+        setDiscount(0);
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
       setDiscount(0);
-      // Show server message (like minOrderValue requirement)
-      alert(data.message);
+      alert("Error applying coupon. Please try again.");
     }
-  } catch (err) {
-    console.error(err);
-    setDiscount(0);
-    alert("Error applying coupon. Please try again.");
-  }
-};
-
-
-
+  };
 
   return (
     <div className="mt-20 lg:mt-40">
       <div className="bg-black text-white py-8 text-center w-full">
         <h1 className="text-4xl font-black">{labels.shoppingCart}</h1>
         <Breadcrumb />
-        
       </div>
 
       <div className="container mx-auto p-4">
@@ -173,15 +152,11 @@ const applyCoupon = async () => {
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-8">
-
-            {/* Left side: Cart Items */}
+            {/* Left side */}
             <div className="flex-1">
               <ul className="space-y-4">
                 {cartItems.map((item) => (
-                  <li
-                    key={item.slug}
-                    className="flex flex-col md:flex-row justify-between items-center border-b py-4"
-                  >
+                  <li key={item.slug} className="flex flex-col md:flex-row justify-between items-center border-b py-4">
                     <Image
                       src={item.mainImage}
                       alt={item.name}
@@ -193,7 +168,12 @@ const applyCoupon = async () => {
 
                     <div className="flex-1 px-4 w-full md:w-auto">
                       <h3 className="font-semibold">{item.name}</h3>
-                      <p className="text-gray-600">{labels.price}: ${item.price.toFixed(2)}</p>
+
+                      {/* Show discounted price if available */}
+                      <p className="text-gray-600">
+                        {labels.price}: ${getItemPrice(item).toFixed(2)}
+                      </p>
+
                       <div className="flex items-center space-x-3 mt-2">
                         <button
                           onClick={() => handleQuantityChange(item.slug, -1)}
@@ -210,7 +190,7 @@ const applyCoupon = async () => {
 
                     <div className="text-right mt-2 md:mt-0">
                       <span className="font-semibold">
-                        ${(item.price * quantities[item.slug]).toFixed(2)}
+                        ${(getItemPrice(item) * quantities[item.slug]).toFixed(2)}
                       </span>
                       <button
                         onClick={() => removeFromCart(item.slug)}
@@ -250,9 +230,7 @@ const applyCoupon = async () => {
 
             {/* Right side: Cart Totals */}
             <div className="w-full md:w-2/3 lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
-
               <h3 className="font-bold text-xl mb-6">{labels.cartTotals}</h3>
-
               <div className="flex justify-between mb-3">
                 <span>{labels.subtotal}</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -268,12 +246,9 @@ const applyCoupon = async () => {
                   <span>${shippingCost.toFixed(2)}</span>
                 )}
               </div>
-              {/* Shipping disclaimer */}
-{shippingCost !== null && (
-  <p className="text-sm text-gray-600 mt-1">
-    {labels.shippingDisclaimer}
-  </p>
-)}
+              {shippingCost !== null && (
+                <p className="text-sm text-gray-600 mt-1">{labels.shippingDisclaimer}</p>
+              )}
 
               <div className="flex justify-between mb-3">
                 <span>{labels.salesTax}</span>
@@ -285,49 +260,35 @@ const applyCoupon = async () => {
                 <span>${total.toFixed(2)} USD</span>
               </div>
 
-             {/* Proceed to Checkout Button */}
-<div className="relative">
-  <Link
-    href={shippingCost === null ? "#" : `/${language}/checkout`}
+              {/* Proceed to Checkout Button */}
+              <div className="relative">
+                <Link
+                  href={shippingCost === null ? "#" : `/${language}/checkout`}
+                  className={`block mt-6 text-white text-center py-3 rounded font-semibold transition-colors
+                    ${shippingCost === null 
+                      ? "bg-gray-400 cursor-not-allowed border border-red-500" 
+                      : "bg-blue-600 hover:bg-blue-700"}`
+                  }
+                  onClick={(e) => { if (shippingCost === null) e.preventDefault(); }}
+                >
+                  {labels.proceedToCheckout}
+                </Link>
 
-    className={`block mt-6 text-white text-center py-3 rounded font-semibold transition-colors
-      ${shippingCost === null 
-        ? "bg-gray-400 cursor-not-allowed border border-red-500" 
-        : "bg-blue-600 hover:bg-blue-700"}`
-    }
-    onClick={(e) => {
-      if (shippingCost === null) e.preventDefault();
-    }}
-  >
-    {labels.proceedToCheckout}
-  </Link>
+                {shippingCost === null && (
+                  <>
+                    <p className="mt-2 text-red-600 text-sm md:hidden flex items-center">
+                      ⚠️ {labels.shippingWarning}
+                    </p>
+                    <p className="mt-2 text-red-600 text-sm hidden md:block">
+                      ⚠️ {labels.shippingWarning}
+                    </p>
+                  </>
+                )}
 
-  {/* Always visible warning on mobile/small screens */}
-  {shippingCost === null && (
-  <p className="mt-2 text-red-600 text-sm md:hidden flex items-center">
-    ⚠️ {labels.shippingWarning}
-  </p>
-)}
-
-
-  {/* Visible on medium+ screens when hovering */}
-  {shippingCost === null && (
-    <p className="mt-2 text-red-600 text-sm hidden md:block">
-      ⚠️ {labels.shippingWarning}
-    </p>
-  )}
-</div>
-
-
-
-{/* Inline message below the button */}
-{showShippingWarning && (
-  <p className="mt-2 text-red-600 text-sm font-semibold">
-    {labels.shippingWarning}
-  </p>
-)}
-
-
+                {showShippingWarning && (
+                  <p className="mt-2 text-red-600 text-sm font-semibold">{labels.shippingWarning}</p>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -339,4 +300,3 @@ const applyCoupon = async () => {
 };
 
 export default CartPage;
-// The above code defines a React component for a shopping cart page with features like quantity adjustment, coupon application, shipping calculation, and total cost display.

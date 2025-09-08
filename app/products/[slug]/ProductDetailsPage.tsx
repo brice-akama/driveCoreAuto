@@ -42,6 +42,7 @@ interface Product {
   name: Record<string, string>;
   slug: Record<string, string>;
   price: number;
+   discountPercent?: number;
   description: Record<string, string>;
   Specifications: Record<string, string>;
   Shipping: Record<string, string>;
@@ -129,11 +130,21 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
   const { language } = useLanguage();
   const { symbol } = useCurrency();
 
+  const getDiscountedPrice = (price: number, discountPercent?: number) => {
+  if (!discountPercent) return price;
+  return price - (price * discountPercent) / 100;
+};
+
+
   const reviewCount = useReviewCount(product.slug[language] || product.slug.en);
 
   const t = translations[language as keyof typeof translations]; // ✅ type-safe
 
-  useEffect(() => setTotalPrice(product.price * quantity), [quantity, product.price]);
+  useEffect(() => {
+  const priceToUse = getDiscountedPrice(product.price, product.discountPercent);
+  setTotalPrice(priceToUse * quantity);
+}, [quantity, product.price, product.discountPercent]);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -161,11 +172,22 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
   }, []);
 
   const handleAddToCart = () => {
-    const slug = product.slug[language] || product.slug.en;
-    const name = product.name[language] || product.name.en;
-    addToCart({ slug, name, price: product.price, mainImage: product.mainImage, quantity }, language);
-    openCart();
-  };
+  const slug = product.slug[language] || product.slug.en;
+  const name = product.name[language] || product.name.en;
+  const priceToUse = getDiscountedPrice(product.price, product.discountPercent);
+
+  addToCart({
+    slug,
+    name,
+    price: priceToUse,
+    mainImage: product.mainImage,
+    quantity,
+    originalPrice: product.discountPercent ? product.price : 0, // keep original
+  }, language);
+
+  openCart();
+};
+
 
   const handleAddToWishlist = () => {
     const slug = product.slug[language] || product.slug.en;
@@ -308,7 +330,21 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
 {/* ⭐ Star Rating + Review Count */}
 <StarRating rating={5} reviewCount={reviewCount} />
 
-<p className="text-gray-600 mt-2 font-semibold">{symbol}{totalPrice.toFixed(2)}</p>
+
+      <p className="mt-2 font-semibold text-lg">
+  {product.discountPercent ? (
+    <>
+      <span className="line-through text-gray-500 mr-2">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      <span className="text-blue-600">
+        {symbol}{totalPrice.toFixed(2)}
+      </span>
+    </>
+  ) : (
+    <span className="text-gray-700">{symbol}{totalPrice.toFixed(2)}</span>
+  )}
+</p>
 
 
             <div className="border-t border-gray-300 my-4" />
@@ -434,7 +470,22 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
             />
             <div>
               <div className="font-semibold text-lg ">{product.name[language] || product.name.en}</div>
-              <div className="text-gray-700 font-bold">{symbol}{product.price.toFixed(2)}</div>
+<div className="text-lg font-bold">
+  {product.discountPercent ? (
+    <>
+      <span className="line-through text-gray-500 mr-1">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      <span className="text-blue-600">
+        {symbol}{(getDiscountedPrice(product.price, product.discountPercent) * quantity).toFixed(2)}
+      </span>
+    </>
+  ) : (
+    <span>{symbol}{(product.price * quantity).toFixed(2)}</span>
+  )}
+</div>
+
+
             </div>
           </div>
           <div className="flex items-center gap-2">

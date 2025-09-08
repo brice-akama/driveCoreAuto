@@ -14,6 +14,7 @@ type Product = {
   id: string;
   name: Record<string, string>;
   price: number;
+  discountPercent?: number; // optional, 0 if no discount
   category: string;
   edibles: boolean;
   popularProduct: boolean;
@@ -64,6 +65,7 @@ export default function BestSeller() {
   const { addToCart, openCart } = useCart();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const { symbol } = useCurrency();
+  
   
 
 
@@ -130,43 +132,36 @@ export default function BestSeller() {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (product: Product, e: React.MouseEvent<HTMLButtonElement>) => {
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  const cartIcon = document.getElementById("cart-icon");
+  const handleAddToCart = (product: Product, e?: React.MouseEvent<HTMLButtonElement>) => {
+  const priceToUse =
+    product.discountPercent && product.discountPercent > 0
+      ? product.price - (product.price * product.discountPercent) / 100
+      : product.price;
 
-  if (!cartIcon) {
-    console.warn("Cart icon not found! Make sure it has id='cart-icon'");
-    addToCart(
-      {
-        slug: product.slug[currentLang] || product.slug.en,
-        name: product.name[currentLang] || product.name.en,
-        price: product.price,
-        mainImage: product.mainImage,
-        quantity: 1,
-      },
-      currentLang
-    );
-    openCart();
-    return;
+  if (e) {
+    // Fly to cart animation only if event exists
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const cartIcon = document.getElementById("cart-icon");
+    if (cartIcon) {
+      const cartRect = cartIcon.getBoundingClientRect();
+      setFlyCart({
+        image: product.mainImage,
+        startX: rect.left,
+        startY: rect.top,
+        endX: cartRect.left + cartRect.width / 2 - 32,
+        endY: cartRect.top + cartRect.height / 2 - 32,
+      });
+    }
   }
-
-  const cartRect = cartIcon.getBoundingClientRect();
-
-  setFlyCart({
-    image: product.mainImage,
-    startX: rect.left,
-    startY: rect.top,
-    endX: cartRect.left + cartRect.width / 2 - 32,
-    endY: cartRect.top + cartRect.height / 2 - 32,
-  });
 
   addToCart(
     {
       slug: product.slug[currentLang] || product.slug.en,
       name: product.name[currentLang] || product.name.en,
-      price: product.price,
+      price: priceToUse,
       mainImage: product.mainImage,
       quantity: 1,
+      originalPrice: 0
     },
     currentLang
   );
@@ -196,7 +191,7 @@ export default function BestSeller() {
             product={product}
             currentLang={currentLang}
             addToWishlist={() => handleAddToWishlist(product.slug, currentLang)}
-            addToCart={(e) => handleAddToCart(product, e)}
+            addToCart={handleAddToCart}
             setQuickViewProduct={setQuickViewProduct}
             translatedTexts={translatedTexts}
           />
@@ -204,125 +199,150 @@ export default function BestSeller() {
       </div>
 
       {/* Quick View Modal */}
-      <AnimatePresence>
-        {quickViewProduct && (
-          <motion.div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setQuickViewProduct(null)}
+{/* Quick View Modal */}
+<AnimatePresence>
+  {quickViewProduct && (
+    <motion.div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setQuickViewProduct(null)}
+    >
+      <motion.div
+        className="bg-white w-full max-w-4xl min-h-[500px] rounded-lg shadow-lg flex overflow-hidden relative"
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 300, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          className="absolute top-3 right-6 text-gray-500 hover:text-black z-20"
+          onClick={() => setQuickViewProduct(null)}
+          aria-label="Close modal"
+        >
+          ✕
+        </button>
+
+        {/* Left: Image with hover button */}
+        <div className="w-1/2 relative group">
+          <Image
+            src={quickViewProduct.mainImage}
+            alt={quickViewProduct.name[currentLang] || quickViewProduct.name.en}
+            fill
+            unoptimized
+            className="object-cover"
+          />
+          <Link
+            href={`/products/${quickViewProduct.slug.en}?lang=${currentLang}`}
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
           >
-            <motion.div
-              className="bg-white w-full max-w-4xl min-h-[500px] rounded-lg shadow-lg flex overflow-hidden relative"
-              initial={{ x: 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 300, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close Button */}
-              <button
-                className="absolute top-3 right-6 text-gray-500 hover:text-black z-20"
-                onClick={() => setQuickViewProduct(null)}
-                aria-label="Close modal"
-              >
-                ✕
-              </button>
+             {translatedTexts.viewDetails}    
+          </Link>
+        </div>
 
-              {/* Left: Image with hover button */}
-              <div className="w-1/2 relative group">
-                <Image
-                  src={quickViewProduct.mainImage}
-                  alt={quickViewProduct.name[currentLang] || quickViewProduct.name.en}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                />
-                <Link
-                  href={`/products/${quickViewProduct.slug.en}?lang=${currentLang}`}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
-                >
-                   {translatedTexts.viewDetails}    
-                </Link>
-              </div>
+        {/* Right: Details */}
+        <div className="w-1/2 p-6 flex flex-col justify-between max-h-[500px] overflow-y-auto">
+          {(() => {
+            // ✅ Discount calculation
+            const hasDiscount = (quickViewProduct.discountPercent ?? 0) > 0;
+            const discountedPrice = hasDiscount
+              ? quickViewProduct.price - (quickViewProduct.price * (quickViewProduct.discountPercent ?? 0)) / 100
+              : quickViewProduct.price;
 
-              {/* Right: Details */}
-              <div className="w-1/2 p-6 flex flex-col justify-between max-h-[500px] overflow-y-auto">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">
-                    {quickViewProduct.name[currentLang] || quickViewProduct.name.en}
-                  </h2>
-                  <p className="text-lg font-semibold mb-4">
-                    {symbol}{quickViewProduct.price}
-                  </p>
+            return (
+              <div>
+                <h2 className="text-2xl font-bold mb-2">
+                  {quickViewProduct.name[currentLang] || quickViewProduct.name.en}
+                </h2>
+                <p className="text-lg font-semibold mb-4">
+                  {symbol}{discountedPrice.toFixed(2)}
+                  {hasDiscount && (
+                    <span className="text-blue-600 line-through ml-2">
+                      {symbol}{quickViewProduct.price.toFixed(2)}
+                    </span>
+                  )}
+                </p>
 
-                  <div className="flex items-center gap-4 mb-6">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      className="bg-blue-800 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-black"
-                      onClick={() => {
-                        handleAddToCart(
-                          quickViewProduct,
-                          { currentTarget: document.createElement("button") } as any
-                        );
-                        setQuickViewProduct(null);
-                      }}
-                    >
-                      {translatedTexts.addtoCart}
-                    </motion.button>
+                <div className="flex items-center gap-4 mb-6">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-blue-800 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-black"
+                    onClick={() => {
+                      handleAddToCart(quickViewProduct);
+                      setQuickViewProduct(null);
+                    }}
+                  >
+                    {translatedTexts.addtoCart}
+                  </motion.button>
 
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      className="bg-red-500 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-red-700 flex items-center gap-2"
-                      onClick={() => {
-                        handleAddToWishlist(quickViewProduct.slug, currentLang);
-                        setQuickViewProduct(null);
-                      }}
-                    >
-                      <FiHeart />
-                      {translatedTexts.addtoWishlist}
-                    </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-red-500 whitespace-nowrap text-white px-4 py-2 rounded hover:bg-red-700 flex items-center gap-2"
+                    onClick={() => {
+                      handleAddToWishlist(quickViewProduct.slug, currentLang);
+                      setQuickViewProduct(null);
+                    }}
+                  >
+                    <FiHeart />
+                    {translatedTexts.addtoWishlist}
+                  </motion.button>
 
-                    <a
-                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <FiFacebook size={24} />
-                    </a>
+                  {/* Social links */}
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <FiFacebook size={24} />
+                  </a>
 
-                    <a
-                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}&text=${encodeURIComponent(`Check out this product: ${quickViewProduct.name[currentLang] || quickViewProduct.name.en}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-600"
-                    >
-                      <FiTwitter size={24} />
-                    </a>
-                  </div>
-
-                  <h3 className="font-semibold text-lg mb-1">{translatedTexts.specifications}</h3>
-                  <div className="product-details" dangerouslySetInnerHTML={{
-                    __html: quickViewProduct.Specifications[currentLang] || quickViewProduct.Specifications.en
-                  }}></div>
-
-                  <h3 className="font-semibold text-lg mb-1">{translatedTexts.shipping}</h3>
-                  <div className="product-details" dangerouslySetInnerHTML={{
-                    __html: quickViewProduct.Shipping[currentLang] || quickViewProduct.Shipping.en
-                  }}></div>
-
-                  <h3 className="font-semibold text-lg mb-1">{translatedTexts.warranty}</h3>
-                  <div className="product-details" dangerouslySetInnerHTML={{
-                    __html: quickViewProduct.Warranty[currentLang] || quickViewProduct.Warranty.en
-                  }}></div>
+                  <a
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}/products/${quickViewProduct.slug.en}?lang=${currentLang}`)}&text=${encodeURIComponent(`Check out this product: ${quickViewProduct.name[currentLang] || quickViewProduct.name.en}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-600"
+                  >
+                    <FiTwitter size={24} />
+                  </a>
                 </div>
+
+                {/* Specifications */}
+                <h3 className="font-semibold text-lg mb-1">{translatedTexts.specifications}</h3>
+                <div
+                  className="product-details"
+                  dangerouslySetInnerHTML={{
+                    __html: quickViewProduct.Specifications[currentLang] || quickViewProduct.Specifications.en,
+                  }}
+                ></div>
+
+                <h3 className="font-semibold text-lg mb-1">{translatedTexts.shipping}</h3>
+                <div
+                  className="product-details"
+                  dangerouslySetInnerHTML={{
+                    __html: quickViewProduct.Shipping[currentLang] || quickViewProduct.Shipping.en,
+                  }}
+                ></div>
+
+                <h3 className="font-semibold text-lg mb-1">{translatedTexts.warranty}</h3>
+                <div
+                  className="product-details"
+                  dangerouslySetInnerHTML={{
+                    __html: quickViewProduct.Warranty[currentLang] || quickViewProduct.Warranty.en,
+                  }}
+                ></div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            );
+          })()}
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
 
       {/* Fly to cart animation */}
       <AnimatePresence>
@@ -361,7 +381,7 @@ function ProductCard({
   product: Product & { thumbnails?: string[] };
   currentLang: string;
   addToWishlist: () => void;
-  addToCart: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  addToCart: (product: Product, e: React.MouseEvent<HTMLButtonElement>) => void;
   setQuickViewProduct: React.Dispatch<React.SetStateAction<Product | null>>;
   translatedTexts: {
     title: string;
@@ -378,6 +398,11 @@ function ProductCard({
   const thumbnail = product.thumbnails?.[0];
   const hasThumbnail = Boolean(thumbnail);
   const [hoverCart, setHoverCart] = useState(false);
+  const hasDiscount = product.discountPercent && product.discountPercent > 0;
+const discountedPrice = hasDiscount
+  ? product.price - (product.price * product.discountPercent!) / 100
+  : product.price;
+
 
 
   return (
@@ -389,11 +414,22 @@ function ProductCard({
       transition={{ duration: 0.3 }}
     >
       <Link href={`/products/${slugForLang}?lang=${currentLang}`}>
-        <div className="w-full aspect-square relative overflow-hidden mt-3">
-<div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10 hidden md:block">
-  {extractModel(product.name[currentLang] || product.name.en)}
-</div>
+      
 
+
+
+        <div className="w-full aspect-square relative overflow-hidden mt-3">
+          {/* Discount Badge */}
+  {hasDiscount && (
+    <div className="absolute top-2 left-2 z-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+      -{product.discountPercent}% 
+    </div>
+  )}
+
+  {/* Model Name */}
+  <div className="absolute top-10 left-2 bg-white text-xs font-semibold text-black px-2 py-1 rounded shadow z-10 hidden md:block">
+    {extractModel(product.name[currentLang] || product.name.en)}
+  </div>
 
           <Image
             src={hovered && hasThumbnail ? thumbnail || product.mainImage : product.mainImage}
@@ -463,9 +499,19 @@ function ProductCard({
             {nameForLang}
           </h3>
         </Link>
-        <p className="text-gray-600 mt-1">
-          {symbol}{product.price}
-        </p>
+      
+       <div className="mt-2 text-center flex justify-center items-center gap-2">
+  {hasDiscount && (
+    <span className="text-blue-600 font-medium line-through">
+      {symbol}{product.price.toFixed(2)}
+    </span>
+  )}
+  <span className="text-lg font-semibold text-gray-900">
+    {symbol}{discountedPrice.toFixed(2)}
+  </span>
+</div>
+
+
 
 <motion.div
   className="mt-2 relative flex justify-center"
@@ -473,13 +519,15 @@ function ProductCard({
   onMouseLeave={() => setHoverCart(false)}
 >
   {/* Main button */}
-  <motion.button
-    className="w-full bg-blue-800 border border-black text-white px-4 py-1 rounded shadow-sm flex items-center justify-center transition-colors duration-200 hover:bg-black"
-    whileHover={{ scale: 1.03 }}
-    onClick={(e) => addToCart(e)}
-  >
-    <span className="text-sm">{translatedTexts.addtoCart}</span>
-  </motion.button>
+<motion.button
+  className="w-full bg-blue-800 text-white px-4 py-1 rounded"
+  whileHover={{ scale: 1.03 }}
+  onClick={(e) => addToCart(product, e)} // ✅ pass both product and event
+>
+  {translatedTexts.addtoCart}
+</motion.button>
+
+
 
   {/* Floating hover cart icon */}
   {hoverCart && (
@@ -489,7 +537,8 @@ function ProductCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}
       transition={{ duration: 0.2 }}
-      onClick={(e) => addToCart(e)} // same action as button
+      onClick={(e) => addToCart(product, e)}
+// same action as button
     >
       <FiShoppingCart className="text-gray-900 w-6 h-6" />
     </motion.button>
