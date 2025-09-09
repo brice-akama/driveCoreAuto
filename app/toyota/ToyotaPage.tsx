@@ -31,6 +31,7 @@ export type Product = {
   metaDescription?: Record<string, string>;
   imageUrl?: string;
   discountPercent?: number;
+   finalPrice?: number;
 };
 
 export type ToyotaPageProps = {
@@ -936,7 +937,21 @@ useEffect(() => {
           {product.name[currentLang] || product.name.en}
         </h3>
       </Link>
-      <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
+      {/* Price */}
+  <p className="mt-2 font-semibold text-lg">
+    {product.discountPercent ? (
+      <>
+        <span className="line-through text-gray-500 mr-2">
+          {symbol}{product.price.toFixed(2)}
+        </span>
+        <span className="text-blue-600">
+          {symbol}{getDiscountedPrice(product.price, product.discountPercent).toFixed(2)}
+        </span>
+      </>
+    ) : (
+      <span className="text-gray-700">{symbol}{product.price.toFixed(2)}</span>
+    )}
+  </p>
 
       {/* Add to Cart Button with hover icon swap */}
       <motion.div
@@ -945,7 +960,10 @@ useEffect(() => {
         onMouseLeave={() => setHoveredIcon(null)}
       >
         <motion.button
-          onClick={() => handleAddToCart(product)}
+          onClick={() => handleAddToCart({
+      ...product,
+      finalPrice: getDiscountedPrice(product.price, product.discountPercent)
+    })}
           className="w-full border border-gray-700 rounded py-2 bg-blue-800 text-white flex items-center justify-center relative overflow-hidden"
           whileHover={{ scale: 1.03 }}
         >

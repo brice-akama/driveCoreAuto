@@ -2,107 +2,106 @@ import { SitemapStream, streamToPromise } from "sitemap";
 import { NextResponse } from "next/server";
 import clientPromise from "../../lib/mongodb";
 
-// Fetch products from MongoDB
 const getProducts = async () => {
   const client = await clientPromise;
   const db = client.db("autodrive");
-  return db
-    .collection("products")
-    .find({}, { projection: { slug: 1 } })
+  return db.collection("products")
+    .find({}, { projection: { slug: 1, updatedAt: 1 } })
     .toArray();
 };
 
-// Fetch blogs from MongoDB
 const getBlogs = async () => {
   const client = await clientPromise;
   const db = client.db("autodrive");
-  return db.collection("news").find({}, { projection: { slug: 1 } }).toArray();
+  return db.collection("news")
+    .find({}, { projection: { slug: 1, updatedAt: 1 } })
+    .toArray();
 };
 
 export async function GET() {
-  const sitemap = new SitemapStream({
-    hostname: "https://www.drivecoreauto.com",
-  });
-
   try {
-    // Plain static pages (canonical only)
-    const plainStaticUrls = [
-      { url: "scion", changefreq: "daily", priority: 1.0 },
-      { url: "toyota", changefreq: "weekly", priority: 0.8 },
-      { url: "honda", changefreq: "monthly", priority: 0.6 },
-      { url: "subaru", changefreq: "monthly", priority: 0.6 },
-      { url: "subframe", changefreq: "monthly", priority: 0.6 },
-      { url: "nissan", changefreq: "monthly", priority: 0.6 },
-      { url: "blog", changefreq: "monthly", priority: 0.6 },
-      { url: "top-sellers", changefreq: "monthly", priority: 0.6 },
-      { url: "lexus", changefreq: "monthly", priority: 0.6 },
-      { url: "free-shipping", changefreq: "monthly", priority: 0.6 },
-      { url: "acura", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/toyota/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/scion/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/honda/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/subaru/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/lexus/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/infiniti/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/nissan/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/acura/automatic", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/toyota/manual", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/nissan/manual", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/infiniti/manual", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/scion/manual", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/honda/manual", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/acura/manual", changefreq: "monthly", priority: 0.6 },
-      { url: "transmissions/subaru/manual", changefreq: "monthly", priority: 0.6 },
-      { url: "swaps/infiniti", changefreq: "monthly", priority: 0.6 },
-      { url: "swaps/nissan", changefreq: "monthly", priority: 0.6 },
-      { url: "swaps/subaru", changefreq: "monthly", priority: 0.6 },
-      { url: "swaps/toyota", changefreq: "monthly", priority: 0.6 },
-      { url: "swaps/honda", changefreq: "monthly", priority: 0.6 },
-      { url: "accessories", changefreq: "monthly", priority: 0.6 },
-      { url: "infiniti", changefreq: "monthly", priority: 0.6 },
+    const hostname = "https://www.drivecoreauto.com";
+
+    // Create sitemap stream
+    const sitemap = new SitemapStream({ hostname });
+
+    // ✅ Static pages with improved priorities
+    const staticPages = [
+      { url: "/", changefreq: "weekly", priority: 1.0 }, // Homepage - highest priority
+      { url: "/toyota", changefreq: "weekly", priority: 0.9 }, // Major brand
+      { url: "/honda", changefreq: "weekly", priority: 0.9 }, // Major brand
+      { url: "/nissan", changefreq: "weekly", priority: 0.8 }, // Popular brand
+      { url: "/lexus", changefreq: "weekly", priority: 0.8 }, // Luxury brand
+      { url: "/acura", changefreq: "monthly", priority: 0.7 }, // Premium brand
+      { url: "/subaru", changefreq: "monthly", priority: 0.7 }, // Niche brand
+      { url: "/infiniti", changefreq: "monthly", priority: 0.7 }, // Luxury brand
+      { url: "/scion", changefreq: "monthly", priority: 0.6 }, // Discontinued brand
+      { url: "/blog", changefreq: "weekly", priority: 0.8 }, // Content section
+      { url: "/top-sellers", changefreq: "weekly", priority: 0.8 }, // Important commercial page
+      { url: "/accessories", changefreq: "monthly", priority: 0.7 }, // Product category
+      { url: "/subframe", changefreq: "monthly", priority: 0.6 }, // Specific category
+      { url: "/free-shipping", changefreq: "monthly", priority: 0.6 }, // Info page
+      { url: "/contact", changefreq: "monthly", priority: 0.5 }, // Contact page
+      { url: "/about", changefreq: "monthly", priority: 0.5 }, // About page
     ];
 
-    plainStaticUrls.forEach((page) => {
-      sitemap.write({
-        url: `/${page.url}`,
-        changefreq: page.changefreq,
-        priority: page.priority,
+    const languages = ["en", "fr", "es", "de"];
+
+    // ✅ Static pages with multi-language support
+    staticPages.forEach((page) => {
+      languages.forEach((lang) => {
+        sitemap.write({
+          url: page.url === "/" ? `/?lang=${lang}` : `${page.url}?lang=${lang}`,
+          changefreq: page.changefreq,
+          priority: lang === "en" ? page.priority : page.priority * 0.9
+        });
       });
     });
 
-    // Fetch products and blogs
     const [products, blogs] = await Promise.all([getProducts(), getBlogs()]);
 
-    // Add product URLs (canonical only)
+    // ✅ Products with improved change frequency and lastmod
     products.forEach((product) => {
-      if (product.slug?.en) {
+      if (!product.slug?.en) return;
+      
+      languages.forEach((lang) => {
         sitemap.write({
-          url: `/products/${product.slug.en}`,
-          changefreq: "daily",
-          priority: 0.9,
+          url: `/products/${product.slug.en}?lang=${lang}`,
+          changefreq: "weekly", // More realistic than daily
+          priority: lang === "en" ? 0.8 : 0.7,
+          lastmod: product.updatedAt || new Date()
         });
-      }
+      });
     });
 
-    // Add blog URLs (canonical only)
+    // ✅ Blogs with improved settings and lastmod
     blogs.forEach((blog) => {
-      if (blog.slug?.en) {
+      if (!blog.slug?.en) return;
+      
+      languages.forEach((lang) => {
         sitemap.write({
-          url: `/blog/${blog.slug.en}`,
-          changefreq: "weekly",
-          priority: 0.85,
+          url: `/blog/${blog.slug.en}?lang=${lang}`,
+          changefreq: "weekly", // Blogs might be updated weekly
+          priority: lang === "en" ? 0.75 : 0.65,
+          lastmod: blog.updatedAt || new Date()
         });
-      }
+      });
     });
 
+    // End sitemap
     sitemap.end();
 
-    const sitemapXml = await streamToPromise(sitemap);
-    return new NextResponse(sitemapXml, {
-      headers: { "Content-Type": "application/xml" },
+    // Convert stream to proper XML
+    const xml = await streamToPromise(sitemap);
+
+    return new NextResponse(xml, {
+      headers: { 
+        "Content-Type": "application/xml",
+        "Cache-Control": "public, max-age=3600" // Cache for 1 hour
+      },
     });
-  } catch (error) {
-    console.error("Error generating sitemap:", error);
+  } catch (err) {
+    console.error("Sitemap generation error:", err);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

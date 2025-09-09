@@ -43,7 +43,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const imageUrl = post.imageUrl;
 
   // Canonical always points to English slug
-  const canonicalUrl = `https://www.drivecoreauto.com/blog/${params.slug}`;
+  // Canonical always points to English slug with ?lang=en
+const canonicalUrl = `https://www.drivecoreauto.com/blog/${params.slug}?lang=en`;
+
 
   // Supported languages
   const languages = ['en', 'fr', 'de', 'es'];

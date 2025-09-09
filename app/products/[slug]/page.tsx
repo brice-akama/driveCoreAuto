@@ -4,7 +4,6 @@ import { fetchProduct } from "./fetchProduct";
 import ProductDetailsPage from "./ProductDetailsPage";
 import { Metadata } from "next";
 import { notFound } from 'next/navigation';
-import Head from "next/head";
 
 type Props = {
   params: { slug: string };
@@ -32,7 +31,8 @@ export async function generateMetadata(props: Promise<Props>): Promise<Metadata>
   const localizedSeoKeywords =
     product.seoKeywords?.[lang] || product.seoKeywords?.["en"] || `${localizedName}, fitness, ${product.category || ""}`;
 
-  const canonicalUrl = `https://www.drivecoreauto.com/products/${product.slug.en}`;
+  const canonicalUrl = `https://www.drivecoreauto.com/products/${product.slug.en}?lang=en`;
+
   const ogImageUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products/og?title=${encodeURIComponent(localizedName)}`;
   const image = product.mainImage || ogImageUrl;
 
@@ -45,8 +45,10 @@ export async function generateMetadata(props: Promise<Props>): Promise<Metadata>
     languages: {} as Record<string, string>,
   };
 
+  // ✅ FIXED: Build proper hreflang URLs
   languages.forEach((l) => {
-    (alternates.languages as Record<string, string>)[l] = `${canonicalUrl}?lang=${l}`;
+    (alternates.languages as Record<string, string>)[l] = 
+      `https://www.drivecoreauto.com/products/${product.slug.en}?lang=${l}`;
   });
 
   // Optional: set x-default to English
@@ -72,6 +74,64 @@ export async function generateMetadata(props: Promise<Props>): Promise<Metadata>
   };
 }
 
+// ✅ JSON-LD Component (moved out of Head wrapper)
+function ProductJsonLD({ product, lang }: { product: any; lang: string }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          name: product.name[lang] || product.name.en,
+          image: [product.mainImage, ...(product.thumbnails || [])],
+          description: product.description[lang] || product.description.en,
+          sku: product._id,
+          brand: { "@type": "Brand", name: "DriveCore Auto" },
+          offers: {
+            "@type": "Offer",
+            url: `https://www.drivecoreauto.com/products/${product.slug.en}?lang=${lang}`,
+            priceCurrency: "USD",
+            price: product.price,
+            availability: "https://schema.org/InStock",
+          },
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.8",
+            reviewCount: "125",
+          },
+          review: [
+            {
+              "@type": "Review",
+              author: "John Doe",
+              datePublished: "2025-09-07",
+              reviewBody: "High-quality product. Works perfectly!",
+              name: "Excellent Product",
+              reviewRating: {
+                "@type": "Rating",
+                ratingValue: "5",
+                bestRating: "5",
+              },
+            },
+            {
+              "@type": "Review",
+              author: "Jane Smith",
+              datePublished: "2025-09-05",
+              reviewBody: "Very satisfied with this purchase.",
+              name: "Highly Recommended",
+              reviewRating: {
+                "@type": "Rating",
+                ratingValue: "5",
+                bestRating: "5",
+              },
+            },
+          ],
+        }),
+      }}
+    />
+  );
+}
+
 export const revalidate = 60;
 
 export default async function Page(props: Promise<Props>) {
@@ -85,62 +145,9 @@ export default async function Page(props: Promise<Props>) {
 
   return (
     <>
-      {/* ✅ Static JSON-LD schema (no database reviews) */}
-      <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org/",
-              "@type": "Product",
-              name: product.name[lang] || product.name.en,
-              image: [product.mainImage, ...(product.thumbnails || [])],
-              description: product.description[lang] || product.description.en,
-              sku: product._id,
-              brand: { "@type": "Brand", name: "DriveCore Auto" },
-              offers: {
-                "@type": "Offer",
-                url: `https://www.drivecoreauto.com/product/${product.slug[lang] || product.slug.en}`,
-                priceCurrency: "USD",
-                price: product.price,
-                availability: "https://schema.org/InStock",
-              },
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "4.8",
-                reviewCount: "125",
-              },
-              review: [
-                {
-                  "@type": "Review",
-                  author: "John Doe",
-                  datePublished: "2025-09-07",
-                  reviewBody: "High-quality product. Works perfectly!",
-                  name: "Excellent Product",
-                  reviewRating: {
-                    "@type": "Rating",
-                    ratingValue: "5",
-                    bestRating: "5",
-                  },
-                },
-                {
-                  "@type": "Review",
-                  author: "Jane Smith",
-                  datePublished: "2025-09-05",
-                  reviewBody: "Very satisfied with this purchase.",
-                  name: "Highly Recommended",
-                  reviewRating: {
-                    "@type": "Rating",
-                    ratingValue: "5",
-                    bestRating: "5",
-                  },
-                },
-              ],
-            }),
-          }}
-        />
-      </Head>
-
+      {/* ✅ JSON-LD without Head wrapper (App Router compatible) */}
+      <ProductJsonLD product={product} lang={lang} />
+      
       {/* Your actual product component */}
       <ProductDetailsPage product={product} lang={lang} />
     </>
