@@ -5,6 +5,8 @@ type WishlistItem = {
   slug: string;
   name: string;
   price: number;
+  discountPrice?: number;   // ✅ new
+  discountPercent?: number; // ✅ new
   mainImage: string;
 };
 
@@ -13,24 +15,25 @@ type Wishlist = {
   items: WishlistItem[];
 };
 
+// Helper to calculate discounted price
+const calculateDiscountPrice = (price: number, discountPercent?: number) => {
+  if (discountPercent && discountPercent > 0) {
+    return price - (price * discountPercent) / 100;
+  }
+  return price;
+};
+
 // POST: Add or update wishlist items
 export async function POST(req: Request) {
   const { slug, language } = await req.json();
-  console.log(`Received data: slug=${slug}`);
 
-  // Extract or generate guestId
   const cookies = req.headers.get('cookie') || '';
   const newGuestId = 'guest-' + Date.now();
   const guestId =
     cookies.split('; ').find((c) => c.startsWith('guestId='))?.split('=')[1] || newGuestId;
 
-  console.log(`[POST] Updating wishlist. GuestID: ${guestId}, Slug: ${slug}`);
-
-  if (!slug) {
-    return NextResponse.json({ error: 'Product slug is required' }, { status: 400 });
-  }
-  if (!language) {
-    return NextResponse.json({ error: 'Language is required' }, { status: 400 });
+  if (!slug || !language) {
+    return NextResponse.json({ error: 'Product slug and language are required' }, { status: 400 });
   }
 
   try {
@@ -39,13 +42,11 @@ export async function POST(req: Request) {
     const wishlistCollection = db.collection('wishlist');
     const productsCollection = db.collection("products");
 
-    // Fetch product using slug and language
     const product = await productsCollection.findOne({ [`slug.${language}`]: slug });
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-    }
+    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 
-    // Fetch or create wishlist
+    const discountPrice = calculateDiscountPrice(product.price, product.discountPercent);
+
     let wishlist = (await wishlistCollection.findOne({ guestId })) as Wishlist | null;
 
     if (!wishlist) {
@@ -56,6 +57,8 @@ export async function POST(req: Request) {
             slug,
             name: product.name[language] || product.name.en,
             price: product.price,
+            discountPrice,                 // ✅ added
+            discountPercent: product.discountPercent || 0, // ✅ added
             mainImage: product.mainImage,
           },
         ],
@@ -63,13 +66,13 @@ export async function POST(req: Request) {
       await wishlistCollection.insertOne(wishlist);
     } else {
       const itemIndex = wishlist.items.findIndex((item) => item.slug === slug);
-      if (itemIndex >= 0) {
-        // If already in wishlist, no quantity update needed, so no change
-      } else {
+      if (itemIndex < 0) {
         wishlist.items.push({
           slug,
           name: product.name[language] || product.name.en,
           price: product.price,
+          discountPrice,                 // ✅ added
+          discountPercent: product.discountPercent || 0, // ✅ added
           mainImage: product.mainImage,
         });
       }
@@ -77,20 +80,17 @@ export async function POST(req: Request) {
     }
 
     const headers = new Headers();
-    if (newGuestId === guestId) {
-      headers.append('Set-Cookie', `guestId=${guestId}; Path=/; HttpOnly; SameSite=Strict`);
-    }
+    if (newGuestId === guestId) headers.append('Set-Cookie', `guestId=${guestId}; Path=/; HttpOnly; SameSite=Strict`);
 
     const updatedWishlist = await wishlistCollection.findOne({ guestId });
-    return NextResponse.json(
-      { message: 'Wishlist updated', wishlist: updatedWishlist },
-      { headers }
-    );
+    return NextResponse.json({ message: 'Wishlist updated', wishlist: updatedWishlist }, { headers });
   } catch (error) {
     console.error('Error updating wishlist:', error);
     return NextResponse.json({ error: 'Failed to update wishlist' }, { status: 500 });
   }
 }
+
+
 
 // GET: Retrieve wishlist data
 export async function GET(req: Request) {

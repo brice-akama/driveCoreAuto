@@ -1,19 +1,28 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
-import { useCart } from "@/app/context/CartContext"; // Adjust the path as necessary
+import { useCart } from "@/app/context/CartContext";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "../context/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CartDrawer: React.FC = () => {
-  const { cartItems, totalPrice, removeFromCart, updateQuantity: contextUpdateQuantity, isCartOpen, closeCart } = useCart();
+  const {
+    cartItems,
+    totalPrice,
+    removeFromCart,
+    updateQuantity: contextUpdateQuantity,
+    isCartOpen,
+    closeCart
+  } = useCart();
+
   const [quantities, setQuantities] = useState<{ [slug: string]: number }>({});
   const router = useRouter();
   const { language, translate } = useLanguage();
 
-  // Initialize quantities when the cart items change
+  // Initialize quantities when cartItems change
   useEffect(() => {
     const initialQuantities = cartItems.reduce((acc, item) => {
       acc[item.slug] = item.quantity || 1;
@@ -22,9 +31,14 @@ const CartDrawer: React.FC = () => {
     setQuantities(initialQuantities);
   }, [cartItems]);
 
-  const handleViewCartClick = () => {
+  const updateQuantity = (slug: string, value: number) => {
+    const newQuantity = Math.max(1, (quantities[slug] || 1) + value);
+    setQuantities((prev) => ({ ...prev, [slug]: newQuantity }));
+    contextUpdateQuantity(slug, newQuantity);
+  };
+
+  const handleLinkClick = () => {
     closeCart();
-    router.push("/cart-drawer");
   };
 
   const [translatedTexts, setTranslatedTexts] = useState({
@@ -61,132 +75,153 @@ const CartDrawer: React.FC = () => {
     translateTexts();
   }, [language, translate]);
 
-  // Update the quantity and recalculate the total price
-  const updateQuantity = (slug: string, value: number) => {
-    setQuantities((prev) => {
-      const newQuantity = Math.max(1, (prev[slug] || 1) + value);
-      contextUpdateQuantity(slug, newQuantity);
-      return { ...prev, [slug]: newQuantity };
-    });
-  };
-
-  const handleLinkClick = () => {
-    closeCart();
-  };
-
-  // Get effective price considering discount
+  // Effective price considering discount
   const getItemPrice = (item: any) => {
     return item.discountPrice ?? item.price;
   };
 
-  if (!isCartOpen) return null;
+  const handleViewCartClick = () => {
+    closeCart();
+    router.push("/cart-drawer");
+  };
 
   return (
-    <div
-      id="cart-drawer"
-      className="fixed right-0 top-0 w-80 bg-white shadow-lg h-full p-4 z-20 overflow-hidden"
-    >
-      {/* Close Button */}
-      <button onClick={closeCart} className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-2xl">
-        ✖
-      </button>
+    <AnimatePresence>
+  {isCartOpen && (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        className="fixed inset-0 bg-black/30 z-40"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={closeCart} // Click outside closes drawer
+      />
 
-      <h2 className="text-xl font-bold mt-20 text-center">{translatedTexts.yourCart}</h2>
+      {/* Drawer */}
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "tween", duration: 0.3 }}
+        className="fixed right-0 top-0 w-80 bg-white shadow-lg h-full p-4 z-50 overflow-hidden"
+        onClick={(e) => e.stopPropagation()} // Prevent click inside drawer from closing
+      >
+        {/* Close Button */}
+        <button
+          onClick={closeCart}
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-2xl"
+        >
+          ✖
+        </button>
 
-      {cartItems.length === 0 ? (
-        <div className="text-center mt-6">
-          <p>{translatedTexts.emptyCartMessage}</p>
-          <Link href="/toyota" className="block bg-blue-600 text-white text-center py-2 rounded mt-10" onClick={handleLinkClick}>
-            {translatedTexts.continueShopping}
-          </Link>
-        </div>
-      ) : (
-        <div className="mt-6">
-          <div className="h-72 overflow-y-auto">
-            <ul>
-              {cartItems.map((item, index) => {
-                const slugKey = item.slug;
-                const itemQuantity = quantities[slugKey] || 1;
-                const itemTotalPrice = (getItemPrice(item) * itemQuantity).toFixed(2);
+        <h2 className="text-xl font-bold mt-20 text-center">{translatedTexts.yourCart}</h2>
 
-                return (
-                  <React.Fragment key={slugKey}>
-                    <li className="flex items-start space-x-4 my-4">
-                      <Image
-                        src={item.mainImage}
-                        alt={item.name}
-                        width={64}
-                        height={64}
-                        unoptimized
-                        className="object-cover flex-shrink-0 mt-5"
-                      />
-                      <div className="flex-1 flex flex-col">
-                        <h3 className="text-sm font-semibold leading-tight mb-1 break-words">
-                          {item.name}
-                        </h3>
+        {cartItems.length === 0 ? (
+          <div className="text-center mt-6">
+            <p>{translatedTexts.emptyCartMessage}</p>
+            <Link
+              href="/toyota"
+              className="block bg-blue-600 text-white text-center py-2 rounded mt-10"
+              onClick={handleLinkClick}
+            >
+              {translatedTexts.continueShopping}
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-6 flex flex-col h-full">
+            <div className="flex-1 overflow-y-auto">
+              <ul>
+                {cartItems.map((item, index) => {
+                  const slugKey = item.slug;
+                  const itemQuantity = quantities[slugKey] || 1;
+                  const itemTotalPrice = (getItemPrice(item) * itemQuantity).toFixed(2);
 
-                        {/* Show discounted price */}
-                        <span className="text-base font-bold mb-2">
-                          ${itemTotalPrice}
-                        </span>
+                  return (
+                    <React.Fragment key={slugKey}>
+                      <li className="flex items-start space-x-4 my-4">
+                        <Image
+                          src={item.mainImage}
+                          alt={item.name}
+                          width={64}
+                          height={64}
+                          unoptimized
+                          className="object-cover flex-shrink-0 mt-5"
+                        />
+                        <div className="flex-1 flex flex-col">
+                          <h3 className="text-sm font-semibold leading-tight mb-1 break-words">
+                            {item.name}
+                          </h3>
+                          <span className="text-base font-bold mb-2">
+                            ${itemTotalPrice}
+                          </span>
 
-                        <div className="flex flex-col space-y-2">
-                          <div className="flex items-center space-x-3">
+                          <div className="flex flex-col space-y-2">
+                            <div className="flex items-center space-x-3">
+                              <button
+                                className="bg-gray-200 rounded px-3 py-1"
+                                onClick={() => updateQuantity(slugKey, -1)}
+                              >
+                                -
+                              </button>
+                              <span className="text-lg font-bold">{itemQuantity}</span>
+                              <button
+                                className="bg-gray-200 rounded px-3 py-1"
+                                onClick={() => updateQuantity(slugKey, 1)}
+                              >
+                                +
+                              </button>
+                            </div>
+
                             <button
-                              className="bg-gray-200 rounded px-3 py-1"
-                              onClick={() => updateQuantity(slugKey, -1)}
+                              onClick={() => removeFromCart(slugKey)}
+                              className="text-red-500 underline text-sm self-start"
                             >
-                              -
-                            </button>
-                            <span className="text-lg font-bold">{itemQuantity}</span>
-                            <button
-                              className="bg-gray-200 rounded px-3 py-1"
-                              onClick={() => updateQuantity(slugKey, 1)}
-                            >
-                              +
+                              {translatedTexts.remove}
                             </button>
                           </div>
-
-                          <button
-                            onClick={() => removeFromCart(slugKey)}
-                            className="text-red-500 underline text-sm self-start"
-                          >
-                            {translatedTexts.remove}
-                          </button>
                         </div>
-                      </div>
-                    </li>
+                      </li>
 
-                    {index < cartItems.length - 1 && <hr className="my-3 border-t border-gray-300 opacity-50" />}
-                  </React.Fragment>
-                );
-              })}
-            </ul>
-          </div>
+                      {index < cartItems.length - 1 && (
+                        <hr className="my-3 border-t border-gray-300 opacity-50" />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </ul>
+            </div>
 
-          {/* Total */}
-          <div className="mt-10 text-center">
-            <h3 className="font-bold">
-              Total: ${cartItems.reduce(
-                (acc, item) => acc + getItemPrice(item) * (quantities[item.slug] || 1),
-                0
-              ).toFixed(2)}
-            </h3>
-            <button
-              onClick={handleViewCartClick}
-              className="mt-4 w-full bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition"
-            >
-              {translatedTexts.viewCart}
-            </button>
-            <div className="mt-1">
-              <Link href={`/${language}/checkout`} className="block bg-blue-600 text-white text-center py-2 rounded" onClick={handleLinkClick}>
-                {translatedTexts.checkout}
-              </Link>
+            <div className="mb-20 text-center">
+              <h3 className="font-bold">
+                {translatedTexts.total}: ${cartItems.reduce(
+                  (acc, item) => acc + getItemPrice(item) * (quantities[item.slug] || 1),
+                  0
+                ).toFixed(2)}
+              </h3>
+              <button
+                onClick={handleViewCartClick}
+                className="mb-2 w-full bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition"
+              >
+                {translatedTexts.viewCart}
+              </button>
+              <div className="mb-10">
+                <Link
+                  href={`/${language}/checkout`}
+                  className="block bg-blue-600 text-white text-center py-2 rounded"
+                  onClick={handleLinkClick}
+                >
+                  {translatedTexts.checkout}
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </motion.div>
+    </>
+  )}
+</AnimatePresence>
+
   );
 };
 

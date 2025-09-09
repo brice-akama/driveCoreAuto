@@ -94,7 +94,10 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   const handleAddToCart = (_id: string, slugObj: Record<string, string>, nameObj: Record<string, string>, price: number, mainImage: string, currentLang: string) => {
     const slug = slugObj[currentLang] || slugObj["en"] || "";
     const name = nameObj[currentLang] || nameObj["en"] || "";
-    addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);
+    addToCart({
+      slug, name, price, mainImage, quantity: 1,
+      originalPrice: 0
+    }, currentLang);
     openCart();
   };
 

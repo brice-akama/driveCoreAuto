@@ -3,9 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCurrency } from "@/app/context/CurrencyContext";
 import { FiHeart, FiFacebook, FiTwitter } from "react-icons/fi";
-import { useLanguage } from "../context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface Product {
   _id: string;
@@ -18,19 +17,24 @@ interface Product {
   Specifications: Record<string, string>;
   Shipping: Record<string, string>;
   Warranty: Record<string, string>;
+  discountPercent?: number;
 }
 
 interface QuickViewModalProps {
   product: Product;
   onClose: () => void;
   currentLang: string;
-  handleAddToCart: (product: Product) => void;
+  handleAddToCart: (product: Product, quantity: number) => void; 
   handleAddToWishlist: (product: Product) => void;
   translatedTexts: {
     addtoCart: string;
     addToWishlist: string;
   };
   symbol?: string;
+}
+
+function getDiscountedPrice(price: number, discountPercent?: number) {
+  return discountPercent ? price - price * (discountPercent / 100) : price;
 }
 
 export default function QuickViewModal({
@@ -44,7 +48,6 @@ export default function QuickViewModal({
 }: QuickViewModalProps) {
   const { symbol } = useCurrency();
   const currencySymbol = propSymbol || symbol || "$";
-  const { translate } = useLanguage();
 
   const [labels, setLabels] = useState({
     specifications: "Specifications",
@@ -53,25 +56,29 @@ export default function QuickViewModal({
     viewDetails: "View Details",
   });
 
+  const [quantity, setQuantity] = useState(1);
+
   useEffect(() => {
     async function loadLabels() {
-      const specifications = await translate("Specifications");
-      const shipping = await translate("Shipping & Delivery");
-      const warranty = await translate("Warranty");
-      const viewDetails = await translate("View Details");
-      setLabels({ specifications, shipping, warranty, viewDetails });
+      setLabels({
+        specifications: "Specifications",
+        shipping: "Shipping & Delivery",
+        warranty: "Warranty",
+        viewDetails: "View Details",
+      });
     }
     loadLabels();
-  }, [translate]);
+  }, []);
+
+  const discountedPrice = getDiscountedPrice(product.price, product.discountPercent);
+  const totalPrice = discountedPrice * quantity;
 
   const domain =
     process.env.NEXT_PUBLIC_API_URL ||
     (typeof window !== "undefined" ? window.location.origin : "https://www.drivecoreauto.com");
 
   const productUrl = `${domain}/products/${product.slug.en}?lang=${currentLang}`;
-  const shareText = encodeURIComponent(
-    `Check out this product: ${product.name[currentLang] || product.name.en}`
-  );
+  const shareText = encodeURIComponent(`Check out this product: ${product.name[currentLang] || product.name.en}`);
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
   const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(productUrl)}&text=${shareText}`;
 
@@ -103,7 +110,6 @@ export default function QuickViewModal({
             unoptimized
           />
 
-          {/* View Details button on hover */}
           <Link
             href={`/products/${product.slug.en}?lang=${currentLang}`}
             className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-800 text-white px-4 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity w-full text-center"
@@ -119,16 +125,35 @@ export default function QuickViewModal({
               {product.name[currentLang] || product.name.en}
             </h2>
 
+            {/* Price with discount */}
             <p className="text-lg font-semibold mb-3">
-              {currencySymbol}{product.price}
+              {product.discountPercent ? (
+                <>
+                  <span className="line-through text-gray-500 mr-2">
+                    {symbol}{product.price.toFixed(2)}
+                  </span>
+                  <span className="text-blue-600">
+                    {symbol}{discountedPrice.toFixed(2)}
+                  </span>
+                  <span className="ml-2 text-gray-700">
+                    x {quantity} = {symbol}{totalPrice.toFixed(2)}
+                  </span>
+                </>
+              ) : (
+                <span>
+                  {symbol}{product.price.toFixed(2)} x {quantity} = {symbol}{totalPrice.toFixed(2)}
+                </span>
+              )}
             </p>
 
-            {/* Buttons: Add to Cart + Wishlist */}
+            
+
+            {/* Buttons */}
             <div className="flex gap-4 mb-6">
               <button
                 className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-black flex-1"
                 onClick={() => {
-                  handleAddToCart(product);
+                  handleAddToCart(product, quantity);
                   onClose();
                 }}
               >
@@ -148,24 +173,12 @@ export default function QuickViewModal({
               </button>
             </div>
 
-            {/* Share icons */}
+            {/* Share */}
             <div className="flex gap-4 mb-6">
-              <a
-                href={facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800"
-                aria-label="Share on Facebook"
-              >
+              <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
                 <FiFacebook size={24} />
               </a>
-              <a
-                href={twitterUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-600"
-                aria-label="Share on Twitter"
-              >
+              <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-600">
                 <FiTwitter size={24} />
               </a>
             </div>
@@ -179,7 +192,6 @@ export default function QuickViewModal({
               }}
             />
 
-            {/* Shipping & Delivery */}
             <h3 className="font-semibold text-lg mb-1">{labels.shipping}</h3>
             <div
               className="product-details"
@@ -188,7 +200,6 @@ export default function QuickViewModal({
               }}
             />
 
-            {/* Warranty */}
             <h3 className="font-semibold text-lg mb-1">{labels.warranty}</h3>
             <div
               className="product-details"

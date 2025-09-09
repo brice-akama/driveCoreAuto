@@ -2,13 +2,14 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
-interface WishlistItem {
-  _id: string;
+export interface WishlistItem {
+  _id?: string;
   slug: string;
   name: string;
-  price?: number;
+  price: number;
+  discountPrice?: number;      // ✅ added
+  discountPercent?: number;    // ✅ added
   mainImage: string;
-  
 }
 
 interface WishlistContextType {
@@ -27,7 +28,6 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       const response = await fetch("/api/wishlist");
       const data = await response.json();
-      // your backend returns { wishlist: { items: [...] } } or similar
       setWishlist(Array.isArray(data.wishlist?.items) ? data.wishlist.items : []);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -50,8 +50,20 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
       });
 
       if (response.ok) {
-        // refresh wishlist after add
-        await fetchWishlist();
+        const data = await response.json();
+        // map discount info from backend
+        if (data.wishlist?.items) {
+          setWishlist(
+            data.wishlist.items.map((item: any) => ({
+              slug: item.slug,
+              name: item.name,
+              price: item.price,
+              discountPrice: item.discountPrice,
+              discountPercent: item.discountPercent,
+              mainImage: item.mainImage,
+            }))
+          );
+        }
       } else {
         console.error("Failed to add to wishlist:", await response.text());
       }
@@ -68,8 +80,8 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
         body: JSON.stringify({ slug }),
       });
       if (response.ok) {
-        // refresh wishlist after remove
-        await fetchWishlist();
+        const data = await response.json();
+        setWishlist(Array.isArray(data.wishlist?.items) ? data.wishlist.items : []);
       }
     } catch (error) {
       console.error("Error removing from wishlist:", error);

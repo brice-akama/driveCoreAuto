@@ -13,7 +13,15 @@ interface WishlistItem {
   name: string;
   price: number;
   mainImage: string;
+  discountPercent?: number;
+  discountPrice?: number;
 }
+
+// ✅ Helper to calculate discounted price
+const getDiscountedPrice = (price: number, discountPercent?: number) => {
+  if (!discountPercent || discountPercent <= 0) return price;
+  return parseFloat((price - (price * discountPercent) / 100).toFixed(2));
+};
 
 export default function WishlistPage() {
   const { wishlist, removeFromWishlist } = useWishlist() as {
@@ -36,9 +44,22 @@ export default function WishlistPage() {
     mainImage: string,
     currentLang: string
   ) => {
-    addToCart({ slug, name, price, mainImage, quantity: 1 }, currentLang);
+    addToCart({
+      slug,
+      name,
+      price,
+      mainImage,
+      quantity: 1,
+      originalPrice: 0
+    }, currentLang);
     openCart();
   };
+
+  // ✅ Compute discount price for display
+  const wishlistWithDiscounts = wishlist.map(item => ({
+    ...item,
+    discountPrice: getDiscountedPrice(item.price, item.discountPercent)
+  }));
 
   // **Empty wishlist view**
   if (wishlist.length === 0) {
@@ -84,7 +105,7 @@ export default function WishlistPage() {
               </tr>
             </thead>
             <tbody>
-              {wishlist.map((item, index) => (
+              {wishlistWithDiscounts.map((item, index) => (
                 <tr key={`${item._id}-${index}`} className="border-b border-gray-200 hover:bg-gray-50">
                   <td className="flex items-center py-4 px-4 gap-4">
                     <Image
@@ -96,7 +117,10 @@ export default function WishlistPage() {
                     />
                     <span className="text-blue-600 font-medium">{item.name}</span>
                   </td>
-                  <td className="py-4 px-4">${item.price.toFixed(2)}</td>
+                  <td className="py-4 px-4">
+                    ${ (item.discountPrice ?? item.price).toFixed(2) }
+                  </td>
+
                   <td className="py-4 px-4">
                     <button
                       onClick={() => removeFromWishlist(item.slug)}
@@ -123,7 +147,7 @@ export default function WishlistPage() {
 
         {/* Mobile */}
         <div className="block md:hidden space-y-4">
-          {wishlist.map((item, index) => (
+          {wishlistWithDiscounts.map((item, index) => (
             <div
               key={`${item._id}-${index}`}
               className="border border-gray-200 rounded-lg p-4 flex flex-col items-start gap-4"
@@ -138,7 +162,10 @@ export default function WishlistPage() {
                 />
                 <span className="text-blue-600 font-medium">{item.name}</span>
               </div>
-              <p className="text-gray-800 font-semibold">${item.price.toFixed(2)}</p>
+              <p className="text-gray-800 font-semibold">
+                ${ (item.discountPrice ?? item.price).toFixed(2) }
+              </p>
+
               <div className="flex gap-2">
                 <button
                   onClick={() => removeFromWishlist(item.slug)}

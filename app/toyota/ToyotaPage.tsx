@@ -287,13 +287,22 @@ const currentProducts = sortedProducts.slice(
   const slug = product.slug[currentLang] || product.slug["en"] || "";
   const name = product.name[currentLang] || product.name["en"] || "";
 
+  // Apply discount once
+  const discountedPrice = getDiscountedPrice(product.price, product.discountPercent);
+
   addToCart(
     {
-      slug, name, price: product.price, mainImage: product.mainImage, quantity: 1,
-      originalPrice: 0
+      slug,
+      name,
+      price: discountedPrice,          // already final price
+      originalPrice: product.price,    // keep reference
+      discountPercent: product.discountPercent || 0,
+      mainImage: product.mainImage,
+      quantity: 1,
     },
     currentLang
   );
+
   openCart();
 };
 
@@ -960,10 +969,7 @@ useEffect(() => {
         onMouseLeave={() => setHoveredIcon(null)}
       >
         <motion.button
-          onClick={() => handleAddToCart({
-      ...product,
-      finalPrice: getDiscountedPrice(product.price, product.discountPercent)
-    })}
+          onClick={() => handleAddToCart(product)}
           className="w-full border border-gray-700 rounded py-2 bg-blue-800 text-white flex items-center justify-center relative overflow-hidden"
           whileHover={{ scale: 1.03 }}
         >

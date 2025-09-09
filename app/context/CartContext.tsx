@@ -61,15 +61,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
 const addToCart = async (item: CartItem, language: string) => {
-  const finalPrice =
-    item.discountPercent && item.discountPercent > 0
-      ? item.price - (item.price * item.discountPercent) / 100
-      : item.price;
-
+  // item.price is already discounted
   const itemToAdd: CartItem = {
     ...item,
-    originalPrice: item.price, // keep original
-    price: finalPrice          // discounted price
+    originalPrice: item.originalPrice || item.price, // keep reference
   };
 
   setCartItems((prevItems) => {
@@ -89,7 +84,7 @@ const addToCart = async (item: CartItem, language: string) => {
       body: JSON.stringify({
         slug: item.slug,
         quantity: item.quantity,
-        price: finalPrice,
+        price: item.price, // already discounted
         language,
       }),
     });
