@@ -126,25 +126,34 @@ export default function QuickViewModal({
             </h2>
 
             {/* Price with discount */}
-            <p className="text-lg font-semibold mb-3">
-              {product.discountPercent ? (
-                <>
-                  <span className="line-through text-gray-500 mr-2">
-                    {symbol}{product.price.toFixed(2)}
-                  </span>
-                  <span className="text-blue-600">
-                    {symbol}{discountedPrice.toFixed(2)}
-                  </span>
-                  <span className="ml-2 text-gray-700">
-                    x {quantity} = {symbol}{totalPrice.toFixed(2)}
-                  </span>
-                </>
-              ) : (
-                <span>
-                  {symbol}{product.price.toFixed(2)} x {quantity} = {symbol}{totalPrice.toFixed(2)}
-                </span>
-              )}
-            </p>
+            {/* Price with discount */}
+<p className="text-lg font-semibold mb-3">
+  {product.discountPercent && product.discountPercent > 0 ? (
+    <>
+      {/* Original price */}
+      <span className="line-through text-gray-500 mr-2">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      {/* Discounted price */}
+      <span className="text-blue-600">
+        {symbol}{discountedPrice.toFixed(2)}
+      </span>
+      {/* Total for quantity */}
+      <span className="ml-2 text-gray-700">
+        x {quantity} = {symbol}{totalPrice.toFixed(2)}
+      </span>
+    </>
+  ) : (
+    /* No discount: price in blue and total in gray */
+    <span>
+      <span className="text-blue-600">{symbol}{product.price.toFixed(2)}</span>
+      <span className="ml-2 text-gray-700">
+        x {quantity} = {symbol}{totalPrice.toFixed(2)}
+      </span>
+    </span>
+  )}
+</p>
+
 
             
 

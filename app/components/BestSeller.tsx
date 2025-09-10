@@ -247,10 +247,10 @@ export default function BestSeller() {
         <div className="w-1/2 p-6 flex flex-col justify-between max-h-[500px] overflow-y-auto">
           {(() => {
             // ✅ Discount calculation
-            const hasDiscount = (quickViewProduct.discountPercent ?? 0) > 0;
-            const discountedPrice = hasDiscount
-              ? quickViewProduct.price - (quickViewProduct.price * (quickViewProduct.discountPercent ?? 0)) / 100
-              : quickViewProduct.price;
+            const hasDiscount = (quickViewProduct.discountPercent ?? 0) > 0; // ✅ only true if discount > 0
+const discountedPrice = hasDiscount
+  ? quickViewProduct.price - (quickViewProduct.price * quickViewProduct.discountPercent!) / 100
+  : quickViewProduct.price;
 
             return (
               <div>
@@ -258,13 +258,25 @@ export default function BestSeller() {
                   {quickViewProduct.name[currentLang] || quickViewProduct.name.en}
                 </h2>
                 <p className="text-lg font-semibold mb-4">
-                  {symbol}{discountedPrice.toFixed(2)}
-                  {hasDiscount && (
-                    <span className="text-blue-600 line-through ml-2">
-                      {symbol}{quickViewProduct.price.toFixed(2)}
-                    </span>
-                  )}
-                </p>
+  {hasDiscount ? (
+    <>
+      {/* Original price gray */}
+      <span className="text-gray-500 line-through mr-2">
+        {symbol}{quickViewProduct.price.toFixed(2)}
+      </span>
+      {/* Discounted price blue */}
+      <span className="text-blue-600">
+        {symbol}{discountedPrice.toFixed(2)}
+      </span>
+    </>
+  ) : (
+    // No discount, price blue
+    <span className="text-blue-600">
+      {symbol}{quickViewProduct.price.toFixed(2)}
+    </span>
+  )}
+</p>
+
 
                 <div className="flex items-center gap-4 mb-6">
                   <motion.button
@@ -398,10 +410,11 @@ function ProductCard({
   const thumbnail = product.thumbnails?.[0];
   const hasThumbnail = Boolean(thumbnail);
   const [hoverCart, setHoverCart] = useState(false);
-  const hasDiscount = product.discountPercent && product.discountPercent > 0;
+  const hasDiscount = (product.discountPercent ?? 0) > 0; // ✅ only true if discount > 0
 const discountedPrice = hasDiscount
   ? product.price - (product.price * product.discountPercent!) / 100
   : product.price;
+
 
 
 
@@ -501,14 +514,23 @@ const discountedPrice = hasDiscount
         </Link>
       
        <div className="mt-2 text-center flex justify-center items-center gap-2">
-  {hasDiscount && (
-    <span className="text-blue-600 font-medium line-through">
+  {hasDiscount ? (
+    <>
+      {/* Original price in gray */}
+      <span className="text-gray-500 font-medium line-through">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      {/* Discounted price in blue */}
+      <span className="text-blue-600 text-lg font-semibold">
+        {symbol}{discountedPrice.toFixed(2)}
+      </span>
+    </>
+  ) : (
+    // No discount, price in blue
+    <span className="text-blue-600 text-lg font-semibold">
       {symbol}{product.price.toFixed(2)}
     </span>
   )}
-  <span className="text-lg font-semibold text-gray-900">
-    {symbol}{discountedPrice.toFixed(2)}
-  </span>
 </div>
 
 

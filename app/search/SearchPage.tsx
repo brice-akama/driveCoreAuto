@@ -25,6 +25,7 @@ interface Product {
   subText?: string;
   price: number; // now always number
   category: string;
+   discountPercent?: number; 
   releaseDate?: string;
   description: { [lang: string]: string };
   Specifications: Record<string, string>;
@@ -55,6 +56,7 @@ export default function SearchPage() {
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const { symbol } = useCurrency();
   const router = useRouter();
+  
 
 
   const { addToWishlist } = useWishlist();
@@ -101,6 +103,7 @@ export default function SearchPage() {
           Specifications: p.Specifications || {},
           Shipping: p.Shipping || {},
           Warranty: p.Warranty || {},
+            discountPercent: p.discountPercent ?? 0,
         }));
 
         setResults({ products: normalizedProducts, blogs: data.blogs || [] });
@@ -125,28 +128,49 @@ export default function SearchPage() {
 
   // Add to cart
   const handleAddToCart = (product: Product) => {
-    const slug = product.slug[currentLang] || product.slug.en;
-    const name = product.name[currentLang] || product.name.en;
+  const slug = product.slug[currentLang] || product.slug.en;
+  const name = product.name[currentLang] || product.name.en;
 
-    addToCart(
-  {
-    slug,
-    name,
-    price: product.price,
-    mainImage: product.mainImage || '',
-    quantity: 1,
-  },
-  currentLang
-);
+  // ✅ Calculate discounted price
+  const hasDiscount = (product.discountPercent ?? 0) > 0;
+  const finalPrice = hasDiscount
+    ? product.price - (product.price * product.discountPercent!) / 100
+    : product.price;
 
-    openCart();
-  };
+  addToCart(
+    {
+      slug,
+      name,
+      price: finalPrice,       // ✅ use discounted price
+      mainImage: product.mainImage || '',
+      quantity: 1,
+      originalPrice: product.price // optional: store original price
+    },
+    currentLang
+  );
+
+  openCart();
+};
+
   
   // Inside your SearchPage component, after router is defined
 const handleViewDetails = (product: Product) => {
   const englishSlug = product.slug.en; // always use English slug
   router.push(`/products/${englishSlug}?lang=${currentLang}`);
 };
+
+
+
+  const BRANDS = ["Toyota", "Nissan", "Subaru", "Honda", "Mazda", "Accessories", "Scion", "Acure", "Lexus"];
+  const extractModel = (name: string) => {
+    if (!name) return "UNKNOWN ENGINE";
+    const brandPattern = BRANDS.join("|");
+    const regex = new RegExp(`(${brandPattern})\\s+(\\w+)`, "i");
+    const match = name.match(regex);
+    if (match && match[1] && match[2]) return `${match[1].toUpperCase()} ${match[2].toUpperCase()}`;
+    const fallback = name.split(" ").slice(0, 2).join(" ");
+    return fallback.toUpperCase() || "UNKNOWN ENGINE";
+  };
 
 
   // Add to wishlist
@@ -251,6 +275,10 @@ const handleViewDetails = (product: Product) => {
   {paginatedProducts.map(product => {
     const slugForLang = product.slug[currentLang] || product.slug.en;
     const nameForLang = product.name[currentLang] || product.name.en;
+  const hasDiscount = (product.discountPercent ?? 0) > 0; // ✅ only true if discount > 0
+const discountedPrice = hasDiscount
+  ? product.price - (product.price * product.discountPercent!) / 100
+  : product.price;
 
     return (
       <motion.li
@@ -261,6 +289,16 @@ const handleViewDetails = (product: Product) => {
       >
         {/* Image with hover zoom */}
         <motion.div className="relative overflow-hidden rounded-md">
+
+                {/* Discount Badge */}
+  {hasDiscount && (
+    <div className="absolute top-2  left-2 z-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+      -{product.discountPercent}% 
+    </div>
+  )}
+                 <div className="absolute mt-7 top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-2 rounded shadow z-10">
+    {extractModel(product.name[currentLang] || product.name.en)}
+  </div>
   <motion.img
     src={product.mainImage || "/placeholder.jpg"}
     alt={nameForLang}
@@ -307,7 +345,25 @@ const handleViewDetails = (product: Product) => {
 </span>
 
         <p className="text-sm text-gray-600">{product.subText}</p>
-        <p className="text-gray-600 font-bold mt-1 text-center">{symbol}{product.price}</p>
+         <div className="mt-2 text-center flex justify-center items-center gap-2">
+  {hasDiscount ? (
+    <>
+      {/* Original price in gray */}
+      <span className="text-gray-500 font-medium line-through">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      {/* Discounted price in blue */}
+      <span className="text-blue-600 text-lg font-semibold">
+        {symbol}{discountedPrice.toFixed(2)}
+      </span>
+    </>
+  ) : (
+    // No discount, price in blue
+    <span className="text-blue-600 text-lg font-semibold">
+      {symbol}{product.price.toFixed(2)}
+    </span>
+  )}
+</div>
 
         {/* Animated Add to Cart */}
         <motion.button

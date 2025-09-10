@@ -2,6 +2,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
+import toast from "react-hot-toast";
+
 
 
 
@@ -238,22 +240,28 @@ const paginate = (pageNumber: number) => {
 
   // Submit new review to backend
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("/api/customers-reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newReview),
-      });
-      if (!res.ok) throw new Error("Failed to submit review");
-      setNewReview({ product: "", rating: 0, text: "", author: "", location: "" });
-      setShowModal(false);
-      fetchReviews(); // Refresh the review list
-    } catch (error) {
-      console.error(error);
-      alert("Failed to submit review. Please try again.");
-    }
-  };
+  e.preventDefault();
+  try {
+    const res = await fetch("/api/customers-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newReview),
+    });
+
+    if (!res.ok) throw new Error("Failed to submit review");
+
+    setNewReview({ product: "", rating: 0, text: "", author: "", location: "" });
+    setShowModal(false);
+    fetchReviews(); // Refresh the review list
+
+    // ✅ Show success toast
+    toast.success("Your review has been submitted successfully!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to submit review. Please try again.");
+  }
+};
+
 
 
   return (
@@ -356,73 +364,111 @@ const paginate = (pageNumber: number) => {
           </button>
         </div>
         {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-            <div className="bg-white p-8 rounded-lg max-w-lg w-full relative">
-              <button
-                onClick={() => setShowModal(false)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-              >
-                ✕
-              </button>
-              <h3 className="text-xl font-bold mb-4">Submit Your Review</h3>
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                <input
-                  type="text"
-                  name="product"
-                  value={newReview.product}
-                  onChange={handleInputChange}
-                  placeholder="Product Name"
-                  required
-                  className="border rounded px-3 py-2"
-                />
-                <input
-                  type="number"
-                  name="rating"
-                  value={newReview.rating}
-                  onChange={handleInputChange}
-                  placeholder="Rating (1-5)"
-                  min={1}
-                  max={5}
-                  required
-                  className="border rounded px-3 py-2"
-                />
-                <textarea
-                  name="text"
-                  value={newReview.text}
-                  onChange={handleInputChange}
-                  placeholder="Write your review..."
-                  required
-                  className="border rounded px-3 py-2"
-                />
-                <input
-                  type="text"
-                  name="author"
-                  value={newReview.author}
-                  onChange={handleInputChange}
-                  placeholder="Your Name"
-                  required
-                  className="border rounded px-3 py-2"
-                />
-                <input
-                  type="text"
-                  name="location"
-                  value={newReview.location}
-                  onChange={handleInputChange}
-                  placeholder="Your Location"
-                  required
-                  className="border rounded px-3 py-2"
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-2"
-                >
-                  Submit Review
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
+{/* Modal */}
+{showModal && (
+  <div
+  onClick={() => setShowModal(false)}
+  className="fixed inset-0 flex items-center justify-center z-50">
+    <div 
+     onClick={(e) => e.stopPropagation()}
+    className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-[fadeInUp_0.3s_ease]">
+      
+      {/* Close Button */}
+      <button
+        onClick={() => setShowModal(false)}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
+      >
+        ✕
+      </button>
+
+      {/* Title */}
+      <h3 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        Share Your Experience
+      </h3>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        
+        {/* Product */}
+        <input
+          type="text"
+          name="product"
+          value={newReview.product}
+          onChange={handleInputChange}
+          placeholder="Product Name"
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+
+        {/* Rating (Star Picker) */}
+        <div className="flex items-center gap-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              onClick={() => setNewReview({ ...newReview, rating: star })}
+              className={`h-6 w-6 cursor-pointer transition ${
+                star <= newReview.rating
+                  ? "text-yellow-400"
+                  : "text-gray-300 hover:text-yellow-300"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Review Text */}
+        <textarea
+          name="text"
+          value={newReview.text}
+          onChange={handleInputChange}
+          placeholder="Write your review..."
+          required
+          rows={4}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+
+        {/* Author */}
+        <input
+          type="text"
+          name="author"
+          value={newReview.author}
+          onChange={handleInputChange}
+          placeholder="Your Name"
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+
+        {/* Location */}
+        <input
+          type="text"
+          name="location"
+          value={newReview.location}
+          onChange={handleInputChange}
+          placeholder="Your Location"
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 justify-end mt-4">
+          <button
+            type="button"
+            onClick={() => setShowModal(false)}
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold shadow hover:opacity-90 transition"
+          >
+            Submit Review
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       </section>
     </div>
   );

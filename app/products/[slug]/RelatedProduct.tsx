@@ -19,6 +19,8 @@ interface RelatedProduct {
   Specifications?: Record<string, string>;
   Shipping?: Record<string, string>;
   Warranty?: Record<string, string>;
+  discountPrice?: number;       // ✅ optional
+  discountPercent?: number;     // ✅ optional
 }
 
 interface RelatedProductsProps {
@@ -43,6 +45,8 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
   const [isFallback, setIsFallback] = useState(false);
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
   const [hoveredCartButton, setHoveredCartButton] = useState<string | null>(null);
+  
+  
 
   const { language, translate } = useLanguage();
   const { addToWishlist } = useWishlist();
@@ -127,6 +131,11 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
             Specifications: p.Specifications,
             Shipping: p.Shipping,
             Warranty: p.Warranty,
+            discountPercent: p.discountPercent || 0,
+discountPrice: p.discountPercent
+  ? p.price - (p.price * p.discountPercent) / 100
+  : p.price,
+            // optional if API provides
           }))
         );
       } else {
@@ -179,11 +188,27 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
         {relatedProducts.map(product => {
           const localizedName = product.name?.[language] || product.name?.en || "";
           const englishSlug = product.slug?.en || product.slug?.[language] || "";
+          {/*
+  Check if product has a discount
+  We'll use discountPercent if available
+*/}
+const hasDiscount = (product.discountPrice ?? product.price) < product.price;
+const discountedPrice = hasDiscount
+  ? product.price - (product.price * product.discountPercent!) / 100
+  : product.price;
+
 
           return (
             <div key={product.id} className="group">
               <div className="relative w-full h-[300px] overflow-hidden rounded-lg mt-10">
-                <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
+
+                {/* Discount Badge */}
+{hasDiscount && (
+  <div className="absolute top-2 left-2 z-20 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+    -{product.discountPercent}%
+  </div>
+)}
+     <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-3 rounded shadow z-10">
                   {extractModel(localizedName)}
                 </div>
 
@@ -254,15 +279,33 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
                 <Link href={`/products/${englishSlug}?lang=${language || "en"}`}>
                   <h3 className="text-lg font-medium cursor-pointer hover:underline">{localizedName}</h3>
                 </Link>
-                <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
+<p className="mt-1 text-lg font-semibold">
+  {hasDiscount ? (
+    <>
+      <span className="line-through text-gray-500 mr-2">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      <span className="text-blue-600">
+        {symbol}{product.discountPrice!.toFixed(2)}
+      </span>
+    </>
+  ) : (
+    <span className="text-blue-600">
+      {symbol}{product.price.toFixed(2)}
+    </span>
+  )}
+</p>
+
                 <button
-                  className="mt-2 px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800 transition flex items-center justify-center mx-auto"
-                  onClick={() => handleAddToCart(product.id, product.slug, product.name, product.price, product.mainImage, language)}
-                  onMouseEnter={() => setHoveredCartButton(product.id)}
-                  onMouseLeave={() => setHoveredCartButton(null)}
-                >
-                  {hoveredCartButton === product.id ? <FiShoppingCart className="w-5 h-5" /> : translatedTexts.addToCart}
-                </button>
+  className="mt-2 px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800 transition flex items-center justify-center mx-auto"
+  onClick={() =>
+    handleAddToCart(product.id, product.slug, product.name, discountedPrice, product.mainImage, language)
+  }
+  onMouseEnter={() => setHoveredCartButton(product.id)}
+  onMouseLeave={() => setHoveredCartButton(null)}
+>
+  {hoveredCartButton === product.id ? <FiShoppingCart className="w-5 h-5" /> : translatedTexts.addToCart}
+</button>
               </div>
             </div>
           );
@@ -312,9 +355,28 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProductSlug })
                 <h2 className="text-2xl font-bold mb-2">
                   {quickViewProduct.name[language] || quickViewProduct.name.en}
                 </h2>
-                <p className="text-lg font-semibold mb-4">
-                  {symbol}{quickViewProduct.price}
-                </p>
+<p className="text-lg font-semibold mb-4">
+  {(quickViewProduct.discountPercent ?? 0) > 0 ? (
+    <>
+      {/* Original price */}
+      <span className="line-through text-gray-500 mr-2">
+        {symbol}{quickViewProduct.price.toFixed(2)}
+      </span>
+      {/* Discounted price */}
+      <span className="text-blue-600">
+        {symbol}{(
+          quickViewProduct.price -
+          (quickViewProduct.price * quickViewProduct.discountPercent!) / 100
+        ).toFixed(2)}
+      </span>
+    </>
+  ) : (
+    <span className="text-blue-600">
+      {symbol}{quickViewProduct.price.toFixed(2)}
+    </span>
+  )}
+</p>
+
 
                 <div className="flex items-center gap-4 mb-6">
                   <button

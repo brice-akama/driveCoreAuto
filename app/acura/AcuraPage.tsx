@@ -2,8 +2,6 @@
 
 
 
-
-
 'use client';
 
 import { useState, useEffect, useRef } from "react";
@@ -36,6 +34,8 @@ export type Product = {
   metaTitle?: Record<string, string>;
   metaDescription?: Record<string, string>;
   imageUrl?: string;
+  discountPercent?: number;
+   finalPrice?: number;
 };
 
 export type AcuraPageProps = {
@@ -131,6 +131,11 @@ const iconVariants = {
 const buttonVariants = {
   hover: { scale: 1.05 },
 };
+
+
+function getDiscountedPrice(price: number, discountPercent?: number) {
+  return discountPercent ? price - price * (discountPercent / 100) : price;
+}
 
 
 
@@ -286,13 +291,22 @@ const currentProducts = sortedProducts.slice(
   const slug = product.slug[currentLang] || product.slug["en"] || "";
   const name = product.name[currentLang] || product.name["en"] || "";
 
+  // Apply discount once
+  const discountedPrice = getDiscountedPrice(product.price, product.discountPercent);
+
   addToCart(
     {
-      slug, name, price: product.price, mainImage: product.mainImage, quantity: 1,
-      originalPrice: 0
+      slug,
+      name,
+      price: discountedPrice,          // already final price
+      originalPrice: product.price,    // keep reference
+      discountPercent: product.discountPercent || 0,
+      mainImage: product.mainImage,
+      quantity: 1,
     },
     currentLang
   );
+
   openCart();
 };
 
@@ -400,7 +414,7 @@ useEffect(() => {
   <BrandLinksNav currentBrand="acura" />
 </div>
 
-    <div className="max-w-7xl mx-auto px-4 py-10 ">
+    <div className="max-w-7xl mx-auto px-4 py-0 ">
 
       <motion.ol
   className="inline-flex  space-x-2"
@@ -804,10 +818,19 @@ useEffect(() => {
     onMouseEnter={() => setHoveredProductId(product._id)}
     onMouseLeave={() => setHoveredProductId(null)}
   >
-    {/* Model label */}
-    <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-1 rounded shadow z-10">
-      {extractModel(product.name[currentLang] || product.name.en)}
-    </div>
+
+{/* Discount Badge */}
+{product.discountPercent && (
+  <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+    -{product.discountPercent}%
+  </div>
+)}
+
+{/* Model label */}
+<div className="absolute top-10 left-2 z-10 bg-white text-xs font-semibold text-black px-1 py-2 rounded shadow">
+  {extractModel(product.name[currentLang] || product.name.en)}
+</div>
+
 
     {/* Product images */}
     {hoveredProductId === product._id && product.thumbnails?.[0] ? (
@@ -927,7 +950,26 @@ useEffect(() => {
           {product.name[currentLang] || product.name.en}
         </h3>
       </Link>
-      <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
+      {/* Price */}
+{/* Price */}
+<p className="mt-2 font-semibold text-lg">
+  {product.discountPercent && product.discountPercent > 0 ? (
+    <>
+      {/* Original price */}
+      <span className="line-through text-gray-500 mr-2">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      {/* Discounted price */}
+      <span className="text-blue-600">
+        {symbol}{getDiscountedPrice(product.price, product.discountPercent).toFixed(2)}
+      </span>
+    </>
+  ) : (
+    /* No discount: price in blue to match buttons */
+    <span className="text-blue-600">{symbol}{product.price.toFixed(2)}</span>
+  )}
+</p>
+
 
       {/* Add to Cart Button with hover icon swap */}
       <motion.div

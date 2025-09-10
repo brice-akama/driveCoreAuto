@@ -12,6 +12,7 @@ import { CurrencyProvider } from "./context/CurrencyContext";
 
 import ClientWrapper from "./components/ClientWrapper";
 import BottomNav from "./components/BottomNav";
+import { Toaster } from "react-hot-toast";
 
 // Fonts
 const geistSans = Geist({
@@ -40,6 +41,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <CartProvider>
                 <ClientWrapper>
                   {children}
+                  {/* ✅ Global Toast Notifications */}
+                  <Toaster
+                    position="top-right"
+                    reverseOrder={false}
+                    toastOptions={{
+                      style: { fontWeight: "500", borderRadius: "8px" },
+                      duration: 4000,
+                    }}
+                  />
                   <BottomNav /> {/* <-- Insert here */}
 
                 </ClientWrapper>

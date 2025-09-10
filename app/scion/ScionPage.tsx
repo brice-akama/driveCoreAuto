@@ -1,389 +1,411 @@
 
 
 
-'use client';
-
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useWishlist } from "@/app/context/WishlistContext";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useLanguage } from "@/app/context/LanguageContext";
-import { Menu, X } from "lucide-react";
-import BrandLinksNav from "../components/BrandLinksNav";
-import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
-import { useCurrency } from "@/app/context/CurrencyContext";
-import { useCart } from "../context/CartContext";
-import QuickViewModal from "../components/QuickViewModal"; 
-import { motion, AnimatePresence } from 'framer-motion';
-
-export type Product = {
-  _id: string;
-  name: Record<string, string>;
-  slug: Record<string, string>;
-  price: number;
-  mainImage: string;
-  thumbnails?: string[];
-  category: string;
-  description: Record<string, string>;
-  Specifications: Record<string, string>;
-  Shipping: Record<string, string>;
-  Warranty: Record<string, string>; 
-   // Add these for SEO
-  metaTitle?: Record<string, string>;
-  metaDescription?: Record<string, string>;
-  imageUrl?: string;
-};
-
-export type ScionPageProps = {
-  categorySlug?: string;
-  initialProducts?: Product[];
-  initialCategories?: string[];
-  initialVehicleModels?: string[];
-};
-
-const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
-
-export default function ScionPage({
-  categorySlug,
-  initialProducts = [],
-  initialCategories = [],
-  initialVehicleModels = [],
-}: ScionPageProps) {
-  const { language, translate } = useLanguage();
-  const currentLang = language || "en";
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const productsRef = useRef<HTMLDivElement>(null);
-
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
-  const { symbol } = useCurrency();
-  const { addToCart, openCart } = useCart();
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-
-  // Use server-side props as initial state
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [categories, setCategories] = useState<string[]>(initialCategories);
-  const [vehicleModels, setVehicleModels] = useState<string[]>(initialVehicleModels);
-
-  const [loading, setLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [appliedPriceRange, setAppliedPriceRange] = useState<string | null>(null);
-  const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
-
-  const [vehicleModelInput, setVehicleModelInput] = useState("");
-  const [engineCodeInput, setEngineCodeInput] = useState("");
-  const [appliedVehicleModel, setAppliedVehicleModel] = useState<string | null>(null);
-  const [appliedEngineCode, setAppliedEngineCode] = useState<string | null>(null);
-
-  const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
-    const params = new URLSearchParams();
-    params.set("scion", "true");
-
-    if (engineCode && engineCode.trim() !== "") {
-      params.set("category", engineCode.trim().toUpperCase());
-    } else {
-      params.delete("category");
-    }
-
-    if (vehicleModel && vehicleModel.trim() !== "") {
-      params.set("vehicleModel", vehicleModel.trim());
-    } else {
-      params.delete("vehicleModel");
-    }
-
-    router.push(`scion?${params.toString()}`);
+  
+  
+  'use client';
+  
+  import { useState, useEffect, useRef } from "react";
+  import Image from "next/image";
+  import Link from "next/link";
+  import { useWishlist } from "@/app/context/WishlistContext";
+  import { useSearchParams, useRouter } from "next/navigation";
+  import { useLanguage } from "@/app/context/LanguageContext";
+  import { Menu, X } from "lucide-react";
+  import BrandLinksNav from "../components/BrandLinksNav";
+  import { FiHeart, FiSearch, FiShoppingCart } from "react-icons/fi";
+  import { useCurrency } from "@/app/context/CurrencyContext";
+  import { useCart } from "../context/CartContext";
+  import QuickViewModal from "../components/QuickViewModal"; 
+  import { motion, AnimatePresence } from 'framer-motion';
+  
+  export type Product = {
+    _id: string;
+    name: Record<string, string>;
+    slug: Record<string, string>;
+    price: number;
+    mainImage: string;
+    thumbnails?: string[];
+    category: string;
+    description: Record<string, string>;
+    Specifications: Record<string, string>;
+    Shipping: Record<string, string>;
+    Warranty: Record<string, string>; 
+     // Add these for SEO
+    metaTitle?: Record<string, string>;
+    metaDescription?: Record<string, string>;
+    imageUrl?: string;
+    discountPercent?: number;
+     finalPrice?: number;
   };
-
-
-  // Suggestion dropdown visibility
-  const [showVehicleSuggestions, setShowVehicleSuggestions] = useState(false);
-  const [showEngineSuggestions, setShowEngineSuggestions] = useState(false);
-
-  const { addToWishlist } = useWishlist();
-
-  const [sortOption, setSortOption] = useState("default");
-  const [currentPage, setCurrentPage] = useState(1);
- const productsPerPage = isMobile ? 6 : 12;
-
-
- const handlePaginate = (pageNumber: number) => {
-  paginate(pageNumber); // your existing pagination function
-  window.scrollTo({ top: 0, behavior: "smooth" }); // scroll to very top
-};
-
-// Add variants for animation
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-  hover: { scale: 1.03, boxShadow: '0px 20px 30px rgba(0,0,0,0.15)' },
-};
-
-const iconVariants = {
-  hidden: { opacity: 0, y: -10 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const buttonVariants = {
-  hover: { scale: 1.05 },
-};
-
-
-
-  const [translatedTexts, setTranslatedTexts] = useState({
-    addToCart: "Add to Cart",
-    addToWishList: "Add to Wishlist",
-      home: " Home",
-      toyota: "Scion",
-      engineCodes: "Engine Codes",
-       vehicleModel: "VEHICLE MODEL",
-         sortedBy: "Sort By",
+  
+  export type ScionPageProps = {
+    categorySlug?: string;
+    initialProducts?: Product[];
+    initialCategories?: string[];
+    initialVehicleModels?: string[];
+  };
+  
+  const toSlug = (text: string) => text.toUpperCase().replace(/\s+/g, "-");
+  
+  export default function ScionPage({
+    categorySlug,
+    initialProducts = [],
+    initialCategories = [],      
+    initialVehicleModels = [],
+  }: ScionPageProps) {
+    const { language, translate } = useLanguage();
+    const currentLang = language || "en";
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const productsRef = useRef<HTMLDivElement>(null);
+  
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+    const { symbol } = useCurrency();
+    const { addToCart, openCart } = useCart();
+    const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  
+    // Use server-side props as initial state
+    const [products, setProducts] = useState<Product[]>(initialProducts);
+    const [categories, setCategories] = useState<string[]>(initialCategories);
+    const [vehicleModels, setVehicleModels] = useState<string[]>(initialVehicleModels);
+  
+    const [loading, setLoading] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [appliedPriceRange, setAppliedPriceRange] = useState<string | null>(null);
+    const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
+  
+    const [vehicleModelInput, setVehicleModelInput] = useState("");
+    const [engineCodeInput, setEngineCodeInput] = useState("");
+    const [appliedVehicleModel, setAppliedVehicleModel] = useState<string | null>(null);
+    const [appliedEngineCode, setAppliedEngineCode] = useState<string | null>(null);
+  
+    const updateUrl = (vehicleModel?: string | null, engineCode?: string | null) => {
+      const params = new URLSearchParams();
+      params.set("scion", "true");
+  
+      if (engineCode && engineCode.trim() !== "") {
+        params.set("category", engineCode.trim().toUpperCase());
+      } else {
+        params.delete("category");
+      }
+  
+      if (vehicleModel && vehicleModel.trim() !== "") {
+        params.set("vehicleModel", vehicleModel.trim());
+      } else {
+        params.delete("vehicleModel");
+      }
+  
+      router.push(`scion?${params.toString()}`);
+    };
+  
+  
+    // Suggestion dropdown visibility
+    const [showVehicleSuggestions, setShowVehicleSuggestions] = useState(false);
+    const [showEngineSuggestions, setShowEngineSuggestions] = useState(false);
+  
+    const { addToWishlist } = useWishlist();
+  
+    const [sortOption, setSortOption] = useState("default");
+    const [currentPage, setCurrentPage] = useState(1);
+   const productsPerPage = isMobile ? 6 : 12;
+  
+  
+   const handlePaginate = (pageNumber: number) => {
+    paginate(pageNumber); // your existing pagination function
+    window.scrollTo({ top: 0, behavior: "smooth" }); // scroll to very top
+  };
+  
+  // Add variants for animation
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+    hover: { scale: 1.03, boxShadow: '0px 20px 30px rgba(0,0,0,0.15)' },
+  };
+  
+  const iconVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0 },
+  };
+  
+  const buttonVariants = {
+    hover: { scale: 1.05 },
+  };
+  
+  
+  function getDiscountedPrice(price: number, discountPercent?: number) {
+    return discountPercent ? price - price * (discountPercent / 100) : price;
+  }
+  
+  
+  
+    const [translatedTexts, setTranslatedTexts] = useState({
+      addToCart: "Add to Cart",
+      addToWishList: "Add to Wishlist",
+        home: " Home",
+        toyota: "Scion",
+        engineCodes: "Engine Codes",
+         vehicleModel: "VEHICLE MODEL",
+           sortedBy: "Sort By",
+            sortPriceLowToHigh: "Price: Low to High",
+            sortPriceHighToLow: "Price: High to Low",
+            placeholderVehicleModel: "Enter your vehicle model",
+              placeholderEngineCode: "Enter your engine code",
+               showSidebar: "Show Sidebar",
+                filterByPrice: "Filter by Price",
+                all: "ALL",
+                quickview: "Quick View",
+           
+    });
+  
+   
+  
+    // Fetch button translations
+    useEffect(() => {
+    async function fetchTranslations() {
+      try {
+        const addToCart = await translate("Add to Cart");
+        const toyota = await translate("Scion");
+        const engineCodes = await translate("Engine Codes");
+        const addToWishList = await translate("Add to Wishlist");
+        const home = await translate("Home");
+        const quickview = await translate("Quick View");
+        const vehicleModel = await translate("VEHICLE MODEL");
+        const sortedBy = await translate("Sort By");
+        const all = await translate("ALL");
+         const filterByPrice = await translate("Filter by Price");
+         const showSidebar = await translate("Show Sidebar");
+        const sortPriceLowToHigh = await translate("Price: Low to High");
+        const sortPriceHighToLow = await translate("Price: High to Low");
+        const placeholderVehicleModel = await translate("Enter your vehicle model");
+        const placeholderEngineCode = await translate("Enter your engine code");
+  
+        setTranslatedTexts({
+          addToCart: addToCart || "Add to Cart",
+          addToWishList: addToWishList || "Add to Wishlist",
+          home: home || "Home",
+          toyota: toyota || "Scion",
+          engineCodes: engineCodes || "Engine Codes",
+          vehicleModel: vehicleModel || "VEHICLE MODEL",
+          sortedBy: sortedBy || "Sort By",
+          showSidebar: showSidebar || "Show Sidebar",
+          all: all || "ALL",
+          quickview: quickview || "Quick View",
+          filterByPrice: filterByPrice || "Filter by Price",
+          sortPriceLowToHigh: sortPriceLowToHigh || "Price: Low to High",
+          sortPriceHighToLow: sortPriceHighToLow || "Price: High to Low",
+          placeholderVehicleModel: placeholderVehicleModel || "Enter your vehicle model",
+          placeholderEngineCode: placeholderEngineCode || "Enter your engine code",
+        });
+      } catch {
+        setTranslatedTexts({
+          addToCart: "Add to Cart",
+          addToWishList: "Add to Wishlist",
+          home: "Home",
+          toyota: "Scion",
+          engineCodes: "Engine Codes",
+          vehicleModel: "VEHICLE MODEL",
+          sortedBy: "Sort By",
           sortPriceLowToHigh: "Price: Low to High",
           sortPriceHighToLow: "Price: High to Low",
           placeholderVehicleModel: "Enter your vehicle model",
-            placeholderEngineCode: "Enter your engine code",
-             showSidebar: "Show Sidebar",
-              filterByPrice: "Filter by Price",
-              all: "ALL",
-              quickview: "Quick View",
-         
-  });
-
- 
-
-  // Fetch button translations
-  useEffect(() => {
-  async function fetchTranslations() {
-    try {
-      const addToCart = await translate("Add to Cart");
-      const toyota = await translate("Scion");
-      const engineCodes = await translate("Engine Codes");
-      const addToWishList = await translate("Add to Wishlist");
-      const home = await translate("Home");
-      const quickview = await translate("Quick View");
-      const vehicleModel = await translate("VEHICLE MODEL");
-      const sortedBy = await translate("Sort By");
-      const all = await translate("ALL");
-       const filterByPrice = await translate("Filter by Price");
-       const showSidebar = await translate("Show Sidebar");
-      const sortPriceLowToHigh = await translate("Price: Low to High");
-      const sortPriceHighToLow = await translate("Price: High to Low");
-      const placeholderVehicleModel = await translate("Enter your vehicle model");
-      const placeholderEngineCode = await translate("Enter your engine code");
-
-      setTranslatedTexts({
-        addToCart: addToCart || "Add to Cart",
-        addToWishList: addToWishList || "Add to Wishlist",
-        home: home || "Home",
-        toyota: toyota || "Scion",
-        engineCodes: engineCodes || "Engine Codes",
-        vehicleModel: vehicleModel || "VEHICLE MODEL",
-        sortedBy: sortedBy || "Sort By",
-        showSidebar: showSidebar || "Show Sidebar",
-        all: all || "ALL",
-        quickview: quickview || "Quick View",
-        filterByPrice: filterByPrice || "Filter by Price",
-        sortPriceLowToHigh: sortPriceLowToHigh || "Price: Low to High",
-        sortPriceHighToLow: sortPriceHighToLow || "Price: High to Low",
-        placeholderVehicleModel: placeholderVehicleModel || "Enter your vehicle model",
-        placeholderEngineCode: placeholderEngineCode || "Enter your engine code",
-      });
-    } catch {
-      setTranslatedTexts({
-        addToCart: "Add to Cart",
-        addToWishList: "Add to Wishlist",
-        home: "Home",
-        toyota: "Scion",
-        engineCodes: "Engine Codes",
-        vehicleModel: "VEHICLE MODEL",
-        sortedBy: "Sort By",
-        sortPriceLowToHigh: "Price: Low to High",
-        sortPriceHighToLow: "Price: High to Low",
-        placeholderVehicleModel: "Enter your vehicle model",
-        placeholderEngineCode: "Enter your engine code",
-        showSidebar: "Show Sidebar",
-        filterByPrice: "Filter by Price",
-        all: "ALL",
-        quickview: "Quick View",
-      });
-    }
-  } 
-
-  fetchTranslations();
-}, [language, translate]);
-
-  useEffect(() => {
-  const checkMobile = () => setIsMobile(window.innerWidth < 640); // Tailwind's "sm" is 640px
-
-  checkMobile(); // Initial check
-
-  window.addEventListener("resize", checkMobile);
-  return () => window.removeEventListener("resize", checkMobile);
-}, []);
-
-
-  // Fetch product data for categories and vehicle models on mount
+          placeholderEngineCode: "Enter your engine code",
+          showSidebar: "Show Sidebar",
+          filterByPrice: "Filter by Price",
+          all: "ALL",
+          quickview: "Quick View",
+        });
+      }
+    } 
   
-  // Fetch filtered products when applied filters change
-
-  // Scroll top on page change
+    fetchTranslations();
+  }, [language, translate]);
+  
+    useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640); // Tailwind's "sm" is 640px
+  
+    checkMobile(); // Initial check
+  
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+  
+  
+    // Fetch product data for categories and vehicle models on mount
+    
+    // Fetch filtered products when applied filters change
+  
+    // Scroll top on page change
+    useEffect(() => {
+      if (productsRef.current) {
+        productsRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, [currentPage]);
+  
+    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setSortOption(e.target.value);
+      setCurrentPage(1);
+    };
+  
+    // Filter products by price first
+  let filteredProducts = [...products];
+  
+  if (appliedPriceRange === "750-1500") {
+    filteredProducts = filteredProducts.filter(p => p.price >= 750 && p.price <= 1500);
+  } else if (appliedPriceRange === "1500-2250") {
+    filteredProducts = filteredProducts.filter(p => p.price > 1500 && p.price <= 2250);
+  } else if (appliedPriceRange === "2250plus") {
+    filteredProducts = filteredProducts.filter(p => p.price > 2250);
+  }
+  else if (appliedPriceRange === "0-500") {
+    filteredProducts = filteredProducts.filter(p => p.price >= 0 && p.price <= 500);
+  } else if (appliedPriceRange === "500-1000") {
+    filteredProducts = filteredProducts.filter(p => p.price > 500 && p.price <= 1000);
+  } else if (appliedPriceRange === "1000-1400") {
+    filteredProducts = filteredProducts.filter(p => p.price > 1000 && p.price <= 1400);
+  }
+  // Sort products per selected option
+  const sortedProducts = [...filteredProducts];
+  if (sortOption === "priceLowToHigh")
+    sortedProducts.sort((a, b) => a.price - b.price);
+  else if (sortOption === "priceHighToLow")
+    sortedProducts.sort((a, b) => b.price - a.price);
+  
+  // Pagination
+  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
+  const currentProducts = sortedProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+  
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  
+    // Wishlist & Cart
+    const handleAddToWishlist = (product: Product) => {
+    const slug = product.slug[currentLang] || product.slug["en"] || "";
+    addToWishlist(slug, currentLang);
+  };
+  
+  
+    const handleAddToCart = (product: Product) => {
+    const slug = product.slug[currentLang] || product.slug["en"] || "";
+    const name = product.name[currentLang] || product.name["en"] || "";
+  
+    // Apply discount once
+    const discountedPrice = getDiscountedPrice(product.price, product.discountPercent);
+  
+    addToCart(
+      {
+        slug,
+        name,
+        price: discountedPrice,          // already final price
+        originalPrice: product.price,    // keep reference
+        discountPercent: product.discountPercent || 0,
+        mainImage: product.mainImage,
+        quantity: 1,
+      },
+      currentLang
+    );
+  
+    openCart();
+  };
+  
+  
+    const extractModel = (name: string): string => {
+      const match = name.match(/Scion\s+\w+/i);
+      return match ? match[0].toUpperCase() : "SCION ENGINE";
+    };
+  
+    // Suggestion filters based on input text
+    const filteredVehicleModels = vehicleModels.filter((model) =>
+      model.toLowerCase().startsWith(vehicleModelInput.toLowerCase())
+    );
+  
+    const filteredEngineCodes = categories.filter((code) =>
+      code.toLowerCase().startsWith(engineCodeInput.toLowerCase())
+    );
+  
+    // helpers
+  const slugifyEngineCodeForUrl = (code: string) =>
+    code.trim().toLowerCase().replace(/\s+/g, "-");
+  
+    // Select suggestion just sets input value & closes suggestions (do not apply filter here)
+    const selectVehicleModel = (model: string) => {
+    setVehicleModelInput(model);
+    setAppliedVehicleModel(model);
+    setShowVehicleSuggestions(false);
+    setShowMobileFilters(false);
+  
+    const params = new URLSearchParams(window.location.search);
+  
+    if (model && model.trim()) params.set("vehicleModel", model.trim());
+    else params.delete("vehicleModel");
+  
+    // keep existing category if present
+    router.push(`/scion?${params.toString()}`);
+  };
+  
+  
+  
+  
+  
+    const selectEngineCode = (code: string) => {
+    const slug = code.trim().toUpperCase();
+    setEngineCodeInput(slug);
+    const params = new URLSearchParams(window.location.search);
+    const engineSlug = slugifyEngineCodeForUrl(code);
+  
+    if (engineSlug) params.set("category", engineSlug);
+    else params.delete("category");
+    setShowMobileFilters(false);
+    setShowEngineSuggestions(false);
+  
+    // IMPORTANT: only set vehicleModel if it already exists & is non-empty
+    const vm = params.get("vehicleModel");
+    if (!vm) params.delete("vehicleModel");
+  
+    router.push(`/scion?${params.toString()}`);
+  };
+  
+  
+  
   useEffect(() => {
-    if (productsRef.current) {
-      productsRef.current.scrollIntoView({ behavior: "smooth" });
+    const categoryParam = searchParams.get("category");
+    const vehicleModelParam = searchParams.get("vehicleModel");
+  
+    if (categoryParam) {
+      setAppliedEngineCode(categoryParam.toUpperCase());
+      setEngineCodeInput(categoryParam.toUpperCase());
     }
-  }, [currentPage]);
-
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortOption(e.target.value);
-    setCurrentPage(1);
-  };
-
-  // Filter products by price first
-let filteredProducts = [...products];
-
-if (appliedPriceRange === "750-1500") {
-  filteredProducts = filteredProducts.filter(p => p.price >= 750 && p.price <= 1500);
-} else if (appliedPriceRange === "1500-2250") {
-  filteredProducts = filteredProducts.filter(p => p.price > 1500 && p.price <= 2250);
-} else if (appliedPriceRange === "2250plus") {
-  filteredProducts = filteredProducts.filter(p => p.price > 2250);
-}
-else if (appliedPriceRange === "0-500") {
-  filteredProducts = filteredProducts.filter(p => p.price >= 0 && p.price <= 500);
-} else if (appliedPriceRange === "500-1000") {
-  filteredProducts = filteredProducts.filter(p => p.price > 500 && p.price <= 1000);
-} else if (appliedPriceRange === "1000-1400") {
-  filteredProducts = filteredProducts.filter(p => p.price > 1000 && p.price <= 1400);
-}
-// Sort products per selected option
-const sortedProducts = [...filteredProducts];
-if (sortOption === "priceLowToHigh")
-  sortedProducts.sort((a, b) => a.price - b.price);
-else if (sortOption === "priceHighToLow")
-  sortedProducts.sort((a, b) => b.price - a.price);
-
-// Pagination
-const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
-const currentProducts = sortedProducts.slice(
-  (currentPage - 1) * productsPerPage,
-  currentPage * productsPerPage
-);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  // Wishlist & Cart
-  const handleAddToWishlist = (product: Product) => {
-  const slug = product.slug[currentLang] || product.slug["en"] || "";
-  addToWishlist(slug, currentLang);
-};
-
-
-  const handleAddToCart = (product: Product) => {
-  const slug = product.slug[currentLang] || product.slug["en"] || "";
-  const name = product.name[currentLang] || product.name["en"] || "";
-
-  addToCart(
-    { slug, name, price: product.price, mainImage: product.mainImage, quantity: 1 },
-    currentLang
-  );
-  openCart();
-};
-
-
-  const extractModel = (name: string): string => {
-    const match = name.match(/Scion\s+\w+/i);
-    return match ? match[0].toUpperCase() : "SCION ENGINE";
-  };
-
-  // Suggestion filters based on input text
-  const filteredVehicleModels = vehicleModels.filter((model) =>
-    model.toLowerCase().startsWith(vehicleModelInput.toLowerCase())
-  );
-
-  const filteredEngineCodes = categories.filter((code) =>
-    code.toLowerCase().startsWith(engineCodeInput.toLowerCase())
-  );
-
-  // helpers
-const slugifyEngineCodeForUrl = (code: string) =>
-  code.trim().toLowerCase().replace(/\s+/g, "-");
-
-  // Select suggestion just sets input value & closes suggestions (do not apply filter here)
-  const selectVehicleModel = (model: string) => {
-  setVehicleModelInput(model);
-  setAppliedVehicleModel(model);
-  setShowVehicleSuggestions(false);
-  setShowMobileFilters(false);
-
-  const params = new URLSearchParams(window.location.search);
-
-  if (model && model.trim()) params.set("vehicleModel", model.trim());
-  else params.delete("vehicleModel");
-
-  // keep existing category if present
-  router.push(`/scion?${params.toString()}`);
-};
-
-
-
-
-
-  const selectEngineCode = (code: string) => {
-  const slug = code.trim().toUpperCase();
-  setEngineCodeInput(slug);
-  const params = new URLSearchParams(window.location.search);
-  const engineSlug = slugifyEngineCodeForUrl(code);
-
-  if (engineSlug) params.set("category", engineSlug);
-  else params.delete("category");
-  setShowMobileFilters(false);
-  setShowEngineSuggestions(false);
-
-  // IMPORTANT: only set vehicleModel if it already exists & is non-empty
-  const vm = params.get("vehicleModel");
-  if (!vm) params.delete("vehicleModel");
-
-  router.push(`/scion?${params.toString()}`);
-};
-
-
-
-useEffect(() => {
-  const categoryParam = searchParams.get("category");
-  const vehicleModelParam = searchParams.get("vehicleModel");
-
-  if (categoryParam) {
-    setAppliedEngineCode(categoryParam.toUpperCase());
-    setEngineCodeInput(categoryParam.toUpperCase());
-  }
-  if (vehicleModelParam) {
-    setAppliedVehicleModel(vehicleModelParam);
-    setVehicleModelInput(vehicleModelParam);
-  }
-}, [searchParams]);
-
-useEffect(() => {
-  const category = searchParams.get("category");
-  const vehicleModel = searchParams.get("vehicleModel");
-
-  async function fetchFilteredProducts() {
-    setLoading(true);
-    const params = new URLSearchParams();
-    params.set("scion", "true");
-    if (category) params.set("engineCode", category.toUpperCase());
-    if (vehicleModel) params.set("vehicleModel", vehicleModel);
-
-    const res = await fetch(`/api/products?${params.toString()}`, { cache: 'no-store' });
-    const data = await res.json();
-    setProducts(data.data || []);
-    setLoading(false);
-  }
-
-  fetchFilteredProducts();
-}, [searchParams]);
-
-
+    if (vehicleModelParam) {
+      setAppliedVehicleModel(vehicleModelParam);
+      setVehicleModelInput(vehicleModelParam);
+    }
+  }, [searchParams]);
+  
+  useEffect(() => {
+    const category = searchParams.get("category");
+    const vehicleModel = searchParams.get("vehicleModel");
+  
+    async function fetchFilteredProducts() {
+      setLoading(true);
+      const params = new URLSearchParams();
+      params.set("scion", "true");
+      if (category) params.set("engineCode", category.toUpperCase());
+      if (vehicleModel) params.set("vehicleModel", vehicleModel);
+  
+      const res = await fetch(`/api/products?${params.toString()}`, { cache: 'no-store' });
+      const data = await res.json();
+      setProducts(data.data || []);
+      setLoading(false);
+    }
+  
+    fetchFilteredProducts();
+  }, [searchParams]);
+  
+  
+    
   
     return (
   
@@ -393,7 +415,7 @@ useEffect(() => {
     <BrandLinksNav currentBrand="scion" />
   </div>
   
-      <div className="max-w-7xl mx-auto px-4 py-10 ">
+      <div className="max-w-7xl mx-auto px-4 py-0 ">
   
         <motion.ol
     className="inline-flex  space-x-2"
@@ -797,10 +819,19 @@ useEffect(() => {
       onMouseEnter={() => setHoveredProductId(product._id)}
       onMouseLeave={() => setHoveredProductId(null)}
     >
-      {/* Model label */}
-      <div className="absolute top-2 left-0 bg-white text-xs font-semibold text-black px-2 py-1 rounded shadow z-10">
-        {extractModel(product.name[currentLang] || product.name.en)}
-      </div>
+  
+  {/* Discount Badge */}
+  {product.discountPercent && (
+    <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+      -{product.discountPercent}%
+    </div>
+  )}
+  
+  {/* Model label */}
+  <div className="absolute top-10 left-2 z-10 bg-white text-xs font-semibold text-black px-1 py-2 rounded shadow">
+    {extractModel(product.name[currentLang] || product.name.en)}
+  </div>
+  
   
       {/* Product images */}
       {hoveredProductId === product._id && product.thumbnails?.[0] ? (
@@ -920,7 +951,26 @@ useEffect(() => {
             {product.name[currentLang] || product.name.en}
           </h3>
         </Link>
-        <p className="text-gray-600 mt-1">{symbol}{product.price}</p>
+        {/* Price */}
+  {/* Price */}
+  <p className="mt-2 font-semibold text-lg">
+    {product.discountPercent && product.discountPercent > 0 ? (
+      <>
+        {/* Original price */}
+        <span className="line-through text-gray-500 mr-2">
+          {symbol}{product.price.toFixed(2)}
+        </span>
+        {/* Discounted price */}
+        <span className="text-blue-600">
+          {symbol}{getDiscountedPrice(product.price, product.discountPercent).toFixed(2)}
+        </span>
+      </>
+    ) : (
+      /* No discount: price in blue to match buttons */
+      <span className="text-blue-600">{symbol}{product.price.toFixed(2)}</span>
+    )}
+  </p>
+  
   
         {/* Add to Cart Button with hover icon swap */}
         <motion.div

@@ -947,20 +947,25 @@ useEffect(() => {
         </h3>
       </Link>
       {/* Price */}
-  <p className="mt-2 font-semibold text-lg">
-    {product.discountPercent ? (
-      <>
-        <span className="line-through text-gray-500 mr-2">
-          {symbol}{product.price.toFixed(2)}
-        </span>
-        <span className="text-blue-600">
-          {symbol}{getDiscountedPrice(product.price, product.discountPercent).toFixed(2)}
-        </span>
-      </>
-    ) : (
-      <span className="text-gray-700">{symbol}{product.price.toFixed(2)}</span>
-    )}
-  </p>
+{/* Price */}
+<p className="mt-2 font-semibold text-lg">
+  {product.discountPercent && product.discountPercent > 0 ? (
+    <>
+      {/* Original price */}
+      <span className="line-through text-gray-500 mr-2">
+        {symbol}{product.price.toFixed(2)}
+      </span>
+      {/* Discounted price */}
+      <span className="text-blue-600">
+        {symbol}{getDiscountedPrice(product.price, product.discountPercent).toFixed(2)}
+      </span>
+    </>
+  ) : (
+    /* No discount: price in blue to match buttons */
+    <span className="text-blue-600">{symbol}{product.price.toFixed(2)}</span>
+  )}
+</p>
+
 
       {/* Add to Cart Button with hover icon swap */}
       <motion.div
