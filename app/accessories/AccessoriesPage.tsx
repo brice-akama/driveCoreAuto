@@ -265,7 +265,10 @@ const currentProducts = sortedProducts.slice(
   const name = product.name[currentLang] || product.name["en"] || "";
 
   addToCart(
-    { slug, name, price: product.price, mainImage: product.mainImage, quantity: 1 },
+    {
+      slug, name, price: product.price, mainImage: product.mainImage, quantity: 1,
+      originalPrice: 0
+    },
     currentLang
   );
   openCart();
