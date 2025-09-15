@@ -113,12 +113,9 @@ const StarRating: React.FC<{ rating?: number; reviewCount: number }> = ({
 const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }) => {
   const [selectedThumbnail, setSelectedThumbnail] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [showDescription, setShowDescription] = useState(true);
+  
   const [showReviewList, setShowReviewList] = useState(false);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [showSpecifications, setShowSpecifications] = useState(false);
-  const [showShipping, setShowShipping] = useState(false);
-  const [showWarranty, setShowWarranty] = useState(false);
+  
   const [viewers, setViewers] = useState(80);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalPrice, setTotalPrice] = useState(product.price);
@@ -134,6 +131,10 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
   if (!discountPercent) return price;
   return price - (price * discountPercent) / 100;
 };
+
+type Tab = "description" | "specifications" | "shipping" | "warranty" | "reviews";
+
+const [activeTab, setActiveTab] = useState<Tab>("description");
 
 
   const reviewCount = useReviewCount(product.slug[language] || product.slug.en);
@@ -194,38 +195,25 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
     addToWishlist(slug, language);
   };
 
-  const toggleReviews = () => {
-    setShowReviewList(!showReviewList);
-    setShowReviewForm(!showReviewForm);
-    setShowDescription(showReviewList);
-  };
+  
 
-  const showProductDescription = () => {
-    setShowDescription(true);
-    setShowReviewList(false);
-    setShowReviewForm(false);
-  };
+  
 
-  const toggleSpecifications = () => {
-    setShowSpecifications(!showSpecifications);
-    setShowDescription(showSpecifications);
-    setShowReviewList(false);
-    setShowReviewForm(false);
-  };
+  
 
-  const toggleShipping = () => {
-    setShowShipping(!showShipping);
-    setShowDescription(showShipping);
-    setShowReviewList(false);
-    setShowReviewForm(false);
-  };
+  const selectTab = (tab: Tab, e?: React.MouseEvent<HTMLButtonElement>) => {
+  // Prevent default behavior to stop mobile from jumping
+  e?.preventDefault();
 
-  const toggleWarranty = () => {
-    setShowWarranty(!showWarranty);
-    setShowDescription(showWarranty);
-    setShowReviewList(false);
-    setShowReviewForm(false);
-  };
+  // Set the active tab
+  setActiveTab(tab);
+
+  // Optional: scroll the tab into view on small devices
+  const tabElement = e?.currentTarget;
+  tabElement?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+
 
   if (!product) return <p>Loading...</p>;
 
@@ -377,80 +365,164 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ product, lang }
         </div>
 
         {/* Tabs */}
-        <div className="mt-9 flex flex-col gap-4 md:gap-6">
-          {/* Description */}
-          <div>
-            <span
-              className={`text-lg font-semibold cursor-pointer ${showDescription ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-700"}`}
-              onClick={showProductDescription}
-            >
-              {t.productDescription}
-            </span>
-            {showDescription && (
-  <div className="space-y-2 mt-2">
-    {parse(product.description[language] || product.description.en, parseOptions)}
-  </div>
-)}
-
-          </div>
-
-          {/* Specifications */}
-          <div>
-            <span
-              className={`text-lg font-semibold cursor-pointer ${showSpecifications ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-700"}`}
-              onClick={toggleSpecifications}
-            >
-              {t.specifications}
-            </span>
-            {showSpecifications && <div className="space-y-2 mt-2">{stripHtmlToParagraphs(product.Specifications[language] || product.Specifications.en).map((p, idx) => <p key={idx}>{p}</p>)}</div>}
-          </div>
-
-          {/* Shipping */}
-          <div>
-            <span
-              className={`text-lg font-semibold cursor-pointer ${showShipping ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-700"}`}
-              onClick={toggleShipping}
-            >
-              {t.shipping}
-            </span>
-            {showShipping && <div className="space-y-2 mt-2">{stripHtmlToParagraphs(product.Shipping[language] || product.Shipping.en).map((p, idx) => <p key={idx}>{p}</p>)}</div>}
-          </div>
-
-          {/* Warranty */}
-          <div>
-            <span
-              className={`text-lg font-semibold cursor-pointer ${showWarranty ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-700"}`}
-              onClick={toggleWarranty}
-            >
-              {t.warranty}
-            </span>
-            {showWarranty && <div className="space-y-2 mt-2">{stripHtmlToParagraphs(product.Warranty[language] || product.Warranty.en).map((p, idx) => <p key={idx}>{p}</p>)}</div>}
-          </div>
-
-          {/* Reviews */}
-          <div>
-<span
-  className={`text-lg font-semibold cursor-pointer ${
-    showReviewList ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-700"
-  }`}
-  onClick={toggleReviews}
->
-  {t.reviews} (
-  <span className="text-yellow-500">{reviewCount}</span>
-  )
-</span>
-
-            {showReviewList && <ReviewList productSlug={product.slug[language] || product.slug.en} />}
-      {showReviewForm && (
-  <ReviewForm
-    slug={product.slug[language] || product.slug.en}
-    productName={product.name[language] || product.name.en}
-  />
-)}
-
-
-          </div>
+          {/* Tabs - Refactored with activeTab */}
+<div className="mt-20 flex flex-col gap-4 md:gap-6">
+  {/* Tab Navigation */}
+  <div className="flex flex-col lg:flex-row lg:gap-8 lg:border-b lg:border-gray-200">
+    {/* Description Tab */}
+    <div className="mb-4 lg:mb-0">
+      <span
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+          activeTab === "description"
+            ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
+            : "text-gray-700 hover:text-blue-500"
+        }`}
+        onClick={() => selectTab("description")}
+      >
+        {t.productDescription}
+      </span>
+      {activeTab === "description" && (
+        <div className="block lg:hidden space-y-2 mt-2">
+          {parse(product.description[language] || product.description.en, parseOptions)}
         </div>
+      )}
+    </div>
+
+    {/* Specifications Tab */}
+    <div className="mb-4 lg:mb-0">
+      <button
+      type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+          activeTab === "specifications"
+            ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
+            : "text-gray-700 hover:text-blue-500"
+        }`}
+        onClick={() => selectTab("specifications")}
+      >
+        {t.specifications}
+     </button>
+
+      {activeTab === "specifications" && (
+        <div className="block lg:hidden space-y-2 mt-2">
+          {stripHtmlToParagraphs(product.Specifications[language] || product.Specifications.en).map((p, idx) => (
+            <p key={idx}>{p}</p>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* Shipping Tab */}
+    <div className="mb-4 lg:mb-0">
+      <button
+      type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+          activeTab === "shipping"
+            ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
+            : "text-gray-700 hover:text-blue-500"
+        }`}
+        onClick={() => selectTab("shipping")}
+      >
+        {t.shipping}
+      </button>
+      {activeTab === "shipping" && (
+        <div className="block lg:hidden space-y-2 mt-2">
+          {stripHtmlToParagraphs(product.Shipping[language] || product.Shipping.en).map((p, idx) => (
+            <p key={idx}>{p}</p>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* Warranty Tab */}
+    <div className="mb-4 lg:mb-0">
+      <button
+       type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+          activeTab === "warranty"
+            ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
+            : "text-gray-700 hover:text-blue-500"
+        }`}
+        onClick={() => selectTab("warranty")}
+      >
+        {t.warranty}
+      </button>
+      {activeTab === "warranty" && (
+        <div className="block lg:hidden space-y-2 mt-2">
+          {stripHtmlToParagraphs(product.Warranty[language] || product.Warranty.en).map((p, idx) => (
+            <p key={idx}>{p}</p>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* Reviews Tab */}
+    <div className="mb-4 lg:mb-0">
+      <button
+       type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+          activeTab === "reviews"
+            ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
+            : "text-gray-700 hover:text-blue-500"
+        }`}
+        onClick={() => selectTab("reviews")}
+      >
+        {t.reviews} (<span className="text-yellow-500">{reviewCount}</span>)
+      </button>
+      {activeTab === "reviews" && (
+        <div className="block lg:hidden">
+          <ReviewList productSlug={product.slug[language] || product.slug.en} />
+          <ReviewForm
+            slug={product.slug[language] || product.slug.en}
+            productName={product.name[language] || product.name.en}
+          />
+        </div>
+      )}
+    </div>
+  </div>
+
+  {/* Tab Content - Only show on large screens */}
+  <div className="hidden lg:block mt-6">
+    {activeTab === "description" && (
+      <div className="space-y-2">
+        {parse(product.description[language] || product.description.en, parseOptions)}
+      </div>
+    )}
+
+    {activeTab === "specifications" && (
+      <div className="space-y-2">
+        {stripHtmlToParagraphs(product.Specifications[language] || product.Specifications.en).map((p, idx) => (
+          <p key={idx}>{p}</p>
+        ))}
+      </div>
+    )}
+
+    {activeTab === "shipping" && (
+      <div className="space-y-2">
+        {stripHtmlToParagraphs(product.Shipping[language] || product.Shipping.en).map((p, idx) => (
+          <p key={idx}>{p}</p>
+        ))}
+      </div>
+    )}
+
+    {activeTab === "warranty" && (
+      <div className="space-y-2">
+        {stripHtmlToParagraphs(product.Warranty[language] || product.Warranty.en).map((p, idx) => (
+          <p key={idx}>{p}</p>
+        ))}
+      </div>
+    )}
+
+    {activeTab === "reviews" && (
+      <>
+        <ReviewList productSlug={product.slug[language] || product.slug.en} />
+        <ReviewForm
+          slug={product.slug[language] || product.slug.en}
+          productName={product.name[language] || product.name.en}
+        />
+      </>
+    )}
+  </div>
+</div>
 
         {/* Related Products */}
         <div className="mt-10">

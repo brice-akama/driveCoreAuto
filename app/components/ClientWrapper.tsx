@@ -11,7 +11,7 @@ import ScrollToTop from "./ScrollToTop";
 import CurrencySelector from "./CurrencySelector";
 import CartDrawer from "./CartDrawer";
 
-import SmartsuppChat from "./ClientSideTawk";
+import SalesIQChat from "./ClientSideTawk";
 
 const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -33,7 +33,7 @@ const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       {!isAdminRoute && <Footer />}
       
       {!isAdminRoute && <CookieConsent />}
-          <SmartsuppChat />
+          <SalesIQChat />
     </>
   );
 };

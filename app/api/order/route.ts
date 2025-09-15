@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
     const t = translations[lang];
 
     // --- Client email ---
-    // Replace your existing clientEmailHTML variable with this:
+    
 const clientEmailHTML = `
   <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
     
@@ -321,59 +321,154 @@ const clientEmailHTML = `
   </div>
 `;
     // --- Company email ---
-    const companyEmailHTML = `
-      <h2>${t.newOrderNotification}</h2>
-      <p>Order ID: <strong>${orderResult.insertedId}</strong></p>
-      <p>${t.customer}: <strong>${sanitizedBilling.firstName} ${sanitizedBilling.lastName}</strong></p>
-      <p>Email: ${sanitizedBilling.email}</p>
-      <p>Phone: ${sanitizedBilling.phone || "N/A"}</p>
+    
+const companyEmailHTML = `
+  <div style="max-width: 700px; margin: 0 auto; font-family: Arial, sans-serif; color: #333; background: #f8fafc;">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #dc2626, #ef4444); color: white; padding: 25px 20px; text-align: center;">
+      <h1 style="margin: 0; font-size: 24px; font-weight: bold;">🚨 NEW ORDER ALERT</h1>
+      <p style="margin: 8px 0 0 0; font-size: 16px; opacity: 0.9;">DriveCore Auto - Internal Notification</p>
+    </div>
+
+    <!-- Main Content -->
+    <div style="background: #ffffff; padding: 25px 20px; border: 1px solid #e5e7eb; border-top: none;">
       
-      <h3>${t.orderDetails}:</h3>
-      <ul>
-        ${cartItems.map((item: any) => `<li>${item.name} x ${item.quantity} - $${item.price.toFixed(2)}</li>`).join("")}
-      </ul>
-      
-      <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
-      
-      <div style="margin: 10px 0;">
-        <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-          <span>Subtotal:</span>
-          <span>$${order.subtotal.toFixed(2)}</span>
-        </div>
-        ${order.discount > 0 ? `
-        <div style="display: flex; justify-content: space-between; margin: 5px 0; color: green;">
-          <span>Coupon Discount:</span>
-          <span>- $${order.discount.toFixed(2)}</span>
-        </div>` : ''}
-        <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-          <span>Shipping Cost:</span>
-          <span>$${order.shippingCost.toFixed(2)}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-          <span>Sales Tax:</span>
-          <span>$${order.salesTaxAmount.toFixed(2)}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 18px; border-top: 1px solid #ddd; padding-top: 10px;">
-          <span>Grand Total:</span>
-          <span>$${order.grandTotal.toFixed(2)}</span>
+      <!-- Order Header Info -->
+      <div style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 20px; margin-bottom: 25px; text-align: center;">
+        <h2 style="color: #991b1b; margin: 0 0 8px 0; font-size: 22px;">Order #${orderResult.insertedId}</h2>
+        <p style="margin: 0; color: #7f1d1d; font-size: 16px;">Received: ${new Date().toLocaleString()}</p>
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #fca5a5;">
+          <p style="margin: 0; font-size: 20px; font-weight: bold; color: #991b1b;">💰 TOTAL: $${order.grandTotal.toFixed(2)}</p>
         </div>
       </div>
-      
-      <p>${t.paymentMethod}: ${paymentMethod}</p>
-      
-      <h3>${t.billingAddress}:</h3>
-      <p>${sanitizedBilling.address1 || ""} ${sanitizedBilling.address2 || ""}</p>
-      <p>${sanitizedBilling.city || ""}, ${sanitizedBilling.state || ""} ${sanitizedBilling.postalCode || ""}</p>
-      <p>${sanitizedBilling.country || ""}</p>
-      
-      ${sanitizedShipping ? `<h3>${t.shippingAddress}:</h3>
-      <p>${sanitizedShipping.address1 || ""} ${sanitizedShipping.address2 || ""}</p>
-      <p>${sanitizedShipping.city || ""}, ${sanitizedShipping.state || ""} ${sanitizedShipping.postalCode || ""}</p>
-      <p>${sanitizedShipping.country || ""}</p>` : ""}
-      
-      <p>${t.orderPending}</p>
-    `;
 
+      <!-- Customer Information -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0;">
+        
+        <!-- Customer Details -->
+        <div style="background: #f0f9ff; border: 1px solid #7dd3fc; border-radius: 8px; padding: 20px;">
+          <h3 style="color: #0c4a6e; margin: 0 0 15px 0; font-size: 16px; border-bottom: 2px solid #7dd3fc; padding-bottom: 8px;">👤 CUSTOMER INFO</h3>
+          <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 16px; color: #1e40af;">${sanitizedBilling.firstName} ${sanitizedBilling.lastName}</p>
+          <p style="margin: 0 0 8px 0; color: #1e40af;">📧 <a href="mailto:${sanitizedBilling.email}" style="color: #1e40af; text-decoration: none;">${sanitizedBilling.email}</a></p>
+          <p style="margin: 0 0 8px 0; color: #1e40af;">📞 ${sanitizedBilling.phone || "Not provided"}</p>
+          <p style="margin: 0; color: #1e40af;">💳 ${paymentMethod.toUpperCase()}</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px;">
+          <h3 style="color: #14532d; margin: 0 0 15px 0; font-size: 16px; border-bottom: 2px solid #86efac; padding-bottom: 8px;">⚡ QUICK ACTIONS</h3>
+          <div style="margin: 8px 0;">
+            <button style="background: #16a34a; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">✅ Confirm Payment</button>
+          </div>
+          <div style="margin: 8px 0;">
+            <button style="background: #0891b2; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">📦 Prepare Shipping</button>
+          </div>
+          <div style="margin: 8px 0;">
+            <button style="background: #7c3aed; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">📧 Contact Customer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div style="margin: 25px 0;">
+        <h3 style="color: #1e3a8a; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">📋 ORDER ITEMS</h3>
+        <div style="background: #f9fafb; border-radius: 8px; overflow: hidden;">
+          <div style="background: #e5e7eb; padding: 12px 20px; font-weight: bold; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px;">
+            <span>Product</span>
+            <span style="text-align: center;">Price</span>
+            <span style="text-align: center;">Qty</span>
+            <span style="text-align: right;">Total</span>
+          </div>
+          ${cartItems.map((item: { name: any; slug: any; price: number; quantity: number; }, index: number) => `
+          <div style="padding: 15px 20px; border-bottom: 1px solid #e5e7eb; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; align-items: center; ${index % 2 === 0 ? 'background: #ffffff;' : 'background: #f9fafb;'}">
+            <div>
+              <p style="margin: 0; font-weight: bold; color: #111827;">${item.name}</p>
+              <p style="margin: 2px 0 0 0; color: #6b7280; font-size: 12px;">SKU: ${item.slug || 'N/A'}</p>
+            </div>
+            <p style="margin: 0; text-align: center;">$${item.price.toFixed(2)}</p>
+            <p style="margin: 0; text-align: center; font-weight: bold;">${item.quantity}</p>
+            <p style="margin: 0; text-align: right; font-weight: bold; color: #16a34a;">$${(item.price * item.quantity).toFixed(2)}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Financial Breakdown -->
+      <div style="margin: 25px 0;">
+        <h3 style="color: #1e3a8a; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">💰 FINANCIAL BREAKDOWN</h3>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-weight: 500;">Subtotal:</span>
+                <span>$${order.subtotal.toFixed(2)}</span>
+              </div>
+              ${order.discount > 0 ? `
+              <div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px 0; border-bottom: 1px solid #e5e7eb; color: #16a34a; font-weight: bold;">
+                <span>Discount Applied:</span>
+                <span>-$${order.discount.toFixed(2)}</span>
+              </div>` : ''}
+              <div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-weight: 500;">Shipping Cost:</span>
+                <span>$${order.shippingCost.toFixed(2)}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-weight: 500;">Sales Tax (7%):</span>
+                <span>$${order.salesTaxAmount.toFixed(2)}</span>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; background: #fee2e2; border-radius: 8px; padding: 20px;">
+              <div style="text-align: center;">
+                <p style="margin: 0 0 5px 0; font-size: 14px; color: #7f1d1d;">GRAND TOTAL</p>
+                <p style="margin: 0; font-size: 28px; font-weight: bold; color: #991b1b;">$${order.grandTotal.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Addresses -->
+      <div style="display: grid; grid-template-columns: 1fr ${sanitizedShipping ? '1fr' : ''}; gap: 20px; margin: 25px 0;">
+        
+        <!-- Billing Address -->
+        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px;">
+          <h3 style="color: #92400e; margin: 0 0 15px 0; font-size: 16px; border-bottom: 2px solid #f59e0b; padding-bottom: 8px;">🏢 BILLING ADDRESS</h3>
+          <p style="margin: 0 0 5px 0; font-weight: bold; color: #92400e;">${sanitizedBilling.firstName} ${sanitizedBilling.lastName}</p>
+          <p style="margin: 0 0 3px 0; color: #92400e;">${sanitizedBilling.address1 || ""} ${sanitizedBilling.address2 || ""}</p>
+          <p style="margin: 0 0 3px 0; color: #92400e;">${sanitizedBilling.city || ""}, ${sanitizedBilling.state || ""} ${sanitizedBilling.postalCode || ""}</p>
+          <p style="margin: 0; color: #92400e;">${sanitizedBilling.country || ""}</p>
+        </div>
+
+        ${sanitizedShipping ? `
+        <!-- Shipping Address -->
+        <div style="background: #dbeafe; border: 1px solid #60a5fa; border-radius: 8px; padding: 20px;">
+          <h3 style="color: #1d4ed8; margin: 0 0 15px 0; font-size: 16px; border-bottom: 2px solid #60a5fa; padding-bottom: 8px;">🚚 SHIPPING ADDRESS</h3>
+          <p style="margin: 0 0 5px 0; font-weight: bold; color: #1d4ed8;">${sanitizedShipping.firstName} ${sanitizedShipping.lastName}</p>
+          <p style="margin: 0 0 3px 0; color: #1d4ed8;">${sanitizedShipping.address1 || ""} ${sanitizedShipping.address2 || ""}</p>
+          <p style="margin: 0 0 3px 0; color: #1d4ed8;">${sanitizedShipping.city || ""}, ${sanitizedShipping.state || ""} ${sanitizedShipping.postalCode || ""}</p>
+          <p style="margin: 0; color: #1d4ed8;">${sanitizedShipping.country || ""}</p>
+        </div>` : ''}
+      </div>
+
+      <!-- Action Required -->
+      <div style="background: #fef2f2; border: 2px solid #fca5a5; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center;">
+        <h3 style="margin: 0 0 10px 0; color: #991b1b; font-size: 18px;">⚠️ ACTION REQUIRED</h3>
+        <p style="margin: 0 0 15px 0; color: #7f1d1d;">This order is pending payment confirmation. Please process and update the order status.</p>
+        <div style="margin-top: 15px;">
+          <p style="margin: 0; font-size: 14px; color: #991b1b;">Order Status: <strong>PENDING PAYMENT</strong></p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #1f2937; color: white; padding: 20px; text-align: center;">
+      <p style="margin: 0 0 10px 0; font-weight: bold;">DriveCore Auto - Order Management System</p>
+      <p style="margin: 0; opacity: 0.8; font-size: 14px;">Internal Use Only • Generated ${new Date().toLocaleString()}</p>
+    </div>
+
+  </div>
+`;
     // --- Send emails ---
     await transporter.sendMail({
       from: `"DriveCore Auto" <${process.env.EMAIL_USER}>`,
