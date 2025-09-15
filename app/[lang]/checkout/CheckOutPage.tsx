@@ -392,9 +392,14 @@ const handlePlaceOrder = async () => {
 
   const orderData = {
     cartItems,
-    totalPrice,
+    totalPrice, // This is your subtotal
     paymentMethod,
     billingDetails,
+    shippingDetails, // Add this if you have it
+    discount, // Add the discount amount
+    shippingCost, // Add the actual shipping cost (not null)
+    salesTaxAmount, // Add the calculated 7% tax
+    total // Add the grand total with everything included
   };
 
   try {
@@ -420,7 +425,6 @@ const handlePlaceOrder = async () => {
     setOrderStatus('error');
   }
 };
-
 
   const [showCoupon, setShowCoupon] = useState(false);
 

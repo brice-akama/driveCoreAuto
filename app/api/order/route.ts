@@ -78,7 +78,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS!,
   },
 });
-
 export async function POST(req: NextRequest) {
   try {
     const db = (await clientPromise).db("autodrive");
@@ -168,11 +167,11 @@ export async function POST(req: NextRequest) {
       billingDetails: sanitizedBilling,
       shippingDetails: billingDetails.shipToDifferentAddress ? sanitizedShipping : null,
       paymentMethod,
-      totalPrice,
+      subtotal: totalPrice,  // This is the subtotal (products only)
       discount: discount || 0,
       shippingCost: shippingCost || 0,
       salesTaxAmount: salesTaxAmount || 0,
-      grandTotal: total || totalPrice,
+      grandTotal: total || totalPrice,  // This is the final total including everything
       status: "pending",
       createdAt: new Date()
     };
@@ -184,32 +183,143 @@ export async function POST(req: NextRequest) {
     const t = translations[lang];
 
     // --- Client email ---
-    const clientEmailHTML = `
-      <h2>${t.thankYou}, ${sanitizedBilling.firstName}!</h2>
-      <p>Order ID: <strong>${orderResult.insertedId}</strong></p>
-      <p>Total: <strong>$${order.grandTotal.toFixed(2)}</strong></p>
-      <p><em>${t.pendingPayment}</em></p>
-      <p>${t.contactSupport}</p>
-      <h3>${t.billingDetails}:</h3>
-      <p>${sanitizedBilling.firstName} ${sanitizedBilling.lastName}</p>
-      <p>${sanitizedBilling.address1 || ""} ${sanitizedBilling.address2 || ""}</p>
-      <p>${sanitizedBilling.city || ""}, ${sanitizedBilling.state || ""} ${sanitizedBilling.postalCode || ""}</p>
-      <p>${sanitizedBilling.country || ""}</p>
-      <p>Email: ${sanitizedBilling.email}</p>
-      <p>Phone: ${sanitizedBilling.phone || "N/A"}</p>
-      ${sanitizedShipping ? `<h3>${t.shippingDetails}:</h3>
-      <p>${sanitizedShipping.firstName} ${sanitizedShipping.lastName}</p>
-      <p>${sanitizedShipping.address1 || ""} ${sanitizedShipping.address2 || ""}</p>
-      <p>${sanitizedShipping.city || ""}, ${sanitizedShipping.state || ""} ${sanitizedShipping.postalCode || ""}</p>
-      <p>${sanitizedShipping.country || ""}</p>` : ""}
-      <h3>${t.items}:</h3>
-      <ul>
-        ${cartItems.map((item: any) => `<li>${item.name} x ${item.quantity} - $${item.price}</li>`).join("")}
-      </ul>
-      <p>${t.paymentMethod}: ${paymentMethod}</p>
-      <p>Thank you for choosing <strong>DriveCore Auto</strong>!</p>
-    `;
+    // Replace your existing clientEmailHTML variable with this:
+const clientEmailHTML = `
+  <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #333;">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0;">
+      <h1 style="margin: 0; font-size: 28px; font-weight: bold;">DriveCore Auto</h1>
+      <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Order Confirmation</p>
+    </div>
 
+    <!-- Main Content -->
+    <div style="background: #ffffff; padding: 30px 20px; border: 1px solid #e5e7eb; border-top: none;">
+      
+      <!-- Greeting & Order Info -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; margin: 0 0 10px 0; font-size: 24px;">${t.thankYou}, ${sanitizedBilling.firstName}!</h2>
+        <p style="margin: 0; color: #6b7280; font-size: 16px;">Your order has been received and is being processed.</p>
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0; display: inline-block;">
+          <p style="margin: 0; font-size: 18px;"><strong>Order #${orderResult.insertedId}</strong></p>
+          <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 14px;">Placed on ${new Date().toLocaleDateString()}</p>
+        </div>
+      </div>
+
+      <!-- Order Status -->
+      <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: center;">
+        <p style="margin: 0; color: #92400e; font-weight: bold;">⏳ Order Status: Pending Payment</p>
+        <p style="margin: 5px 0 0 0; color: #92400e; font-size: 14px;">${t.pendingPayment}</p>
+      </div>
+
+      <!-- Order Items -->
+      <div style="margin: 30px 0;">
+        <h3 style="color: #1e3a8a; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">${t.items}</h3>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+          ${cartItems.map((item: { name: any; quantity: number; price: number; }) => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+            <div>
+              <p style="margin: 0; font-weight: bold; color: #111827;">${item.name}</p>
+              <p style="margin: 2px 0 0 0; color: #6b7280; font-size: 14px;">Qty: ${item.quantity} × $${item.price.toFixed(2)}</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0; font-weight: bold; color: #111827;">$${(item.price * item.quantity).toFixed(2)}</p>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div style="margin: 30px 0;">
+        <h3 style="color: #1e3a8a; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">Order Summary</h3>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+            <span>Subtotal:</span>
+            <span>$${order.subtotal.toFixed(2)}</span>
+          </div>
+          ${order.discount > 0 ? `
+          <div style="display: flex; justify-content: space-between; margin: 8px 0; color: #059669; font-weight: bold;">
+            <span>🎉 Coupon Discount:</span>
+            <span>-$${order.discount.toFixed(2)}</span>
+          </div>` : ''}
+          <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+            <span>Shipping:</span>
+            <span>$${order.shippingCost.toFixed(2)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+            <span>Sales Tax:</span>
+            <span>$${order.salesTaxAmount.toFixed(2)}</span>
+          </div>
+          <div style="border-top: 2px solid #1e3a8a; margin: 15px 0 10px 0; padding-top: 15px;">
+            <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: #1e3a8a;">
+              <span>Grand Total:</span>
+              <span>$${order.grandTotal.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div style="background: #e0e7ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0; color: #3730a3;"><strong>💳 ${t.paymentMethod}:</strong> ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}</p>
+      </div>
+
+      <!-- Billing Address -->
+      <div style="margin: 30px 0;">
+        <h3 style="color: #1e3a8a; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">📍 ${t.billingDetails}</h3>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+          <p style="margin: 0 0 5px 0; font-weight: bold;">${sanitizedBilling.firstName} ${sanitizedBilling.lastName}</p>
+          <p style="margin: 0 0 5px 0;">${sanitizedBilling.address1 || ""} ${sanitizedBilling.address2 || ""}</p>
+          <p style="margin: 0 0 5px 0;">${sanitizedBilling.city || ""}, ${sanitizedBilling.state || ""} ${sanitizedBilling.postalCode || ""}</p>
+          <p style="margin: 0 0 5px 0;">${sanitizedBilling.country || ""}</p>
+          <p style="margin: 0 0 5px 0; color: #6b7280;">📧 ${sanitizedBilling.email}</p>
+          <p style="margin: 0; color: #6b7280;">📞 ${sanitizedBilling.phone || "N/A"}</p>
+        </div>
+      </div>
+
+      ${sanitizedShipping ? `
+      <!-- Shipping Address -->
+      <div style="margin: 30px 0;">
+        <h3 style="color: #1e3a8a; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">🚚 ${t.shippingDetails}</h3>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+          <p style="margin: 0 0 5px 0; font-weight: bold;">${sanitizedShipping.firstName} ${sanitizedShipping.lastName}</p>
+          <p style="margin: 0 0 5px 0;">${sanitizedShipping.address1 || ""} ${sanitizedShipping.address2 || ""}</p>
+          <p style="margin: 0 0 5px 0;">${sanitizedShipping.city || ""}, ${sanitizedShipping.state || ""} ${sanitizedShipping.postalCode || ""}</p>
+          <p style="margin: 0;">${sanitizedShipping.country || ""}</p>
+        </div>
+      </div>` : ''}
+
+      <!-- What's Next -->
+      <div style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+        <h3 style="margin: 0 0 10px 0; color: #065f46;">✅ What's Next?</h3>
+        <p style="margin: 0 0 10px 0; color: #065f46;">1. We'll process your payment and send a confirmation</p>
+        <p style="margin: 0 0 10px 0; color: #065f46;">2. Your order will be prepared and shipped</p>
+        <p style="margin: 0; color: #065f46;">3. You'll receive tracking information via email</p>
+      </div>
+
+      <!-- Support -->
+      <div style="text-align: center; margin: 30px 0; padding: 20px; background: #f3f4f6; border-radius: 8px;">
+        <h3 style="color: #1e3a8a; margin: 0 0 10px 0;">Need Help?</h3>
+        <p style="margin: 0 0 10px 0; color: #6b7280;">${t.contactSupport}</p>
+        <p style="margin: 0; color: #6b7280;">📧 Contact us at <a href="mailto:support@drivecoreauto.com" style="color: #1e3a8a; text-decoration: none;">support@drivecoreauto.com</a></p>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #1f2937; color: white; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+      <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">Thank you for choosing DriveCore Auto!</p>
+      <p style="margin: 0; opacity: 0.8; font-size: 14px;">Drive with confidence, powered by quality parts.</p>
+      <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #374151;">
+        <p style="margin: 0; font-size: 12px; opacity: 0.7;">
+          This email was sent to ${sanitizedBilling.email}. 
+          <br>© ${new Date().getFullYear()} DriveCore Auto. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </div>
+`;
     // --- Company email ---
     const companyEmailHTML = `
       <h2>${t.newOrderNotification}</h2>
@@ -217,20 +327,50 @@ export async function POST(req: NextRequest) {
       <p>${t.customer}: <strong>${sanitizedBilling.firstName} ${sanitizedBilling.lastName}</strong></p>
       <p>Email: ${sanitizedBilling.email}</p>
       <p>Phone: ${sanitizedBilling.phone || "N/A"}</p>
+      
       <h3>${t.orderDetails}:</h3>
       <ul>
-        ${cartItems.map((item: any) => `<li>${item.name} x ${item.quantity} - $${item.price}</li>`).join("")}
+        ${cartItems.map((item: any) => `<li>${item.name} x ${item.quantity} - $${item.price.toFixed(2)}</li>`).join("")}
       </ul>
-      <p>Total: <strong>$${order.grandTotal.toFixed(2)}</strong></p>
+      
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+      
+      <div style="margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+          <span>Subtotal:</span>
+          <span>$${order.subtotal.toFixed(2)}</span>
+        </div>
+        ${order.discount > 0 ? `
+        <div style="display: flex; justify-content: space-between; margin: 5px 0; color: green;">
+          <span>Coupon Discount:</span>
+          <span>- $${order.discount.toFixed(2)}</span>
+        </div>` : ''}
+        <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+          <span>Shipping Cost:</span>
+          <span>$${order.shippingCost.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+          <span>Sales Tax:</span>
+          <span>$${order.salesTaxAmount.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 18px; border-top: 1px solid #ddd; padding-top: 10px;">
+          <span>Grand Total:</span>
+          <span>$${order.grandTotal.toFixed(2)}</span>
+        </div>
+      </div>
+      
       <p>${t.paymentMethod}: ${paymentMethod}</p>
+      
       <h3>${t.billingAddress}:</h3>
       <p>${sanitizedBilling.address1 || ""} ${sanitizedBilling.address2 || ""}</p>
       <p>${sanitizedBilling.city || ""}, ${sanitizedBilling.state || ""} ${sanitizedBilling.postalCode || ""}</p>
       <p>${sanitizedBilling.country || ""}</p>
+      
       ${sanitizedShipping ? `<h3>${t.shippingAddress}:</h3>
       <p>${sanitizedShipping.address1 || ""} ${sanitizedShipping.address2 || ""}</p>
       <p>${sanitizedShipping.city || ""}, ${sanitizedShipping.state || ""} ${sanitizedShipping.postalCode || ""}</p>
       <p>${sanitizedShipping.country || ""}</p>` : ""}
+      
       <p>${t.orderPending}</p>
     `;
 
@@ -258,15 +398,13 @@ export async function POST(req: NextRequest) {
     console.error("Order error:", error);
     return NextResponse.json({ error: "Failed to place order" }, { status: 500 });
   }
-};
+}
 
 // Helper
 function isValidEmail(email: string) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
-
-
 // --------------------------------------------------------------
 
 // --- GET logic for React Admin ---

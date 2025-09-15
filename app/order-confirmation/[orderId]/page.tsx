@@ -21,6 +21,10 @@ const OrderConfirmation: React.FC = () => {
     orderDate: "Order Date",
     customer: "Customer",
     items: "Items",
+    subtotal: "Subtotal",
+    shipping: "Shipping",
+    tax: "Tax",
+    discount: "Discount",
     total: "Total",
     continueShopping: "Continue Shopping",
     viewOrder: "View Order",
@@ -41,6 +45,10 @@ const OrderConfirmation: React.FC = () => {
         orderDate: await translate("Order Date"),
         customer: await translate("Customer"),
         items: await translate("Items"),
+        subtotal: await translate("Subtotal"),
+        shipping: await translate("Shipping"),
+        tax: await translate("Tax"),
+        discount: await translate("Discount"),
         total: await translate("Total"),
         continueShopping: await translate("Continue Shopping"),
         viewOrder: await translate("View Order"),
@@ -68,10 +76,14 @@ const OrderConfirmation: React.FC = () => {
             id: item.slug,
             name: item.name,
             qty: item.quantity,
-            price: item.price,
+            price: item.price ?? 0,
             mainImage: item.mainImage,
           })),
-          total: data.totalPrice,
+          subtotal: data.subtotal ?? 0,
+          shippingCost: data.shippingCost ?? 0,
+          salesTaxAmount: data.salesTaxAmount ?? 0,
+          discount: data.discount ?? 0,
+          total: data.grandTotal ?? 0,
         });
       } else {
         setOrder(null);
@@ -136,14 +148,36 @@ const OrderConfirmation: React.FC = () => {
                     <p className="text-sm text-gray-500">Qty: {item.qty}</p>
                   </div>
                 </div>
-                <span className="font-medium">${item.price}</span>
+                <span className="font-medium">${item.price.toFixed(2)}</span>
               </div>
             ))}
           </div>
 
-          <div className="flex justify-between items-center mt-6 text-lg font-bold">
+          {/* ✅ Order Breakdown */}
+          <div className="mt-6 space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>{translatedTexts.subtotal}:</span>
+              <span>${order.subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>{translatedTexts.shipping}:</span>
+              <span>${order.shippingCost.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>{translatedTexts.tax}:</span>
+              <span>${order.salesTaxAmount.toFixed(2)}</span>
+            </div>
+            {order.discount > 0 && (
+              <div className="flex justify-between text-red-600">
+                <span>{translatedTexts.discount}:</span>
+                <span>- ${order.discount.toFixed(2)}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center mt-6 text-lg font-bold border-t pt-2">
             <span>{translatedTexts.total}:</span>
-            <span>${order.total}</span>
+            <span>${order.total.toFixed(2)}</span>
           </div>
         </div>
 
