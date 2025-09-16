@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 
 interface LanguageContextType {
   language: string;
@@ -26,35 +25,14 @@ export function LanguageProvider({
 }) {
   const [language, setLanguageState] = useState<string>(initialLanguage);
   const [translations, setTranslations] = useState<Record<string, any>>(initialTranslations);
-  const searchParams = useSearchParams();
 
-  // ✅ Detect ?lang= in URL on first load
+  // ✅ On first render, override with saved language if exists
   useEffect(() => {
-  // 1️⃣ Detect path-based language segment: /en/... or /es/...
-  const pathLang = window.location.pathname.split("/")[1];
-
-  // 2️⃣ Detect ?lang= query
-  const urlLang = searchParams.get("lang");
-
-  // 3️⃣ Determine which language to use
-  const detectedLang =
-    pathLang && ["en", "fr", "de", "es"].includes(pathLang)
-      ? pathLang
-      : urlLang || language;
-
-  if (detectedLang && detectedLang !== language) {
-    setLanguage(detectedLang);
-  }
-}, [searchParams, language]);
-
-
-  // Load from localStorage if no SSR lang provided
-  useEffect(() => {
-    if (!initialLanguage) {
-      const savedLang = localStorage.getItem("preferredLang");
-      if (savedLang) setLanguageState(savedLang);
+    const savedLang = localStorage.getItem("preferredLang");
+    if (savedLang && savedLang !== language) {
+      setLanguage(savedLang); // also fetches translations
     }
-  }, [initialLanguage]);
+  }, []);
 
   // ✅ Updated setLanguage with namespace & fallback logic
   const setLanguage = async (lang: string, namespace: string = "") => {
@@ -68,10 +46,9 @@ export function LanguageProvider({
     try {
       const res = await fetch(path);
 
-      // Handle missing file
       if (!res.ok) {
         console.warn(`Translation file not found: ${path}`);
-        setTranslations({}); // fallback to empty
+        setTranslations({});
         return;
       }
 
@@ -79,11 +56,11 @@ export function LanguageProvider({
       setTranslations(data);
     } catch (err) {
       console.error(`Failed to fetch translations for ${lang} (${namespace})`, err);
-      setTranslations({}); // fallback
+      setTranslations({});
     }
   };
 
-  // Fetch translation from loaded JSON
+  // ✅ Static dictionary translation
   const fetchStaticTranslation = (key: string, namespace?: string): any => {
     if (!translations) return key;
 
@@ -94,7 +71,7 @@ export function LanguageProvider({
     return translations[key] || key;
   };
 
-  // Dynamic translation via API (runtime)
+  // ✅ Runtime translation API
   const translate = async (text: string): Promise<string> => {
     if (language === "en") return text;
 
