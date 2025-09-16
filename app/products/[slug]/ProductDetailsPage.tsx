@@ -201,19 +201,28 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
 
   
 
-  const selectTab = (tab: Tab, e?: React.MouseEvent<HTMLButtonElement>) => {
-  // Prevent default behavior to stop mobile from jumping
+  const selectTab = (tab: Tab, e?: React.MouseEvent<HTMLButtonElement | HTMLSpanElement> | React.KeyboardEvent<HTMLSpanElement>) => {
+  // Prevent default behavior to stop unwanted scrolling
   e?.preventDefault();
+  e?.stopPropagation();
 
   // Set the active tab
   setActiveTab(tab);
 
-  // Optional: scroll the tab into view on small devices
-  const tabElement = e?.currentTarget;
-  tabElement?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // For mobile devices, scroll to the tab content smoothly without jumping to bottom
+  if (window.innerWidth < 1024) { // lg breakpoint
+    setTimeout(() => {
+      const tabContentElement = document.querySelector(`[data-tab-content="${tab}"]`);
+      if (tabContentElement) {
+        tabContentElement.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "nearest",
+          inline: "start"
+        });
+      }
+    }, 100);
+  }
 };
-
-
 
   if (!product) return <p>Loading...</p>;
 
@@ -277,25 +286,32 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
               onClick={() => setIsModalOpen(true)}
             >
               <Image
-                src={product.thumbnails[selectedThumbnail] || product.mainImage}
-                alt={product.name[language] || product.name.en}
-                width={500}
-                height={500}
-                className="rounded-lg"
-                unoptimized
-              />
+  src={product.thumbnails[selectedThumbnail] || product.mainImage}
+  alt={product.name[language] || product.name.en}
+  width={500}
+  height={500}
+  className="rounded-lg object-cover"
+  unoptimized
+/>
             </div>
 
             <div className="flex gap-4 mt-4">
               {[product.mainImage, ...product.thumbnails].map((thumb, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => setSelectedThumbnail(idx)}
-                  className={`cursor-pointer ${selectedThumbnail === idx ? "border-2 border-blue-500" : ""}`}
-                >
-                  <Image src={thumb} alt={`Thumbnail ${idx + 1}`} width={100} height={100} className="rounded-lg" unoptimized />
-                </div>
-              ))}
+  <div
+    key={idx}
+    onClick={() => setSelectedThumbnail(idx)}
+    className={`cursor-pointer ${selectedThumbnail === idx ? "border-2 border-blue-500" : ""}`}
+  >
+    <Image 
+      src={thumb} 
+      alt={`Thumbnail ${idx + 1}`} 
+      width={100} 
+      height={100} 
+      className="rounded-lg object-cover" 
+      unoptimized 
+    />
+  </div>
+))}
             </div>
           </div>
 
@@ -365,24 +381,27 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
         </div>
 
         {/* Tabs */}
-          {/* Tabs - Refactored with activeTab */}
+       {/* Tabs - Fixed Version */}
 <div className="mt-20 flex flex-col gap-4 md:gap-6">
   {/* Tab Navigation */}
   <div className="flex flex-col lg:flex-row lg:gap-8 lg:border-b lg:border-gray-200">
     {/* Description Tab */}
     <div className="mb-4 lg:mb-0">
       <span
-        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 transition-colors ${
           activeTab === "description"
             ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
             : "text-gray-700 hover:text-blue-500"
         }`}
-        onClick={() => selectTab("description")}
+        onClick={(e) => selectTab("description", e)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && selectTab("description", e)}
       >
         {t.productDescription}
       </span>
       {activeTab === "description" && (
-        <div className="block lg:hidden space-y-2 mt-2">
+        <div className="block lg:hidden space-y-2 mt-2" data-tab-content="description">
           {parse(product.description[language] || product.description.en, parseOptions)}
         </div>
       )}
@@ -391,19 +410,18 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
     {/* Specifications Tab */}
     <div className="mb-4 lg:mb-0">
       <button
-      type="button"
-        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+        type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 transition-colors border-none bg-transparent ${
           activeTab === "specifications"
             ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
             : "text-gray-700 hover:text-blue-500"
         }`}
-        onClick={() => selectTab("specifications")}
+        onClick={(e) => selectTab("specifications", e)}
       >
         {t.specifications}
-     </button>
-
+      </button>
       {activeTab === "specifications" && (
-        <div className="block lg:hidden space-y-2 mt-2">
+        <div className="block lg:hidden space-y-2 mt-2" data-tab-content="specifications">
           {stripHtmlToParagraphs(product.Specifications[language] || product.Specifications.en).map((p, idx) => (
             <p key={idx}>{p}</p>
           ))}
@@ -414,18 +432,18 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
     {/* Shipping Tab */}
     <div className="mb-4 lg:mb-0">
       <button
-      type="button"
-        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+        type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 transition-colors border-none bg-transparent ${
           activeTab === "shipping"
             ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
             : "text-gray-700 hover:text-blue-500"
         }`}
-        onClick={() => selectTab("shipping")}
+        onClick={(e) => selectTab("shipping", e)}
       >
         {t.shipping}
       </button>
       {activeTab === "shipping" && (
-        <div className="block lg:hidden space-y-2 mt-2">
+        <div className="block lg:hidden space-y-2 mt-2" data-tab-content="shipping">
           {stripHtmlToParagraphs(product.Shipping[language] || product.Shipping.en).map((p, idx) => (
             <p key={idx}>{p}</p>
           ))}
@@ -436,18 +454,18 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
     {/* Warranty Tab */}
     <div className="mb-4 lg:mb-0">
       <button
-       type="button"
-        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+        type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 transition-colors border-none bg-transparent ${
           activeTab === "warranty"
             ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
             : "text-gray-700 hover:text-blue-500"
         }`}
-        onClick={() => selectTab("warranty")}
+        onClick={(e) => selectTab("warranty", e)}
       >
         {t.warranty}
       </button>
       {activeTab === "warranty" && (
-        <div className="block lg:hidden space-y-2 mt-2">
+        <div className="block lg:hidden space-y-2 mt-2" data-tab-content="warranty">
           {stripHtmlToParagraphs(product.Warranty[language] || product.Warranty.en).map((p, idx) => (
             <p key={idx}>{p}</p>
           ))}
@@ -458,18 +476,18 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
     {/* Reviews Tab */}
     <div className="mb-4 lg:mb-0">
       <button
-       type="button"
-        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 ${
+        type="button"
+        className={`block lg:inline-block text-lg font-semibold cursor-pointer pb-2 lg:pb-4 transition-colors border-none bg-transparent ${
           activeTab === "reviews"
             ? "text-blue-600 border-b-2 lg:border-b-2 border-blue-600"
             : "text-gray-700 hover:text-blue-500"
         }`}
-        onClick={() => selectTab("reviews")}
+        onClick={(e) => selectTab("reviews", e)}
       >
         {t.reviews} (<span className="text-yellow-500">{reviewCount}</span>)
       </button>
       {activeTab === "reviews" && (
-        <div className="block lg:hidden">
+        <div className="block lg:hidden" data-tab-content="reviews">
           <ReviewList productSlug={product.slug[language] || product.slug.en} />
           <ReviewForm
             slug={product.slug[language] || product.slug.en}
@@ -523,7 +541,6 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
     )}
   </div>
 </div>
-
         {/* Related Products */}
         <div className="mt-10">
           <RelatedProducts currentProductSlug={product.slug[language] || product.slug.en} />
@@ -535,11 +552,14 @@ const [activeTab, setActiveTab] = useState<Tab>("description");
       {showStickyBar && (
         <div className="hidden md:flex fixed bottom-0 left-0 w-full bg-white shadow-lg border-t z-50 py-3 px-6 items-center justify-between animate-fadeIn">
           <div className="flex items-center gap-4">
-            <img
-              src={product.mainImage}
-              alt={product.name[language] || product.name.en}
-              className="w-16 h-16 object-cover rounded"
-            />
+           <Image
+  src={product.mainImage}
+  alt={product.name[language] || product.name.en}
+  width={64}
+  height={64}
+  className="object-cover rounded"
+  unoptimized
+/>
             <div>
               <div className="font-semibold text-lg ">{product.name[language] || product.name.en}</div>
 <div className="text-lg font-bold">
