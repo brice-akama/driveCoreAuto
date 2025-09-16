@@ -41,8 +41,8 @@ export async function GET() {
       { url: "/accessories", changefreq: "monthly", priority: 0.7 }, // Product category
       { url: "/subframe", changefreq: "monthly", priority: 0.6 }, // Specific category
       { url: "/free-shipping", changefreq: "monthly", priority: 0.6 }, // Info page
-      { url: "/contact", changefreq: "monthly", priority: 0.5 }, // Contact page
-      { url: "/about", changefreq: "monthly", priority: 0.5 }, // About page
+     
+      { url: "/about-us", changefreq: "monthly", priority: 0.5 }, // About page
     ];
 
     const languages = ["en", "fr", "es", "de"];

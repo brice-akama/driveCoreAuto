@@ -45,10 +45,10 @@ export default function FooterLanguageButton() {
   return (
    <div
   className="
-    fixed bottom-16 z-50 
+    fixed bottom-16 z-50  md:bottom-4
     left-1/2 transform -translate-x-1/2     /* default (phones): centered */
     md:left-25 md:transform-none             /* tablets: move to bottom-left */
-    lg:hidden                               /* hide on desktop */
+                               /* hide on desktop */
   "
 >
   {/* Trigger Button */}

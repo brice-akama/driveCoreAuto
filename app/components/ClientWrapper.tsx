@@ -11,7 +11,10 @@ import ScrollToTop from "./ScrollToTop";
 import CurrencySelector from "./CurrencySelector";
 import CartDrawer from "./CartDrawer";
 
+
 import SalesIQChat from "./ClientSideTawk";
+
+
 
 const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -24,11 +27,13 @@ const ClientWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       {!isAdminRoute && <CurrencySelector />}
 
       <main>
-        <ScrollToTop />
+        <ScrollToTop />  
          
         {children}
-        {!isAdminRoute && <BackToTop />}
+        {!isAdminRoute && <BackToTop />}    
+        
       </main>
+      
 
       {!isAdminRoute && <Footer />}
       

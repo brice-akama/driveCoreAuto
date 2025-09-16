@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface LanguageContextType {
   language: string;
@@ -25,6 +26,27 @@ export function LanguageProvider({
 }) {
   const [language, setLanguageState] = useState<string>(initialLanguage);
   const [translations, setTranslations] = useState<Record<string, any>>(initialTranslations);
+  const searchParams = useSearchParams();
+
+  // ✅ Detect ?lang= in URL on first load
+  useEffect(() => {
+  // 1️⃣ Detect path-based language segment: /en/... or /es/...
+  const pathLang = window.location.pathname.split("/")[1];
+
+  // 2️⃣ Detect ?lang= query
+  const urlLang = searchParams.get("lang");
+
+  // 3️⃣ Determine which language to use
+  const detectedLang =
+    pathLang && ["en", "fr", "de", "es"].includes(pathLang)
+      ? pathLang
+      : urlLang || language;
+
+  if (detectedLang && detectedLang !== language) {
+    setLanguage(detectedLang);
+  }
+}, [searchParams, language]);
+
 
   // Load from localStorage if no SSR lang provided
   useEffect(() => {

@@ -97,7 +97,7 @@ export default function BlogPage({ initialPosts }: BlogPageProps) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
           >
-            {currentPosts.map((post) => {
+           {currentPosts.map((post, idx) => {
               const localizedTitle = post.title[currentLang] || post.title['en'] || '';
               const localizedImage = post.imageUrl || '';
               const localizedSlug = post.slug[currentLang] || post.slug['en'] || '';
@@ -105,7 +105,7 @@ export default function BlogPage({ initialPosts }: BlogPageProps) {
 
               return (
                 <motion.article
-                  key={localizedSlug}
+                  key={`${localizedSlug}-${idx}`}
                   className="relative bg-white rounded-xl overflow-hidden shadow-lg cursor-pointer"
                   whileHover={{ scale: 1.03, boxShadow: '0px 20px 30px rgba(0,0,0,0.15)' }}
                   transition={{ duration: 0.3 }}
