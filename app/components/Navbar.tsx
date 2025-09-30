@@ -584,6 +584,11 @@ const knownPaths = languages.flatMap(lang =>
 
 console.log(knownPaths);
 
+// Helper to safely build localized paths; fall back to non-localized path if language missing
+const localized = (path: string) => {
+  if (!path.startsWith('/')) path = `/${path}`;
+  return language ? `/${language}${path}` : path;
+};
 
   // LIVE SEARCH
   useEffect(() => {
@@ -770,18 +775,16 @@ useEffect(() => {
 
 
             {/* Right: Navigation Links */}
-            <div className="hidden md:flex items-center space-x-4">
-             
-              
-              
-              <Link href={`/${language}/warranty`} className="hover:text-gray-200 transition uppercase text-xs font-semibold">
-                WARRANTY
+            <div className="hidden md:flex items-center space-x-4" style={{ position: 'relative', zIndex: 70, pointerEvents: 'auto' }}>
+              <Link href={localized('/track-order')} onClick={() => console.log('top link: track-order clicked')} className="hover:text-gray-200 transition uppercase text-xs font-semibold">
+                TRACK ORDER
               </Link>
-              <Link href={`/${language}/shipping`} className="hover:text-gray-200 transition uppercase text-xs font-semibold">
+              <Link href={localized('/shipping')} onClick={() => console.log('top link: shipping clicked')} className="hover:text-gray-200 transition uppercase text-xs font-semibold">
                 SHIPPING
               </Link>
-              <Link href={`/${language}/track-order`} className="hover:text-gray-200 transition uppercase text-xs font-semibold">
-                TRACK ORDER
+
+              <Link href={localized('/warranty')} onClick={() => console.log('top link: warranty clicked')} className="hover:text-gray-200 transition uppercase text-xs font-semibold">
+                WARRANTY
               </Link>
             </div>
           </div>
@@ -993,7 +996,7 @@ useEffect(() => {
 
       {/* Right Icons */}
      {/* Right Icons — include mobile search icon */}
-<div className="flex items-center space-x-4 md:space-x-6">
+<div className="flex items-center space-x-4 md:space-x-6" style={{ position: 'relative', zIndex: 120, pointerEvents: 'auto' }}>
   {/* Mobile Search Icon */}
   <button
     onClick={() => setIsSidebarOpen(true)}
@@ -1021,11 +1024,9 @@ useEffect(() => {
   <div className="flex items-center gap-2 relative cursor-pointer" onClick={openCart}>
     <div className="relative">
       <FaShoppingCart className="text-2xl text-gray-700 hover:text-red-600 transition" />
-      {cartCount > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
-          {cartCount}
-        </span>
-      )}
+      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+        {cartCount || 0}
+      </span>
     </div>
     <div className="text-xs text-gray-600 font-semibold hidden lg:block"> ${totalPrice.toFixed(2)}</div>
   </div>
