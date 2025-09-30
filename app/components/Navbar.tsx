@@ -1072,7 +1072,7 @@ useEffect(() => {
               {/* ENGINES */}
               <Link
                 href={`/${brandSlug}`}
-                className="block px-4 py-3 hover:bg-blue-50 hover:text-red-600 font-medium transition"
+                className="block px-4 py-3 hover:bg-blue-50 hover:text-blue-600 font-medium transition"
                 onClick={() => setIsBrowseOpen(false)}
               >
                 {brandName} Engines
@@ -1081,7 +1081,7 @@ useEffect(() => {
               {/* TRANSMISSIONS */}
               <Link
                 href={`/transmissions/${brandSlug}/automatic`}
-                className="block px-4 py-3 hover:bg-blue-50 hover:text-red-600 font-medium transition"
+                className="block px-4 py-3 hover:bg-blue-50 hover:text-blue-600 font-medium transition"
                 onClick={() => setIsBrowseOpen(false)}
               >
                 {brandName} Transmissions
@@ -1091,7 +1091,7 @@ useEffect(() => {
               {hasSwaps && (
                 <Link
                   href={`/swaps/${brandSlug}`}
-                  className="block px-4 py-3 hover:bg-blue-50 hover:text-red-600 font-medium transition"
+                  className="block px-4 py-3 hover:bg-blue-50 hover:text-blue-600 font-medium transition"
                   onClick={() => setIsBrowseOpen(false)}
                 >
                   {brandName} Swaps
