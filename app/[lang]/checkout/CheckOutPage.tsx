@@ -726,227 +726,323 @@ const handlePlaceOrder = async () => {
         </div>
         </div>
         {/* Right: Cart Summary & Payment */}
-        <div className=" space-y-4 bg-gray-50  p-6 rounded-lg shadow-md lg:col-span-2">
-          <h2 className="text-xl font-semibold uppercase">Your Order</h2>
-          <div>
-            {cartItems.map((item) => {
-              const priceNum = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
-              return (
-                <div key={item.slug} className="flex items-center gap-4 border-b pb-2">
-                  <img
-  src={item.mainImage}
-  alt={item.name}
-  width={64}   // pixels, matches w-16
-  height={64}  // pixels, matches h-16
-  className="object-cover rounded-md"
-/>
-
-                <div> <p className="font-medium">{item.name}</p> <p className="text-sm">${priceNum.toFixed(2)} x {item.quantity}</p> <p className="text-sm font-semibold">Total: ${(priceNum * item.quantity).toFixed(2)}</p> </div>
-
-                  
-                </div>
-                
-              );
-            })}
-           
-<div className="flex justify-between mt-1">
-  <span>  {t['subtotal']}</span>
-  <span>${subtotal.toFixed(2)}</span>
-</div>
-
-{discount > 0 && (
-  <div className="flex justify-between mt-3 text-green-600 font-medium">
-    <span> {t['couponDiscount']}</span>
-    <span>- ${discount.toFixed(2)}</span>
+        {/* Right: Cart Summary & Payment */}
+<div className="space-y-6 bg-white border border-gray-200 rounded-xl shadow-sm lg:col-span-2 overflow-hidden">
+  {/* Order Header */}
+  <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+    <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide">Your Order</h2>
   </div>
-)}
 
-<div className="flex justify-between mt-1">
-  <span> {t['shipping']}</span>
-  <span>{shippingCost !== null ? `$${shippingCost.toFixed(2)}` : '—'}</span>
-</div>
-
-<div className="flex justify-between mt-1">
-  <span> {t['salesTax']} </span>
-  <span>${salesTaxAmount.toFixed(2)}</span>
-</div>
-
-<p className="mt-4 text-lg font-bold border-t pt-2">
-  {t['grandTotal']}: ${total.toFixed(2)}
-</p>
-
-{shippingCost === null && (
-  <button
-    type="button"
-    onClick={calculateShipping}
-    className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-medium"
-  >
-    Calculate Shipping 
-  </button>
-)}
-
-          </div>
-          <h3 className="text-lg font-semibold mt-4">  {t['paymentMethods']}</h3>
-          <div className="space-y-2">
-  {['Cash App', 'Paypal', 'Zelle', 'Apple Pay', 'Venmo', 'crypto'].map((method) => (
-    <label key={method} className="flex items-center gap-2 cursor-pointer mt-5">
-      <input
-        type="radio"
-        name="paymentMethod"
-        value={method}
-        checked={paymentMethod === method}
-        onChange={() =>
-          setPaymentMethod(
-            method as 'Cash App' | 'Paypal' | 'Zelle' | 'Apple Pay' | 'Venmo' | 'crypto'
-          )
-        }
-      />
-      <span className="flex items-center gap-1">
-        {paymentIcons[method]}
-        {method}
-      </span>
-    </label>
-  ))}
-</div>
-
-          {/* Cash App Instructions */}
-{paymentMethod === 'Cash App' && (
-  <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">{t['cashAppTitle']}</p>
-    <ol className="list-decimal list-inside space-y-1">
-      <li>{t['cashAppStep1']}</li>
-      <li>{t['cashAppStep2']}</li>
-      <li>{t['cashAppStep3']}</li>
-      <li>{t['cashAppStep4']}</li>
-      <li>{t['cashAppStep5']}</li>
-      <li>{t['cashAppStep6']}</li>
-      <li>{t['cashAppStep7']}</li>
-      <li>{t['cashAppStep8']}</li>
-    </ol>
-    <p className="text-red-600 font-medium mt-2">{t['cashAppWarning']}</p>
-  </div>
-)}
-
-{paymentMethod === 'Paypal' && (
-  <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">{t['paypalTitle']}</p>
-    <ol className="list-decimal list-inside space-y-1">
-      <li>{t['paypalStep1']}</li>
-    </ol>
-  </div>
-)}
-
-{paymentMethod === 'Zelle' && (
-  <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">{t['zelleTitle']}</p>
-    <ol className="list-decimal list-inside space-y-1">
-      <li>{t['zelleStep1']}</li>
-      <li>{t['zelleStep2']}</li>
-      <li>{t['zelleStep3']}</li>
-      <li>{t['zelleStep4']}</li>
-      <li>{t['zelleStep5']}</li>
-      <li>{t['zelleStep6']}</li>
-    </ol>
-    <p className="text-red-600 font-medium mt-2">{t['zelleWarning']}</p>
-  </div>
-)}
-
-{paymentMethod === 'Apple Pay' && (
-  <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">{t['applePayTitle']}</p>
-    <ol className="list-decimal list-inside space-y-1">
-      <li>{t['applePayStep1']}</li>
-    </ol>
-  </div>
-)}
-
-{paymentMethod === 'Venmo' && (
-  <div className="bg-white border border-gray-300 p-4 rounded-md text-sm text-gray-700 space-y-2">
-    <p className="font-semibold text-blue-700">{t['venmoTitle']}</p>
-    <ol className="list-decimal list-inside space-y-1">
-      <li>{t['venmoStep1']}</li>
-    </ol>
-  </div>
-)}
-
-
-
-
-
-
-
-          {paymentMethod === 'crypto' && (
-            <div className="bg-blue-100 p-4 rounded-md text-sm text-gray-700 space-y-3">
-              <p><strong>Send BTC to:</strong></p>
-              <div className="flex items-center justify-between bg-white p-2 rounded border">
-                <span className="break-all font-mono text-gray-800">
-                  bc1qv8wl5n9pe89qv9hptvnhljc0cg57c4j63nrynm
-                </span>
-                <button
-                  onClick={handleCopy}
-                  className="ml-3 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
-                >
-                  {copied ? 'Copied!' : 'Copy'}
-                </button>
-              </div>
-              <p>Or scan QR code:</p>
-              <QRCodeWrapper
-                value="bc1qv8wl5n9pe89qv9hptvnhljc0cg57c4j63nrynm"
-                size={160}
+  {/* Order Items */}
+  <div className="px-6">
+    <div className="space-y-3">
+      {cartItems.map((item) => {
+        const priceNum = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
+        return (
+          <div key={item.slug} className="flex items-center gap-4 pb-4 border-b border-gray-100 last:border-0">
+            <div className="relative flex-shrink-0 group">
+              <img
+                src={item.mainImage}
+                alt={item.name}
+                width={64}
+                height={64}
+                className="object-cover rounded-lg border-2 border-gray-200 group-hover:border-blue-400 transition-colors"
               />
+              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
+                {item.quantity}
+              </span>
             </div>
-          )}
-          {orderStatus === 'success' && (
-            <p className="text-sm text-green-700 bg-green-100 p-2 rounded-md">
-              ✅ Your order has been successfully placed and is pending payment via <strong>{paymentMethod}</strong>.
-            </p>
-          )}
-          {orderStatus === 'error' && (
-            <p className="text-sm text-red-600 bg-red-100 p-2 rounded-md">
-              ❌ Something went wrong while placing your order. Please try again.
-            </p>
-          )}
-          <p className="mt-2 text-sm">
-            Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our{' '}
-            <Link  href={`/${language}/privacy-policy`} className="text-blue-600 underline">privacy policy</Link>.
-          </p>
-          {cryptoWarning && (
-            <p className="text-sm text-orange-700 bg-orange-100 p-2 rounded-md">
-              {t['cryptoWarning']}
-            </p>
-          )}
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-gray-800 mb-1 truncate">{item.name}</p>
+              <p className="text-sm text-gray-600">
+                ${priceNum.toFixed(2)} × {item.quantity}
+              </p>
+              <p className="text-base font-bold text-blue-600 mt-1">
+                ${(priceNum * item.quantity).toFixed(2)}
+              </p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
 
-          {/* Terms & Conditions Checkbox */}
-<div className="mt-2 flex items-center gap-2">
-  <input
-    type="checkbox"
-    id="terms"
-    checked={agreedToTerms}
-    onChange={(e) => setAgreedToTerms(e.target.checked)}
-    className="w-4 h-4"
-  />
-  <label htmlFor="terms" className="text-sm">
-  <Link href={`/${language}/terms-conditions`} className="text-blue-600 underline">
-    {t['termsAndConditions']}
-  </Link>
-</label>
+  {/* Order Summary */}
+  <div className="px-6">
+    <div className="bg-gray-50 rounded-lg p-5 space-y-3 border border-gray-200">
+      <div className="flex justify-between text-gray-700 text-base">
+        <span className="font-medium">{t['subtotal']}</span>
+        <span className="font-semibold">${subtotal.toFixed(2)}</span>
+      </div>
 
-</div>
-          
-<button
-  onClick={() => {
-    if (!agreedToTerms) {
-      alert("You must agree to the terms and conditions before placing your order.");
-      return;
-    }
-    handlePlaceOrder();
-  }}
-  className="w-full bg-blue-600 text-white py-2 rounded-md mt-4 hover:bg-blue-700 transition"
->
-   {t['placeOrder']}
-</button>
+      {discount > 0 && (
+        <div className="flex justify-between text-green-600 font-medium text-base">
+          <span className="flex items-center gap-1">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd"/>
+            </svg>
+            {t['couponDiscount']}
+          </span>
+          <span className="font-bold">−${discount.toFixed(2)}</span>
+        </div>
+      )}
+
+      <div className="flex justify-between text-gray-700 text-base border-t border-gray-200 pt-3">
+        <span className="font-medium">{t['shipping']}</span>
+        <span className="font-semibold">
+          {shippingCost !== null ? `$${shippingCost.toFixed(2)}` : '—'}
+        </span>
+      </div>
+
+      <div className="flex justify-between text-gray-700 text-base">
+        <span className="font-medium">{t['salesTax']}</span>
+        <span className="font-semibold">${salesTaxAmount.toFixed(2)}</span>
+      </div>
+
+      <div className="border-t-2 border-gray-300 pt-3">
+        <div className="flex justify-between items-center">
+          <span className="text-lg font-bold text-gray-900">{t['grandTotal']}</span>
+          <span className="text-2xl font-bold text-blue-600">${total.toFixed(2)}</span>
         </div>
       </div>
+    </div>
+
+    {shippingCost === null && (
+      <button
+        type="button"
+        onClick={calculateShipping}
+        className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+      >
+        Calculate Shipping
+      </button>
+    )}
+  </div>
+
+  {/* Payment Methods */}
+  <div className="px-6 pb-6">
+    <div className="border-t border-gray-200 pt-6">
+      <h3 className="text-lg font-bold text-gray-800 mb-4 uppercase tracking-wide">
+        {t['paymentMethods']}
+      </h3>
+      <div className="space-y-2">
+        {['Cash App', 'Paypal', 'Zelle', 'Apple Pay', 'Venmo', 'crypto'].map((method) => (
+          <label
+            key={method}
+            className="flex items-center gap-3 p-4 bg-gray-50 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group"
+          >
+            <input
+              type="radio"
+              name="paymentMethod"
+              value={method}
+              checked={paymentMethod === method}
+              onChange={() =>
+                setPaymentMethod(
+                  method as 'Cash App' | 'Paypal' | 'Zelle' | 'Apple Pay' | 'Venmo' | 'crypto'
+                )
+              }
+              className="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="flex items-center gap-2 font-medium text-gray-800 group-hover:text-blue-700">
+              {paymentIcons[method]}
+              {method}
+            </span>
+          </label>
+        ))}
+      </div>
+    </div>
+
+    {/* Payment Instructions */}
+    {paymentMethod === 'Cash App' && (
+      <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-lg p-5 shadow-sm">
+        <p className="font-bold text-blue-900 mb-3 text-base flex items-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+          </svg>
+          {t['cashAppTitle']}
+        </p>
+        <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 ml-2">
+          <li className="pl-2">{t['cashAppStep1']}</li>
+          <li className="pl-2">{t['cashAppStep2']}</li>
+          <li className="pl-2">{t['cashAppStep3']}</li>
+          <li className="pl-2">{t['cashAppStep4']}</li>
+          <li className="pl-2">{t['cashAppStep5']}</li>
+          <li className="pl-2">{t['cashAppStep6']}</li>
+          <li className="pl-2">{t['cashAppStep7']}</li>
+          <li className="pl-2">{t['cashAppStep8']}</li>
+        </ol>
+        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+          <p className="text-sm text-red-700 font-medium">{t['cashAppWarning']}</p>
+        </div>
+      </div>
+    )}
+
+    {paymentMethod === 'Paypal' && (
+      <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-lg p-5 shadow-sm">
+        <p className="font-bold text-blue-900 mb-3 text-base flex items-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+          </svg>
+          {t['paypalTitle']}
+        </p>
+        <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 ml-2">
+          <li className="pl-2">{t['paypalStep1']}</li>
+        </ol>
+      </div>
+    )}
+
+    {paymentMethod === 'Zelle' && (
+      <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-lg p-5 shadow-sm">
+        <p className="font-bold text-blue-900 mb-3 text-base flex items-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+          </svg>
+          {t['zelleTitle']}
+        </p>
+        <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 ml-2">
+          <li className="pl-2">{t['zelleStep1']}</li>
+          <li className="pl-2">{t['zelleStep2']}</li>
+          <li className="pl-2">{t['zelleStep3']}</li>
+          <li className="pl-2">{t['zelleStep4']}</li>
+          <li className="pl-2">{t['zelleStep5']}</li>
+          <li className="pl-2">{t['zelleStep6']}</li>
+        </ol>
+        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+          <p className="text-sm text-red-700 font-medium">{t['zelleWarning']}</p>
+        </div>
+      </div>
+    )}
+
+    {paymentMethod === 'Apple Pay' && (
+      <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-lg p-5 shadow-sm">
+        <p className="font-bold text-blue-900 mb-3 text-base flex items-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+          </svg>
+          {t['applePayTitle']}
+        </p>
+        <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 ml-2">
+          <li className="pl-2">{t['applePayStep1']}</li>
+        </ol>
+      </div>
+    )}
+
+    {paymentMethod === 'Venmo' && (
+      <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-lg p-5 shadow-sm">
+        <p className="font-bold text-blue-900 mb-3 text-base flex items-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+          </svg>
+          {t['venmoTitle']}
+        </p>
+        <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 ml-2">
+          <li className="pl-2">{t['venmoStep1']}</li>
+        </ol>
+      </div>
+    )}
+
+    {paymentMethod === 'crypto' && (
+      <div className="mt-4 bg-gradient-to-br from-purple-50 to-blue-50 border-l-4 border-purple-600 rounded-r-lg p-5 shadow-sm">
+        <p className="font-bold text-gray-900 mb-3">Send BTC to:</p>
+        <div className="flex items-center justify-between bg-white p-3 rounded-lg border-2 border-gray-300 shadow-sm">
+          <span className="break-all font-mono text-sm text-gray-800 mr-2">
+            bc1qv8wl5n9pe89qv9hptvnhljc0cg57c4j63nrynm
+          </span>
+          <button
+            onClick={handleCopy}
+            className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition font-medium shadow-sm"
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+        <p className="font-semibold text-gray-900 mt-4 mb-2">Or scan QR code:</p>
+        <div className="flex justify-center bg-white p-4 rounded-lg border-2 border-gray-200 shadow-sm">
+          <QRCodeWrapper
+            value="bc1qv8wl5n9pe89qv9hptvnhljc0cg57c4j63nrynm"
+            size={160}
+          />
+        </div>
+      </div>
+    )}
+
+    {/* Status Messages */}
+    {orderStatus === 'success' && (
+      <div className="mt-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg p-4 shadow-sm">
+        <p className="text-sm text-green-800 font-medium flex items-center gap-2">
+          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+          </svg>
+          Your order has been successfully placed and is pending payment via <strong>{paymentMethod}</strong>.
+        </p>
+      </div>
+    )}
+
+    {orderStatus === 'error' && (
+      <div className="mt-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 shadow-sm">
+        <p className="text-sm text-red-800 font-medium flex items-center gap-2">
+          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+          </svg>
+          Something went wrong while placing your order. Please try again.
+        </p>
+      </div>
+    )}
+
+    {cryptoWarning && (
+      <div className="mt-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-lg p-4 shadow-sm">
+        <p className="text-sm text-orange-800 flex items-center gap-2">
+          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+          </svg>
+          {t['cryptoWarning']}
+        </p>
+      </div>
+    )}
+
+    {/* Privacy Policy */}
+    <p className="mt-4 text-xs text-gray-600 leading-relaxed">
+      Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our{' '}
+      <Link href={`/${language}/privacy-policy`} className="text-blue-600 hover:text-blue-800 underline font-medium">
+        privacy policy
+      </Link>.
+    </p>
+
+    {/* Terms & Conditions */}
+    <div className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <label className="flex items-start gap-3 cursor-pointer group">
+        <input
+          type="checkbox"
+          id="terms"
+          checked={agreedToTerms}
+          onChange={(e) => setAgreedToTerms(e.target.checked)}
+          className="w-5 h-5 mt-0.5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+        />
+        <span className="text-sm text-gray-700 group-hover:text-gray-900">
+          I have read and agree to the website{' '}
+          <Link href={`/${language}/terms-conditions`} className="text-blue-600 hover:text-blue-800 underline font-medium">
+            terms and conditions
+          </Link>{' '}
+          <span className="text-red-600 font-bold">*</span>
+        </span>
+      </label>
+    </div>
+
+    {/* Place Order Button */}
+    <button
+      onClick={() => {
+        if (!agreedToTerms) {
+          alert("You must agree to the terms and conditions before placing your order.");
+          return;
+        }
+        handlePlaceOrder();
+      }}
+      className="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-lg font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:transform-none"
+    >
+      {t['placeOrder']}
+    </button>
+  </div>
+</div>
+</div>
     </div>
     </div>
   );

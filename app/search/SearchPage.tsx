@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 
 
 
+
 // Unified Product type
 interface Product {
   slug: { [lang: string]: string }; // always object for TS safety
@@ -56,6 +57,7 @@ export default function SearchPage() {
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const { symbol } = useCurrency();
   const router = useRouter();
+   const { language } = useLanguage(); // current language
   
 
 
@@ -435,19 +437,29 @@ const discountedPrice = hasDiscount
         </>
       )}
 
-      {/* Blogs */}
-      {results.blogs.length > 0 && (
-        <>
-          <h2 className="text-xl font-semibold mt-12 mb-4">Blogs</h2>
-          <ul>
-            {results.blogs.map(blog => (
-              <li key={typeof blog.slug === 'string' ? blog.slug : blog.slug.en} className="mb-4">
-                <h3 className="font-semibold">{blog.title?.[currentLang] || blog.title?.en}</h3>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+     {/* Blogs */}
+{results.blogs.length > 0 && (
+  <>
+    <h2 className="text-xl font-semibold mt-12 mb-4">Blogs</h2>
+    <ul>
+      {results.blogs.map(blog => {
+        const slug = typeof blog.slug === "string" ? blog.slug : blog.slug.en;
+
+        return (
+          <li key={slug} className="mb-4">
+            <Link
+              href={`/blog/${slug}?lang=${language}`}
+              className="font-semibold text-blue-600 hover:underline"
+            >
+              {blog.title?.[currentLang] || blog.title?.en}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  </>
+)}
+
     </div>
     </>
   );
