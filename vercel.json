@@ -1,0 +1,12 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        { "type": "host", "value": "drivecoreauto.com" }
+      ],
+      "destination": "https://www.drivecoreauto.com",
+      "permanent": true
+    }
+  ]
+}
