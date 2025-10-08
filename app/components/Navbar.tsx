@@ -1106,6 +1106,14 @@ useEffect(() => {
 
             {/* Main Navigation Links */}
             <nav className="flex items-center space-x-1">
+            
+
+             <Link
+                href={`/?lang=${language}`}
+                className="px-4 py-4 text-sm font-bold uppercase text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition"
+              >
+                HOME
+              </Link>
               <Link
                 href="/engines"
                 className="px-4 py-4 text-sm font-bold uppercase text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition"
