@@ -772,7 +772,13 @@ const handlePlaceOrder = async () => {
     <div className="bg-gray-50 rounded-lg p-5 space-y-3 border border-gray-200">
       <div className="flex justify-between text-gray-700 text-base">
         <span className="font-medium">{t['subtotal']}</span>
-        <span className="font-semibold">${subtotal.toFixed(2)}</span>
+        <span className="font-semibold">
+  ${cartItems.reduce((acc, item) => {
+    const priceNum = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
+    return acc + priceNum * item.quantity;
+  }, 0).toFixed(2)}
+</span>
+
       </div>
 
       {discount > 0 && (
@@ -803,7 +809,18 @@ const handlePlaceOrder = async () => {
       <div className="border-t-2 border-gray-300 pt-3">
         <div className="flex justify-between items-center">
           <span className="text-lg font-bold text-gray-900">{t['grandTotal']}</span>
-          <span className="text-2xl font-bold text-blue-600">${total.toFixed(2)}</span>
+          <span className="text-2xl font-bold text-blue-600">
+  ${(
+    cartItems.reduce((acc, item) => {
+      const priceNum = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
+      return acc + priceNum * item.quantity;
+    }, 0) 
+    + (shippingCost ?? 0)
+    + salesTaxAmount 
+    - discount
+  ).toFixed(2)}
+</span>
+
         </div>
       </div>
     </div>

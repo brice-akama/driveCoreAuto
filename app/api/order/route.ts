@@ -84,23 +84,42 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const {
-      cartItems,
-      totalPrice,
-      paymentMethod,
-      billingDetails,
-      shippingDetails,
-      discount,
-      shippingCost,
-      salesTaxAmount,
-      total
-    } = body;
+  cartItems,
+  paymentMethod,
+  billingDetails,
+  shippingDetails,
+  discount = 0,
+  shippingCost = 0,
+  salesTaxAmount = 0
+} = body;
+
+// Recalculate subtotal exactly like frontend
+const subtotal = cartItems.reduce((acc: number, item: any) => {
+  const priceNum = typeof item.price === 'string' 
+    ? parseFloat(item.price) 
+    : item.price;
+  return acc + priceNum * item.quantity;
+}, 0);
+
+// Ensure all values are numbers
+const discountNum = typeof discount === 'string' ? parseFloat(discount) : (discount || 0);
+const shippingNum = typeof shippingCost === 'string' ? parseFloat(shippingCost) : (shippingCost || 0);
+const taxNum = typeof salesTaxAmount === 'string' ? parseFloat(salesTaxAmount) : (salesTaxAmount || 0);
+
+const grandTotal = subtotal + shippingNum + taxNum - discountNum;
+
+// Optional: validate grandTotal is positive
+if (grandTotal < 0) {
+  return NextResponse.json({ error: "Invalid order total" }, { status: 400 });
+}
 
     // --- Basic validation ---
     if (!cartItems || cartItems.length === 0)
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
 
-    if (!totalPrice || totalPrice <= 0)
-      return NextResponse.json({ error: "Total price is invalid" }, { status: 400 });
+    // Removed totalPrice check because grandTotal is recalculated on backend
+        if (grandTotal <= 0)
+          return NextResponse.json({ error: "Total price is invalid" }, { status: 400 });
 
     if (!paymentMethod)
       return NextResponse.json({ error: "Payment method is required" }, { status: 400 });
@@ -160,21 +179,23 @@ export async function POST(req: NextRequest) {
         }
       : null;
 
+      
+
     // --- Prepare order object ---
     const order = {
-      userId,
-      cartItems,
-      billingDetails: sanitizedBilling,
-      shippingDetails: billingDetails.shipToDifferentAddress ? sanitizedShipping : null,
-      paymentMethod,
-      subtotal: totalPrice,  // This is the subtotal (products only)
-      discount: discount || 0,
-      shippingCost: shippingCost || 0,
-      salesTaxAmount: salesTaxAmount || 0,
-      grandTotal: total || totalPrice,  // This is the final total including everything
-      status: "pending",
-      createdAt: new Date()
-    };
+  userId,
+  cartItems,
+  billingDetails: sanitizedBilling,
+  shippingDetails: billingDetails.shipToDifferentAddress ? sanitizedShipping : null,
+  paymentMethod,
+  subtotal: parseFloat(subtotal.toFixed(2)),        // ✅ recalculated
+  discount: parseFloat(discountNum.toFixed(2)),
+  shippingCost: parseFloat(shippingNum.toFixed(2)),
+  salesTaxAmount: parseFloat(taxNum.toFixed(2)),
+  grandTotal: parseFloat(grandTotal.toFixed(2)),    // ✅ recalculated
+  status: "pending",
+  createdAt: new Date()
+};
 
     const orderResult = await db.collection("orders").insertOne(order);
 
