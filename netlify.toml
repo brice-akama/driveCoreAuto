@@ -1,0 +1,20 @@
+[build]
+command = "npm run build"
+publish = ".next"
+
+[[plugins]]
+package = "@netlify/plugin-nextjs"
+
+# Redirect non-www to www
+[[redirects]]
+from = "/*"
+to = "https://www.drivecoreauto.com/:splat"
+status = 301
+force = true
+conditions = { Host = "drivecoreauto.com" }
+
+# Example page-specific redirect
+[[redirects]]
+from = "/old-page"
+to = "/new-page"
+status = 301
